@@ -14,9 +14,9 @@
  * ------------------
  * OLED SDA    -> GPIO 13
  * OLED SCL    -> GPIO 14
- * BTN_UP      -> GPIO 16 (to GND)
- * BTN_DOWN    -> GPIO 3  (to GND)
- * BTN_SELECT  -> GPIO 1  (to GND)
+ * BTN_UP      -> GPIO 12 (to GND)
+ * BTN_DOWN    -> GPIO 15 (to GND)
+ * BTN_SELECT  -> GPIO 2  (to GND)
  * 
  * SD_MMC uses internal ESP32-CAM pins (no additional wiring needed)
  */
@@ -38,9 +38,9 @@
 #define OLED_SCL         14
 
 // Button Configuration
-#define BTN_UP           16
-#define BTN_DOWN         3
-#define BTN_SELECT       1
+#define BTN_UP           12
+#define BTN_DOWN         15
+#define BTN_SELECT       2
 
 // Button Timing
 #define DEBOUNCE_DELAY   50
