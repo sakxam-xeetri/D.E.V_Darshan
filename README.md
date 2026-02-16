@@ -63,21 +63,26 @@
 
 | Function | GPIO | Pull Resistor | Notes |
 |----------|------|--------------|-------|
-| SD DATA0 | 2 | 10 kΩ pull-up | Boot-safe (HIGH) |
-| SD CLK | 14 | — | Not boot-sensitive |
-| SD CMD | 15 | 10 kΩ pull-up | Boot-safe (HIGH) |
-| OLED SDA | 13 | 4.7 kΩ pull-up to 3.3V | Free in 1-bit SD mode |
-| OLED SCL | 12 | 4.7 kΩ pull-up + 10 kΩ pull-down | **10 kΩ pull-down ensures LOW at boot**, then I2C drives it |
-| BTN UP | 16 | Internal pull-up | No boot constraint |
-| BTN DOWN | 3 (RX) | 10 kΩ external pull-up | Safe after boot |
-| BTN SELECT | 1 (TX) | 10 kΩ external pull-up | Safe after boot |
+| SD DATA0 | 2 | SD card built-in | Boot-safe (HIGH) |
+| SD CLK | 14 | — | Shared with I2C SCL |
+| SD CMD | 15 | SD card built-in | Boot-safe (HIGH) |
+| OLED SDA | 13 | OLED module built-in | No external resistor needed |
+| OLED SCL | 14 | OLED module built-in | Shared with SD CLK — no conflict |
+| BTN UP | 16 | ESP32 internal pull-up | Active LOW, no external resistor |
+| BTN DOWN | 3 (RX) | ESP32 internal pull-up | Active LOW, no external resistor |
+| BTN SELECT | 1 (TX) | ESP32 internal pull-up | Active LOW, no external resistor |
 
-### Why These Pins Are Safe
+### Why These Pins Are Safe (and No External Resistors Needed!)
 
-- **GPIO 16** — No boot function, no strapping pin. Ideal for buttons.
-- **GPIO 1 & 3** (TX/RX) — Only used by UART0 during boot. After boot completes, they're free for GPIO. External pull-ups prevent ghost triggers during serial boot output.
-- **GPIO 13** — Not a strapping pin. Free when SD_MMC runs in 1-bit mode (normally SD D3).
-- **GPIO 12** — Strapping pin (must be LOW at boot for 3.3V flash). The **10 kΩ pull-down holds it LOW during boot**, then the 4.7 kΩ I2C pull-up (much weaker) is overridden during boot by the pull-down. After boot, I2C SCL toggles it normally.
+- **GPIO 16** — No boot function, perfect for buttons with internal pull-up.
+- **GPIO 1 & 3** (TX/RX) — Only used by UART0 during boot. After boot, they're free for GPIO with internal pull-ups enabled.
+- **GPIO 13** — Not a strapping pin. Free when SD_MMC runs in 1-bit mode.
+- **GPIO 14** — Shared between SD CLK and I2C SCL. Works perfectly because:
+  - OLED initializes first (before SD mount)
+  - Display updates happen between SD reads (not simultaneously)
+  - The OLED module's built-in pull-ups don't interfere with SD communication
+- **No GPIO 12** — We avoid GPIO 12 entirely (it needs LOW at boot), so no pull-down resistor needed!
+- **All pull-ups built-in** — SD cards, OLED modules, and ESP32 GPIOs all have built-in pull-up/pull-down resistors
 
 ---
 
@@ -91,7 +96,7 @@
   ┌──── 3.3V ──────┤ 3V3            GND ├──────── GND ────┐
   │                 │                      │                │
   │  ┌── SDA ──────┤ GPIO 13              │                │
-  │  │  ┌ SCL ─────┤ GPIO 12              │                │
+  │  │  ┌ SCL ─────┤ GPIO 14 (also SD CLK)│                │
   │  │  │           │                      │                │
   │  │  │  ┌───────┤ GPIO 16   GPIO 2 ├──── SD D0          │
   │  │  │  │        │           GPIO 14├──── SD CLK         │
@@ -102,7 +107,6 @@
   │  │  │  │  │ │   │                      │                │
   │  │  │  │  │ │   │    5V ──────────┤    │                │
   │  │  │  │  │ │   └─────────────────────┘                │
-  │  │  │  │  │ │                                           │
   │  │  │  │  │ │                                           │
   │  ▼  ▼  │  │ │                                           │
   │ ┌──────┐│  │ │    ┌─────────┐       ┌──────────────┐   │
@@ -131,13 +135,12 @@
   │  └─── GND                                               │
   └──────────────────────────────────────────────────────────┘
 
-  Pull-up Resistors (all to 3.3V):
-  • GPIO 2  ← 10 kΩ pull-up
-  • GPIO 15 ← 10 kΩ pull-up
-  • GPIO 13 ← 4.7 kΩ pull-up  (I2C SDA)
-  • GPIO 12 ← 4.7 kΩ pull-up  (I2C SCL) + 10 kΩ pull-down to GND
-  • GPIO 3  ← 10 kΩ pull-up
-  • GPIO 1  ← 10 kΩ pull-up
+  ✅ NO EXTERNAL RESISTORS NEEDED!
+  
+  • SD card has built-in pull-ups on DATA0 and CMD lines
+  • OLED module has built-in 4.7kΩ or 10kΩ pull-ups on SDA/SCL
+  • ESP32 internal pull-ups handle all 3 buttons (enabled in code)
+  • GPIO 14 shared between SD CLK and I2C SCL — works perfectly!
 
   Power Stability:
   • 470 µF electrolytic capacitor across 3.3V and GND (near ESP32)
