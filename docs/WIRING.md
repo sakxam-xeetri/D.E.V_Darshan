@@ -1,4 +1,4 @@
-# DEV_Darshan — Wiring Reference
+# DEV_Darshan — Wiring Reference (NO RESISTORS NEEDED!)
 
 ## Complete Wiring Table
 
@@ -7,7 +7,7 @@
 | 1 | ESP32-CAM `3V3` | Breadboard 3.3V rail | Power | Main 3.3V supply |
 | 2 | ESP32-CAM `GND` | Breadboard GND rail | Power | Common ground |
 | 3 | ESP32-CAM `GPIO 13` | OLED `SDA` | Signal wire | I2C Data |
-| 4 | ESP32-CAM `GPIO 12` | OLED `SCL` | Signal wire | I2C Clock |
+| 4 | ESP32-CAM `GPIO 14` | OLED `SCL` | Signal wire | I2C Clock (shared with SD CLK) |
 | 5 | OLED `VCC` | 3.3V rail | Power | OLED power |
 | 6 | OLED `GND` | GND rail | Power | OLED ground |
 | 7 | ESP32-CAM `GPIO 16` | BTN_UP one leg | Signal wire | Active LOW |
@@ -17,19 +17,15 @@
 | 11 | ESP32-CAM `GPIO 1` | BTN_SELECT one leg | Signal wire | Active LOW |
 | 12 | BTN_SELECT other leg | GND rail | Wire | Button ground |
 
-## Pull Resistor Wiring
+## ✅ NO Pull Resistors Needed!
 
-| # | From | To | Component | Purpose |
-|---|------|-----|----------|---------|
-| R1 | GPIO 2 | 3.3V | 10 kΩ resistor | SD D0 boot pull-up |
-| R2 | GPIO 15 | 3.3V | 10 kΩ resistor | SD CMD boot pull-up |
-| R3 | GPIO 13 | 3.3V | 4.7 kΩ resistor | I2C SDA pull-up |
-| R4 | GPIO 12 | 3.3V | 4.7 kΩ resistor | I2C SCL pull-up |
-| R5 | GPIO 12 | GND | 10 kΩ resistor | **Critical**: keeps GPIO12 LOW at boot |
-| R6 | GPIO 3 | 3.3V | 10 kΩ resistor | Button pull-up (RX pin) |
-| R7 | GPIO 1 | 3.3V | 10 kΩ resistor | Button pull-up (TX pin) |
+**All pull-ups and pull-downs are built-in!**
 
-> **R4 + R5 together** on GPIO 12: The 10 kΩ to GND dominates at boot (pulls LOW). After boot, the I2C SCL driver actively toggles the pin — the pull-down doesn't interfere with I2C at 100 kHz.
+1. **SD Card** — has built-in pull-up resistors on DATA0 (GPIO 2) and CMD (GPIO 15) lines
+2. **OLED Module** — most SSD1306 modules have built-in 4.7 kΩ or 10 kΩ pull-ups on SDA and SCL
+3. **ESP32 Buttons** — use internal pull-ups (enabled via `pinMode(pin, INPUT_PULLUP)` in firmware)
+
+**Result: Zero external resistors required for this project!**
 
 ## Power Section
 
@@ -52,34 +48,6 @@ Li-ion 3.7V → Reed Switch → TP4056 (protection) → ESP32-CAM 5V → AMS1117
             Magnetic ON/OFF    USB-C charging
 ```
 
-## GPIO 12 Boot Safety — Detailed Explanation
-
-GPIO 12 is a VDD_SDIO strapping pin on ESP32:
-- If HIGH at boot → sets VDD_SDIO to 1.8V → **will crash with 3.3V flash**
-- If LOW at boot → sets VDD_SDIO to 3.3V → **correct for ESP32-CAM**
-
-Our solution:
-```
-GPIO 12 ──┬──── 4.7 kΩ ──── 3.3V   (I2C SCL pull-up)
-           │
-           └──── 10 kΩ ──── GND     (boot safety pull-down)
-```
-
-At boot (high-impedance state):
-- Pull-down: 3.3V / 10kΩ = 0.33 mA pulling LOW
-- Pull-up: 3.3V / 4.7kΩ = 0.70 mA pulling HIGH
-- BUT the voltage divider gives: `3.3 × (10k / (10k + 4.7k)) = 2.24V`
-- This is above the HIGH threshold...
-
-**Better approach**: Use a 10 kΩ pull-down and **no** external pull-up on GPIO 12. The SSD1306 I2C works fine with just the internal weak pull-up enabled after boot, or rely on the OLED module's onboard pull-ups (most modules have 10 kΩ pull-ups).
-
-**Revised R4**: Remove the external 4.7 kΩ on GPIO 12. Keep only R5 (10 kΩ to GND). The OLED module's built-in pull-up (or software `Wire.begin()` with internal pull-up) handles SCL after boot.
-
-| Revised | From | To | Component | Purpose |
-|---------|------|-----|----------|---------|
-| R4 | ~~GPIO 12~~ | ~~3.3V~~ | ~~4.7 kΩ~~ | **REMOVED** — use OLED module built-in pull-up |
-| R5 | GPIO 12 | GND | 10 kΩ | Boot safety — keeps LOW during boot |
-
 ## SD Card Notes
 
 The ESP32-CAM has a **built-in** microSD slot wired to:
@@ -91,6 +59,21 @@ The ESP32-CAM has a **built-in** microSD slot wired to:
 - GPIO 13 → Data 3 / CS (unused in 1-bit mode)
 
 By using **1-bit mode**, we only need GPIO 2, 14, 15 — freeing GPIO 4, 12, 13 for other purposes.
+
+## GPIO 14 Pin Sharing — I2C SCL and SD CLK
+
+GPIO 14 is cleverly shared between:
+1. **I2C SCL** (for OLED display)
+2. **SD_MMC CLK** (for SD card)
+
+**Why this works perfectly:**
+- The OLED is initialized first (in `setup()`) before SD card mounting
+- Display updates happen between SD read operations, never simultaneously
+- When SD reads occur, I2C communication is idle
+- The OLED module's built-in pull-ups don't interfere with SD clock signals
+- Both protocols use open-drain/push-pull compatible signaling
+
+This is a standard technique in embedded systems to maximize GPIO usage on pin-limited MCUs.
 
 ## Capacitor Placement
 
