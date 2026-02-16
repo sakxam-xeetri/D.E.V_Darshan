@@ -574,6 +574,21 @@ void startWiFiPortal() {
   
   showMessage("Starting WiFi...", "Please wait...");
   
+  // Check SD card status (warning only, don't block WiFi)
+  File testRoot = SD_MMC.open("/");
+  if (!testRoot) {
+    Serial.println("WARNING: SD Card not accessible - uploads may not work!");
+    Serial.println("Attempting to continue anyway...");
+  } else {
+    testRoot.close();
+    Serial.println("SD Card accessible");
+    uint64_t totalBytes = SD_MMC.totalBytes();
+    uint64_t usedBytes = SD_MMC.usedBytes();
+    if (totalBytes > 0) {
+      Serial.printf("SD Card - Free: %llu MB\n", (totalBytes - usedBytes) / (1024 * 1024));
+    }
+  }
+  
   WiFi.mode(WIFI_AP);
   WiFi.softAP(AP_SSID, AP_PASSWORD);
   
@@ -604,6 +619,7 @@ void startWiFiPortal() {
   Serial.println("WiFi Portal Active");
   Serial.printf("SSID: %s\n", AP_SSID);
   Serial.printf("Password: %s\n", AP_PASSWORD);
+  Serial.println("Ready to receive file uploads!");
 }
 
 void stopWiFiPortal() {
@@ -643,6 +659,8 @@ void handleRoot() {
 void handleFileUpload() {
   HTTPUpload& upload = server.upload();
   static File uploadFile;
+  static String currentFileName;
+  static size_t bytesWritten = 0;
   
   if (upload.status == UPLOAD_FILE_START) {
     String filename = upload.filename;
@@ -656,49 +674,119 @@ void handleFileUpload() {
     
     // Sanitize filename
     filename.replace(" ", "_");
+    filename.replace("/", "");
+    filename.replace("\\", "");
     if (!filename.startsWith("/")) {
       filename = "/" + filename;
     }
     
+    currentFileName = filename;
+    bytesWritten = 0;
+    
     Serial.printf("Upload Start: %s\n", filename.c_str());
+    
+    // Check SD card availability by trying to access it
+    File testRoot = SD_MMC.open("/");
+    if (!testRoot) {
+      uploadStatus = "Error: SD Card not accessible!";
+      Serial.println("ERROR: Cannot access SD card!");
+      return;
+    }
+    testRoot.close();
+    Serial.println("SD Card access confirmed");
+    
+    // Close any existing file first
+    if (uploadFile) {
+      uploadFile.close();
+    }
     
     // Delete existing file with same name
     if (SD_MMC.exists(filename)) {
+      Serial.println("Deleting existing file...");
       SD_MMC.remove(filename);
+      delay(100);
     }
     
+    // Open file for writing
     uploadFile = SD_MMC.open(filename, FILE_WRITE);
     if (!uploadFile) {
       uploadStatus = "Error: Failed to create file!";
-      Serial.println(uploadStatus);
+      Serial.printf("ERROR: Could not open %s for writing\n", filename.c_str());
     } else {
       uploadStatus = "Uploading...";
+      Serial.println("File opened successfully");
     }
     
   } else if (upload.status == UPLOAD_FILE_WRITE) {
     if (uploadFile) {
-      uploadFile.write(upload.buf, upload.currentSize);
+      size_t written = uploadFile.write(upload.buf, upload.currentSize);
+      bytesWritten += written;
+      
+      if (written != upload.currentSize) {
+        Serial.printf("WARNING: Write mismatch! Expected %d, wrote %d\n", upload.currentSize, written);
+      }
+      
+      // Flush periodically for reliability
+      if (bytesWritten % 512 == 0) {
+        uploadFile.flush();
+      }
+    } else {
+      Serial.println("ERROR: Upload file not open for writing!");
     }
     
   } else if (upload.status == UPLOAD_FILE_END) {
     if (uploadFile) {
+      uploadFile.flush();  // Ensure all data is written
       uploadFile.close();
-      uploadStatus = "Success! " + String(upload.totalSize) + " bytes";
-      Serial.printf("Upload Complete: %d bytes\n", upload.totalSize);
+      
+      // Verify file was created
+      if (SD_MMC.exists(currentFileName)) {
+        File checkFile = SD_MMC.open(currentFileName);
+        size_t actualSize = checkFile.size();
+        checkFile.close();
+        
+        uploadStatus = "Success! " + String(actualSize) + " bytes";
+        Serial.printf("Upload Complete: %s (%d bytes)\n", currentFileName.c_str(), actualSize);
+        
+        if (actualSize != upload.totalSize) {
+          Serial.printf("WARNING: Size mismatch! Expected %d, got %d\n", upload.totalSize, actualSize);
+        }
+      } else {
+        uploadStatus = "Error: File not found after upload!";
+        Serial.println("ERROR: File verification failed!");
+      }
+    } else {
+      uploadStatus = "Error: Upload failed!";
+      Serial.println("ERROR: Upload file was not open!");
     }
+    
+  } else if (upload.status == UPLOAD_FILE_ABORTED) {
+    if (uploadFile) {
+      uploadFile.close();
+    }
+    uploadStatus = "Upload aborted!";
+    Serial.println("Upload aborted by client");
   }
 }
 
 void handleUploadComplete() {
-  String html = getUploadPage();
-  server.send(200, "text/html", html);
+  // Send status response
+  String response = "{\"status\":\"" + uploadStatus + "\"}";
+  server.send(200, "application/json", response);
+  Serial.printf("Upload status sent: %s\n", uploadStatus.c_str());
 }
 
 void handleListFiles() {
   String json = "[";
   File root = SD_MMC.open("/");
   
-  if (root && root.isDirectory()) {
+  if (!root) {
+    Serial.println("ERROR: SD Card not accessible in handleListFiles");
+    server.send(200, "application/json", "[]");
+    return;
+  }
+  
+  if (root.isDirectory()) {
     File file = root.openNextFile();
     bool first = true;
     
@@ -713,6 +801,9 @@ void handleListFiles() {
       }
       file = root.openNextFile();
     }
+    root.close();
+  } else {
+    Serial.println("ERROR: Could not open SD root directory");
     root.close();
   }
   
@@ -735,6 +826,16 @@ void handleDeleteFile() {
 }
 
 void handleStatus() {
+  // Test SD card access
+  File testRoot = SD_MMC.open("/");
+  if (!testRoot) {
+    Serial.println("ERROR: SD Card not accessible in handleStatus");
+    String json = "{\"total\":0,\"used\":0,\"free\":0}";
+    server.send(200, "application/json", json);
+    return;
+  }
+  testRoot.close();
+  
   uint64_t totalBytes = SD_MMC.totalBytes();
   uint64_t usedBytes = SD_MMC.usedBytes();
   
@@ -919,17 +1020,19 @@ String getUploadPage() {
     <p class="subtitle">TXT Reader File Manager</p>
     
     <div class="card">
-      <h2>Upload TXT File</h2>
+      <h2>Upload TXT Files</h2>
       <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
         <div class="upload-area" id="dropZone">
           <div class="icon">+</div>
-          <p>Tap to select or drop .txt file</p>
-          <input type="file" name="file" id="fileInput" accept=".txt">
+          <p>Tap to select or drop .txt files</p>
+          <p style="font-size:0.8rem;color:#888;margin-top:5px">Multiple files supported</p>
+          <input type="file" name="file" id="fileInput" accept=".txt" multiple>
         </div>
         <div class="progress" id="progress">
           <div class="progress-bar"><div class="fill" id="progressFill"></div></div>
+          <p id="progressText" style="text-align:center;margin-top:5px;font-size:0.8rem;color:#888"></p>
         </div>
-        <button type="submit" class="btn btn-primary" id="uploadBtn">Upload File</button>
+        <button type="submit" class="btn btn-primary" id="uploadBtn">Upload Files</button>
       </form>
       <div id="uploadStatus"></div>
     </div>
@@ -980,8 +1083,16 @@ String getUploadPage() {
     
     function updateDropZone() {
       if (fileInput.files.length) {
-        const file = fileInput.files[0];
-        dropZone.innerHTML = '<div class="icon">OK</div><p>' + file.name + '</p><p style="color:#888;font-size:0.8rem">' + formatSize(file.size) + '</p>';
+        if (fileInput.files.length === 1) {
+          const file = fileInput.files[0];
+          dropZone.innerHTML = '<div class="icon">OK</div><p>' + file.name + '</p><p style="color:#888;font-size:0.8rem">' + formatSize(file.size) + '</p>';
+        } else {
+          let totalSize = 0;
+          for (let i = 0; i < fileInput.files.length; i++) {
+            totalSize += fileInput.files[i].size;
+          }
+          dropZone.innerHTML = '<div class="icon">OK</div><p>' + fileInput.files.length + ' files selected</p><p style="color:#888;font-size:0.8rem">' + formatSize(totalSize) + ' total</p>';
+        }
       }
     }
     
@@ -989,21 +1100,47 @@ String getUploadPage() {
       e.preventDefault();
       
       if (!fileInput.files.length) {
-        showStatus('Please select a file', 'error');
+        showStatus('Please select at least one file', 'error');
         return;
       }
       
-      const file = fileInput.files[0];
-      if (!file.name.toLowerCase().endsWith('.txt')) {
-        showStatus('Only .txt files are allowed', 'error');
+      // Filter only .txt files
+      const txtFiles = Array.from(fileInput.files).filter(f => f.name.toLowerCase().endsWith('.txt'));
+      
+      if (txtFiles.length === 0) {
+        showStatus('No valid .txt files selected', 'error');
         return;
       }
       
+      if (txtFiles.length < fileInput.files.length) {
+        showStatus('Only .txt files will be uploaded (' + txtFiles.length + ' of ' + fileInput.files.length + ')', 'error');
+      }
+      
+      // Upload files sequentially
+      uploadFiles(txtFiles, 0);
+    });
+    
+    function uploadFiles(files, index) {
+      if (index >= files.length) {
+        // All files uploaded
+        progress.style.display = 'none';
+        showStatus('All files uploaded successfully! (' + files.length + ' files)', 'success');
+        fileInput.value = '';
+        dropZone.innerHTML = '<div class="icon">+</div><p>Tap to select or drop .txt files</p><p style="font-size:0.8rem;color:#888;margin-top:5px">Multiple files supported</p>';
+        setTimeout(() => {
+          loadFiles();
+          loadStatus();
+        }, 500);
+        return;
+      }
+      
+      const file = files[index];
       const formData = new FormData();
       formData.append('file', file);
       
       progress.style.display = 'block';
       progressFill.style.width = '0%';
+      document.getElementById('progressText').textContent = 'Uploading ' + (index + 1) + ' of ' + files.length + ': ' + file.name;
       
       const xhr = new XMLHttpRequest();
       xhr.open('POST', '/upload', true);
@@ -1016,29 +1153,42 @@ String getUploadPage() {
       };
       
       xhr.onload = function() {
-        progress.style.display = 'none';
         if (xhr.status === 200) {
-          showStatus('File uploaded successfully!', 'success');
-          fileInput.value = '';
-          dropZone.innerHTML = '<div class="icon">+</div><p>Tap to select or drop .txt file</p>';
-          loadFiles();
-          loadStatus();
+          try {
+            const response = JSON.parse(xhr.responseText);
+            if (response.status && response.status.includes('Success')) {
+              // Upload next file
+              uploadFiles(files, index + 1);
+            } else {
+              progress.style.display = 'none';
+              showStatus('Upload failed: ' + file.name + ' - ' + (response.status || 'Unknown error'), 'error');
+            }
+          } catch (e) {
+            // Upload next file even if response parsing failed (likely success)
+            uploadFiles(files, index + 1);
+          }
         } else {
-          showStatus('Upload failed', 'error');
+          progress.style.display = 'none';
+          showStatus('Upload failed: ' + file.name + ' (HTTP ' + xhr.status + ')', 'error');
         }
       };
       
       xhr.onerror = function() {
         progress.style.display = 'none';
-        showStatus('Upload error', 'error');
+        showStatus('Network error uploading: ' + file.name, 'error');
+      };
+      
+      xhr.ontimeout = function() {
+        progress.style.display = 'none';
+        showStatus('Timeout uploading: ' + file.name, 'error');
       };
       
       xhr.send(formData);
-    });
+    }
     
     function showStatus(msg, type) {
       uploadStatus.innerHTML = '<div class="status ' + type + '">' + msg + '</div>';
-      setTimeout(() => uploadStatus.innerHTML = '', 3000);
+      setTimeout(() => uploadStatus.innerHTML = '', 5000);
     }
     
     function loadFiles() {
