@@ -42,26 +42,30 @@
  *  │  (internal or 4.7 kΩ) drive it for SCL after init.                  │
  *  └──────────────────────────────────────────────────────────────────────┘
  *
- *  FINAL ACTIVE PIN ASSIGNMENT (1-bit SD_MMC):
+ *  FINAL ACTIVE PIN ASSIGNMENT (1-bit SD_MMC) — NO EXTERNAL RESISTORS:
  *  ┌────────────┬──────────┬───────────────────────────────────────┐
- *  │  Function  │  GPIO    │  Safety / Pull resistor               │
+ *  │  Function  │  GPIO    │  Pull resistor                        │
  *  ├────────────┼──────────┼───────────────────────────────────────┤
- *  │  SD DATA0  │  GPIO 2  │  10 kΩ pull-up (boot HIGH)            │
- *  │  SD CLK    │  GPIO 14 │  —                                    │
- *  │  SD CMD    │  GPIO 15 │  10 kΩ pull-up (boot HIGH)            │
- *  │  OLED SDA  │  GPIO 13 │  4.7 kΩ pull-up to 3.3 V             │
- *  │  OLED SCL  │  GPIO 12 │  10 kΩ pull-down ONLY (boot LOW)     │
- *  │            │          │  OLED module built-in pull-up is OK   │
- *  │  BTN UP    │  GPIO 16 │  Internal pull-up (active LOW btn)    │
- *  │  BTN DOWN  │  GPIO 3  │  10 kΩ external pull-up               │
- *  │  BTN SEL   │  GPIO 1  │  10 kΩ external pull-up               │
+ *  │  SD DATA0  │  GPIO 2  │  SD card built-in pull-up (boot HIGH) │
+ *  │  SD CLK    │  GPIO 14 │  —  (shared with I2C SCL)             │
+ *  │  SD CMD    │  GPIO 15 │  SD card built-in pull-up (boot HIGH) │
+ *  │  OLED SDA  │  GPIO 13 │  OLED module built-in pull-up         │
+ *  │  OLED SCL  │  GPIO 14 │  OLED module built-in pull-up         │
+ *  │            │          │  (shared with SD CLK — no conflict)   │
+ *  │  BTN UP    │  GPIO 16 │  ESP32 internal pull-up               │
+ *  │  BTN DOWN  │  GPIO 3  │  ESP32 internal pull-up               │
+ *  │  BTN SEL   │  GPIO 1  │  ESP32 internal pull-up               │
  *  └────────────┴──────────┴───────────────────────────────────────┘
  *
  *  HARDWARE NOTES:
+ *  • NO EXTERNAL RESISTORS NEEDED — all pull-ups/downs are built-in!
  *  • 470 µF electrolytic cap across 3.3 V rail — prevents brownout on
  *    WiFi TX bursts and SD card inrush current.
  *  • Magnetic reed switch cuts battery positive line → true hardware OFF.
  *  • TP4056 module with DW01A protection IC for safe Li-ion charging.
+ *  • GPIO 14 is shared between SD CLK and I2C SCL — works fine since
+ *    OLED init happens before SD mount, and display updates happen
+ *    between SD reads (not simultaneously).
  *  =========================================================================
  */
 
@@ -79,7 +83,7 @@
 #define OLED_HEIGHT      32
 #define OLED_I2C_ADDR    0x3C
 #define PIN_SDA          13
-#define PIN_SCL          12
+#define PIN_SCL          14      // Shared with SD CLK — no conflict
 
 // ── SD Card (SD_MMC 1-bit mode) ────────────────────────────────────────
 // In 1-bit mode only DATA0 (GPIO2), CLK (GPIO14), CMD (GPIO15) are used.
