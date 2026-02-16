@@ -101,13 +101,14 @@ Students and professionals often need to reference notes, formulas, or study mat
 | 0.91" SSD1306 OLED | ₹120 |
 | TP4056 USB-C module | ₹30 |
 | 800mAh Li-ion battery | ₹150 |
-| Resistors (7× assorted) | ₹10 |
 | 470µF capacitor | ₹5 |
 | Reed switch + magnet | ₹20 |
 | 3× tactile buttons | ₹10 |
 | MicroSD card (4GB) | ₹100 |
 | Wires + misc | ₹20 |
-| **Total** | **~₹815** |
+| **Total** | **~₹805** |
+
+**✅ No external resistors needed!** All pull-ups/downs are built into the modules or ESP32 internal.
 
 ---
 
