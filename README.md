@@ -37,9 +37,9 @@ SCL         →    GPIO 14
 ```
 Button      →    ESP32 Pin    →    Other Leg
 ──────────────────────────────────────────────
-UP          →    GPIO 16      →    GND
-DOWN        →    GPIO 3       →    GND
-SELECT      →    GPIO 1       →    GND
+UP          →    GPIO 12      →    GND
+DOWN        →    GPIO 15      →    GND
+SELECT      →    GPIO 2       →    GND
 ```
 
 ### Visual Wiring Diagram
@@ -51,11 +51,11 @@ SELECT      →    GPIO 1       →    GND
         OLED SDA ───┤ GPIO 13          3.3V ├─── OLED VCC
         OLED SCL ───┤ GPIO 14          GND  ├─── OLED GND
                     │                         │
-      BTN_UP ───────┤ GPIO 16                │
+      BTN_UP ───────┤ GPIO 12                │
                     │                         │
-    BTN_DOWN ───────┤ GPIO 3 (RX)            │
+    BTN_DOWN ───────┤ GPIO 15                │
                     │                         │
-  BTN_SELECT ───────┤ GPIO 1 (TX)            │
+  BTN_SELECT ───────┤ GPIO 2 (Built-in LED)  │
                     │                         │
                     │  ┌─────────┐            │
                     │  │ SD CARD │            │
@@ -69,10 +69,10 @@ SELECT      →    GPIO 1       →    GND
 
 ## ⚠️ Important Notes
 
-### GPIO 3 & GPIO 1 (RX/TX)
-- These are the serial pins used for programming
-- **Disconnect buttons when uploading code** or you may get upload errors
-- After upload, reconnect buttons for normal operation
+### GPIO 2 (Built-in LED)
+- GPIO 2 is used for SELECT button
+- It has a built-in LED that may blink when button is pressed
+- This is normal and doesn't affect functionality
 
 ### SD Card
 - Uses **SD_MMC 1-bit mode** (not SPI)
@@ -98,12 +98,10 @@ Upload Speed: "115200"
 ### Upload Process
 1. Connect ESP32-CAM to FTDI/USB-Serial adapter
 2. Connect GPIO 0 to GND (boot mode)
-3. **Disconnect GPIO 1 and GPIO 3 buttons temporarily**
-4. Press RST/EN button
-5. Click Upload in Arduino IDE
-6. After upload, disconnect GPIO 0 from GND
-7. Reconnect buttons
-8. Press RST to boot normally
+3. Press RST/EN button
+4. Click Upload in Arduino IDE
+5. After upload, disconnect GPIO 0 from GND
+6. Press RST to boot normally
 
 ## 🎮 Controls
 
@@ -219,10 +217,11 @@ Edit these lines in the code:
 |---------|----------|
 | SD Card Error | Check card is FAT32, properly inserted |
 | OLED blank | Verify I2C address (0x3C or 0x3D) |
-| Upload fails | Disconnect GPIO 1/3 buttons, connect GPIO 0 to GND |
+| Upload fails | Connect GPIO 0 to GND during upload |
 | No files shown | Ensure .txt files are in root, not folders |
 | WiFi won't start | Check 5-second hold timing |
 | Buttons unresponsive | Check connections to GND |
+| Boot loop/resets | Don't use GPIO 1/3 (serial pins) |
 
 ## 📝 License
 
