@@ -32,15 +32,9 @@ static void _initBtn(ButtonState& b, uint8_t pin) {
     b.longFired    = false;
     b.lastRepeatMs = 0;
 
-    // GPIO 16 has no internal pull-up on ESP32; for GPIO 1 & 3 (TX/RX)
-    // external 10 kΩ pull-ups are required. We set INPUT_PULLUP for 16
-    // and INPUT for 1/3 (external pull-ups handle those).
-    if (pin == 16) {
-        // GPIO 16 does support INPUT_PULLUP on ESP32
-        pinMode(pin, INPUT_PULLUP);
-    } else {
-        pinMode(pin, INPUT);
-    }
+    // All buttons use ESP32 internal pull-ups (INPUT_PULLUP mode)
+    // This works for GPIO 1, 3, and 16 — no external resistors needed!
+    pinMode(pin, INPUT_PULLUP);
 }
 
 /*  Debounce one button. Returns:
