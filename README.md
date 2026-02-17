@@ -51,7 +51,7 @@
 - **Offline-first**: WiFi is disabled during reading for maximum battery life
 - **Memory-safe**: Line-by-line file reading — never loads full file into RAM
 - **Boot-safe**: Carefully mapped GPIOs to avoid ESP32-CAM boot failures
-- **Minimal UI**: Two-button interface with intuitive long-press actions
+- **Minimal UI**: Three-button interface (UP / DOWN / SELECT) — intuitive, no combos needed
 - **Production-ready**: Debounced inputs, error handling, brownout protection
 
 ---
@@ -108,8 +108,11 @@
 │  │ BTN DOWN │───GPIO0───►│  CMD  = GPIO15       │      │
 │  │ (int ↑)  │            │  D0   = GPIO2        │      │
 │  └──────────┘            │                      │      │
-│                          │  FREE: GPIO4,12,13,16│      │
+│                          │  FREE: GPIO12, GPIO16│      │
 │  ┌──────────┐            └──────────────────────┘      │
+│  │BTN SELECT│───GPIO4───► (desolder onboard LED)       │
+│  │ (int ↑)  │                                         │
+│  └──────────┘                                         │
 │  │ 3.7V     │──►TP4056──►5V/3.3V                      │
 │  │ Li-ion   │            │                             │
 │  │ 1100mAh  │   ┌────────┘                             │
@@ -203,9 +206,9 @@ The key insight: **SD_MMC 1-bit mode** only uses 3 pins (GPIO2, GPIO14, GPIO15) 
 | CLK | GPIO14 | SD clock |
 | CMD | GPIO15 | Internal pull-up enabled by SD driver ✅ |
 | DATA0 | GPIO2 | Internal pull-up enabled by SD driver ✅ |
-| ~~DATA1~~ | ~~GPIO4~~ | **FREE** — not used in 1-bit mode |
+| ~~DATA1~~ | ~~GPIO4~~ | **BTN_SELECT** — repurposed (desolder flash LED) |
 | ~~DATA2~~ | ~~GPIO12~~ | **FREE** — not used, no pull-down needed |
-| ~~DATA3~~ | ~~GPIO13~~ | **FREE** — used for BTN_UP instead |
+| ~~DATA3~~ | ~~GPIO13~~ | **BTN_UP** — repurposed |
 
 ### Final GPIO Assignment Table (ZERO External Resistors)
 
@@ -215,10 +218,10 @@ The key insight: **SD_MMC 1-bit mode** only uses 3 pins (GPIO2, GPIO14, GPIO15) 
 | **OLED SCL** | GPIO1 (U0TXD) | I2C Clock | OLED module built-in ↑ | ✅ Safe | No external resistor needed |
 | **BTN_UP** | GPIO13 | INPUT_PULLUP | Internal ↑ | ✅ Safe | Free in 1-bit SD mode — no pin conflict |
 | **BTN_DOWN** | GPIO0 | INPUT_PULLUP | Internal ↑ | ✅ Safe* | *Don't hold during power-on (enters flash mode) |
+| **BTN_SELECT** | GPIO4 | INPUT_PULLUP | Internal ↑ | ✅ Safe | Desolder onboard flash LED to avoid dim glow |
 | SD_MMC CLK | GPIO14 | SD | — | ✅ Safe | Fixed |
 | SD_MMC CMD | GPIO15 | SD | Internal ↑ (SD driver) | ✅ Safe | Driver handles pull-up |
 | SD_MMC D0 | GPIO2 | SD | Internal ↑ (SD driver) | ✅ Safe | Driver handles pull-up |
-| Flash LED | GPIO4 | OUTPUT LOW | — | ✅ Safe | Disabled in firmware (`digitalWrite(4, LOW)`) |
 | ~~GPIO12~~ | — | Not connected | Floating | ✅ Safe | Not used in 1-bit mode — no boot issue |
 | ~~GPIO16~~ | — | Not connected | — | ✅ Safe | Free for future use |
 
@@ -230,7 +233,9 @@ The key insight: **SD_MMC 1-bit mode** only uses 3 pins (GPIO2, GPIO14, GPIO15) 
 
 3. **GPIO0 for BTN_DOWN**: Has internal pull-up → HIGH at rest → safe normal boot. Only risk: if held LOW during power-on, ESP32 enters flash mode. In practice, users don't hold buttons while flipping the reed switch.
 
-4. **GPIO12 not used**: By using 1-bit SD mode, GPIO12 is never touched. It floats at whatever state the silicon defaults to. Since the SD driver doesn't drive it, and we don't connect anything to it, there's no boot issue.
+4. **GPIO4 for BTN_SELECT**: Has internal pull-up. The onboard flash LED is connected to GPIO4 — when the pin is HIGH (button not pressed), the LED may glow dimly and waste ~1-3mA. **Solution**: desolder the tiny SMD LED from the ESP32-CAM board (2-second job with a soldering iron).
+
+5. **GPIO12 not used**: By using 1-bit SD mode, GPIO12 is never touched. It floats at whatever state the silicon defaults to. Since the SD driver doesn't drive it, and we don't connect anything to it, there's no boot issue.
 
 5. **GPIO15 & GPIO2**: The SD_MMC driver calls `gpio_pullup_en()` on these pins internally. No external resistors needed.
 
@@ -254,26 +259,26 @@ With 1-bit SD mode and WiFi disabled during reading, current draw is low enough 
          │  │  ┌───┤GPIO13 (BTN_UP) GPIO2├──── SD_D0  (internal ↑)
          │  │  │   │  (internal ↑)            │
          │  │  │   │                          │
-         │  │  │ ┌─┤GPIO0 (BTN_DN) GPIO4├──── (free, LED off)
-         │  │  │ │ │  (internal ↑)            │
-         │  │  │ │ │              GPIO12├──── (free, not connected)
-         │  │  │ │ │                          │
-         │  │  │ │ │              GPIO16├──── (free)
-         │  │  │ │ │                          │
-         │  │  │ │ └─────────────────────────┘
-         │  │  │ │
-  ┌──────┴──┴┐ │ │     Only 4 wires to OLED:
-  │ SSD1306  │ │ │       SDA → GPIO3
-  │ 128x32   │ │ │       SCL → GPIO1
-  │ (has own │ │ │       VCC → 3.3V
-  │  pull-ups│ │ │       GND → GND
-  │ on board)│ │ │
-  └──────────┘ │ │     Only 2 wires per button:
-        ┌──────┘ │       BTN pin → GND (when pressed)
-        │  ┌─────┘
-   [BTN_UP] [BTN_DN]   (simple switches, no resistors)
-     │  │    │  │
-   GPIO13 GND GPIO0 GND
+         │  │  │ ┌─┤GPIO0 (BTN_DN) GPIO4├─┬─ BTN_SELECT
+         │  │  │ │ │  (internal ↑)       │  │  (internal ↑)
+         │  │  │ │ │              GPIO12├─│─ (free, not connected)
+         │  │  │ │ │                     │  │
+         │  │  │ │ │              GPIO16├─│─ (free)
+         │  │  │ │ │                     │  │
+         │  │  │ │ └─────────────────────┘  │
+         │  │  │ │                           │
+  ┌──────┴──┴┐ │ │     Only 4 wires to OLED: │
+  │ SSD1306  │ │ │       SDA → GPIO3       │
+  │ 128x32   │ │ │       SCL → GPIO1       │
+  │ (has own │ │ │       VCC → 3.3V        │
+  │  pull-ups│ │ │       GND → GND         │
+  │ on board)│ │ │                          │
+  └──────────┘ │ │     2 wires per button:  │
+        ┌──────┘ │       BTN → GND          │
+        │  ┌─────┘                          │
+   [BTN_UP] [BTN_DN] [BTN_SEL]─────────┘
+     │  │    │  │    │  │
+   GPIO13 GND GPIO0 GND GPIO4 GND
 
 
    TP4056      Reed         Battery
@@ -287,7 +292,7 @@ With 1-bit SD mode and WiFi disabled during reading, current draw is low enough 
       └──────────────────────┘
 ```
 
-### Wiring Summary (Just 8 wires total!)
+### Wiring Summary (Just 10 wires total!)
 
 | Connection | Wire |
 |-----------|------|
@@ -299,7 +304,9 @@ With 1-bit SD mode and WiFi disabled during reading, current draw is low enough 
 | BTN_UP other leg → GND | 1 |
 | BTN_DOWN one leg → GPIO0 | 1 |
 | BTN_DOWN other leg → GND | 1 |
-| **Total** | **8 wires, 0 resistors** |
+| BTN_SELECT one leg → GPIO4 | 1 |
+| BTN_SELECT other leg → GND | 1 |
+| **Total** | **10 wires, 0 resistors** |
 
 ---
 
@@ -490,7 +497,7 @@ User Phone                          ESP32-CAM
 │ WiFi: TXT_Reader     │
 │ Pass: readmore       │
 │ IP: 192.168.4.1      │
-│ Hold ▼ to exit       │
+│ Press SEL to exit    │
 └──────────────────────┘
 ```
 
@@ -514,7 +521,7 @@ User Phone                          ESP32-CAM
 |-----------|---------------|---------|
 | WiFi OFF | `WiFi.mode(WIFI_OFF)` at boot | ~80mA |
 | Bluetooth OFF | `btStop()` at boot | ~30mA |
-| Flash LED OFF | `digitalWrite(4, LOW)` | ~20mA |
+| Flash LED OFF | Desolder GPIO4 LED (pin used for BTN_SELECT) | ~20mA |
 | CPU frequency | 80MHz (vs default 240MHz) | ~30mA |
 | OLED sleep | Display off after 60s idle | ~10mA |
 | Deep sleep | After 5min idle (optional) | ~98% |
@@ -576,8 +583,8 @@ Power ON
   │
   ├─ 4. ESP32 boots normally
   ├─ 5. Firmware disables WiFi + BT immediately
-  ├─ 6. Set GPIO4 LOW (disable flash LED)
-  ├─ 7. Initialize buttons on GPIO13/GPIO0 (INPUT_PULLUP)
+  ├─ 6. Set BTN_SELECT pin (GPIO4) as INPUT_PULLUP
+  ├─ 7. Initialize buttons on GPIO13/GPIO0/GPIO4
   ├─ 8. Initialize I2C for OLED on GPIO1/3
   ├─ 9. Initialize SD_MMC 1-bit mode (only GPIO2,14,15)
   ├─ 10. Show splash screen → enter file menu
@@ -682,14 +689,14 @@ Button Press Timeline:
 
 | Action | Input | Context |
 |--------|-------|---------|
-| Scroll up in list/text | Short press UP | Menu / Reading |
-| Scroll down in list/text | Short press DOWN | Menu / Reading |
+| Scroll up in list/text | Short press **UP** | Menu / Reading |
+| Scroll down in list/text | Short press **DOWN** | Menu / Reading |
 | Fast scroll | Hold UP or DOWN | Reading |
-| Select file | Hold UP (2s) | Menu |
-| Back to menu | Hold DOWN (2s) | Reading |
-| Open WiFi portal | Hold BOTH (2s) | Any |
-| Exit WiFi portal | Hold DOWN (2s) | WiFi Portal |
-| Toggle display invert | Hold UP (2s) | Reading (configurable) |
+| Select / open file | Short press **SELECT** | Menu |
+| Toggle display invert | Short press **SELECT** | Reading |
+| Back to menu | Long press **SELECT** (2s) | Reading |
+| Open WiFi portal | Hold **UP+DOWN** (2s) | Any |
+| Exit WiFi portal | Press **SELECT** | WiFi Portal |
 
 ### Uploading Files
 1. Hold both buttons for 2 seconds
@@ -697,7 +704,7 @@ Button Press Timeline:
 3. Connect phone to `TXT_Reader` WiFi
 4. Open `192.168.4.1` in browser
 5. Select and upload `.txt` files
-6. Hold DOWN to exit portal and resume reading
+6. Press SELECT to exit portal and resume reading
 
 ### Bookmarks
 - Position is **automatically saved** every 10 scrolls
@@ -769,7 +776,7 @@ Button Press Timeline:
 - Power optimization
 - Memory-constrained programming
 - Web development (embedded HTTP server)
-- Human-computer interaction (2-button UX design)
+- Human-computer interaction (3-button UX design)
 - Hardware-software co-design
 - PCB-less prototyping and compact assembly
 
