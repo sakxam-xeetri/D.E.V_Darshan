@@ -58,10 +58,10 @@
 |----------|---------------|-------|
 | **VCC** | **3.3V** | Power supply for OLED |
 | **GND** | **GND** | Common ground |
-| **SDA** | **GPIO 12** | I2C Data (software I2C via U8g2) |
-| **SCL** | **GPIO 14** | I2C Clock (software I2C via U8g2) |
+| **SDA** | **GPIO 13** | I2C Data (software I2C via U8g2) |
+| **SCL** | **GPIO 0** | I2C Clock (software I2C via U8g2) |
 
-> **Why GPIO 12 & 14?** Standard I2C pins (GPIO 21/22) are not broken out on the AI Thinker ESP32-CAM. U8g2's software I2C allows any GPIO pair.
+> **Why GPIO 13 & 0?** GPIO 14/15 conflict with SD_MMC (even in 1-bit mode). GPIO 12 as I2C with pull-up causes boot failure (strapping pin). GPIO 13 is clean, and GPIO 0's pull-up keeps it HIGH at boot → normal boot mode. **Note:** Disconnect OLED for serial flashing (GPIO 0 must be LOW for flash mode), or use OTA updates.
 
 ---
 
@@ -69,10 +69,12 @@
 
 | Button | ESP32-CAM Pin | Wiring | Internal Pull-up |
 |--------|---------------|--------|------------------|
-| **UP** | **GPIO 13** | One leg → GPIO 13, other leg → GND | Yes (`INPUT_PULLUP`) |
-| **DOWN** | **GPIO 15** | One leg → GPIO 15, other leg → GND | Yes (`INPUT_PULLUP`) |
+| **UP** | **GPIO 12** | One leg → GPIO 12, other leg → GND | Yes (`INPUT_PULLUP`) |
+| **DOWN** | **GPIO 3** | One leg → GPIO 3, other leg → GND | Yes (`INPUT_PULLUP`) |
 
 > Buttons connect the GPIO to GND when pressed. The internal pull-up resistor holds the pin HIGH when released. **LOW = pressed, HIGH = released.**
+> **GPIO 12:** No external pull-up, so defaults LOW at boot → 3.3V flash → safe.
+> **GPIO 3 (RX):** Serial RX is disabled in firmware to free this pin for button use.
 
 **Button behavior:**
 
@@ -128,11 +130,13 @@
 
 | GPIO | Used For | Direction | Notes |
 |------|----------|-----------|-------|
-| 12 | OLED SDA | Output | Software I2C data |
-| 14 | OLED SCL | Output | Software I2C clock |
-| 13 | UP Button | Input | `INPUT_PULLUP`, active LOW |
-| 15 | DOWN Button | Input | `INPUT_PULLUP`, active LOW |
+| 13 | OLED SDA | Output | Software I2C data |
+| 0 | OLED SCL | Output | Software I2C clock (disconnect for serial flash) |
+| 12 | UP Button | Input | `INPUT_PULLUP`, active LOW, strapping safe |
+| 3 | DOWN Button | Input | `INPUT_PULLUP`, active LOW (Serial RX disabled) |
 | 2 | SD DATA0 | Internal | SD_MMC 1-bit mode |
+| 14 | SD CLK | Internal | SD_MMC 1-bit mode |
+| 15 | SD CMD | Internal | SD_MMC 1-bit mode |
 | 4 | Flash LED | — | Not used (built-in LED) |
 
 ---
@@ -141,10 +145,11 @@
 
 | GPIO | Reason |
 |------|--------|
-| **0** | Strapping pin — LOW at boot enters flash mode |
-| **2** | Strapping pin — used by SD_MMC |
-| **12** | Strapping pin — affects flash voltage (safe for I2C after boot) |
+| **2** | Strapping pin — used by SD_MMC DATA0 |
+| **14** | Used by SD_MMC CLK (even in 1-bit mode) |
+| **15** | Used by SD_MMC CMD (even in 1-bit mode) |
 | **16** | PSRAM (used internally on WROVER modules) |
+| **4** | Connected to flash LED — INPUT_PULLUP turns LED on |
 
 ---
 
