@@ -1,6 +1,6 @@
 /*
  * ============================================================================
- *  PocketTXT — SD Card Reader Implementation
+ *  D.E.V_Darshan — SD Card Reader Implementation
  * ============================================================================
  *  Memory-efficient file reader using SD_MMC (1-bit mode).
  *
