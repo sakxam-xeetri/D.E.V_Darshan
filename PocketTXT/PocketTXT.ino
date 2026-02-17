@@ -8,15 +8,16 @@
  *    - ESP32-CAM (camera module NOT used — repurposed for SD + GPIO)
  *    - 0.91" SSD1306 OLED (128×32, I2C on GPIO1/GPIO3)
  *    - SD card via SD_MMC 1-bit mode (built-in slot, zero resistors)
- *    - Two tactile buttons (GPIO13=UP, GPIO0=DOWN) — internal pull-ups only
+ *    - Three tactile buttons (GPIO13=UP, GPIO0=DOWN, GPIO4=SELECT)
+ *    - All buttons use internal pull-ups — zero resistors
  *    - 3.7V 1100mAh Li-ion + TP4056 charger
  *    - Magnetic reed switch for hardware power control
  *
  *  Controls:
  *    - Short UP/DOWN → scroll text or navigate menu
- *    - Hold UP 2s → select file (in menu) / toggle invert (in reader)
- *    - Hold DOWN 2s → back to menu (in reader) / exit portal (in WiFi)
- *    - Hold BOTH 2s → open WiFi upload portal
+ *    - Short SELECT → open file (menu) / toggle invert (reading)
+ *    - Long SELECT → back to menu (reading) / exit portal (WiFi)
+ *    - Hold UP+DOWN 2s → open WiFi upload portal
  *
  *  Author:  PocketTXT Project
  *  Version: 1.0.0
@@ -71,11 +72,8 @@ static void disableRadios() {
     esp_bt_controller_disable();
 }
 
-static void disableFlashLED() {
-    // The onboard flash LED on GPIO4 can draw ~20mA if left on
-    pinMode(PIN_FLASH_LED, OUTPUT);
-    digitalWrite(PIN_FLASH_LED, LOW);
-}
+// Note: GPIO4 flash LED should be desoldered since that pin is now BTN_SELECT.
+// No disableFlashLED() needed — the pin is managed by buttons_init() as INPUT_PULLUP.
 
 static void setLowPowerMode() {
     setCpuFrequencyMhz(LOW_POWER_CPU_MHZ);
@@ -264,7 +262,6 @@ static void exitWifiPortal() {
 void setup() {
     // ── 1. Disable radios IMMEDIATELY for power saving ──
     disableRadios();
-    disableFlashLED();
     setLowPowerMode();
 
     // ── 2. Initialize buttons BEFORE SD_MMC (GPIO13 shared) ──
@@ -338,11 +335,11 @@ void loop() {
                 case BTN_DOWN_SHORT:
                     menuScrollDown();
                     break;
-                case BTN_UP_LONG:
-                    menuSelectFile();
+                case BTN_SELECT_SHORT:
+                    menuSelectFile();   // SELECT = open file
                     break;
                 case BTN_UP_HELD:
-                    menuScrollUp();  // Fast scroll in menu too
+                    menuScrollUp();     // Fast scroll in menu
                     break;
                 case BTN_DOWN_HELD:
                     menuScrollDown();
@@ -360,20 +357,20 @@ void loop() {
                 case BTN_DOWN_SHORT:
                     readingScrollDown();
                     break;
-                case BTN_UP_LONG:
+                case BTN_SELECT_SHORT:
                     // Toggle inverted display
                     displayInverted = !displayInverted;
                     display_setInverted(displayInverted);
                     updateReadingView();
                     break;
-                case BTN_DOWN_LONG:
-                    exitReading();
+                case BTN_SELECT_LONG:
+                    exitReading();      // Long SELECT = back to menu
                     break;
                 case BTN_UP_HELD:
-                    readingScrollUp();  // Fast scroll
+                    readingScrollUp();   // Fast scroll
                     break;
                 case BTN_DOWN_HELD:
-                    readingScrollDown();  // Fast scroll
+                    readingScrollDown(); // Fast scroll
                     break;
                 default:
                     break;
@@ -381,8 +378,8 @@ void loop() {
             break;
 
         case STATE_WIFI_PORTAL:
-            if (event == BTN_DOWN_LONG) {
-                exitWifiPortal();
+            if (event == BTN_SELECT_SHORT || event == BTN_SELECT_LONG) {
+                exitWifiPortal();   // Any SELECT press = exit portal
             }
             break;
 
