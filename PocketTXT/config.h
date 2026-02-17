@@ -19,20 +19,23 @@
 #define DEVICE_NAME       "PocketTXT"
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  GPIO PIN MAPPING (ESP32-CAM AI Thinker — Boot-Safe Configuration)
+//  GPIO PIN MAPPING (ESP32-CAM AI Thinker — ZERO External Resistors)
 // ─────────────────────────────────────────────────────────────────────────────
 //
-//  Pin assignments optimized to avoid boot failures:
-//    GPIO0  — Not used (must float HIGH for normal boot)
-//    GPIO1  — Repurposed from UART TX → I2C SCL
-//    GPIO2  — SD_MMC DATA0 (10kΩ pull-up for SD stability)
-//    GPIO3  — Repurposed from UART RX → I2C SDA
-//    GPIO4  — SD_MMC DATA1 (also onboard flash LED — disabled in code)
-//    GPIO12 — SD_MMC DATA2 (CRITICAL: 10kΩ pull-DOWN to GND)
-//    GPIO13 — SD_MMC DATA3 / BTN_UP (read before SD init)
+//  SD_MMC runs in 1-BIT MODE → only GPIO2/14/15 used → GPIO4/12/13 freed.
+//  This eliminates the critical GPIO12 pull-down resistor entirely.
+//  All pull-ups are internal or provided by the OLED module's breakout board.
+//
+//    GPIO0  — BTN_DOWN (internal pull-up) ⚠️ Don't hold during power-on
+//    GPIO1  — Repurposed from UART TX → I2C SCL (OLED module has pull-up)
+//    GPIO2  — SD_MMC DATA0 (SD driver enables internal pull-up)
+//    GPIO3  — Repurposed from UART RX → I2C SDA (OLED module has pull-up)
+//    GPIO4  — FREE (onboard flash LED — disabled in code)
+//    GPIO12 — FREE (not used in 1-bit SD mode — no pull-down needed)
+//    GPIO13 — BTN_UP (internal pull-up)
 //    GPIO14 — SD_MMC CLK
-//    GPIO15 — SD_MMC CMD (10kΩ pull-up for boot safety)
-//    GPIO16 — BTN_DOWN (external 10kΩ pull-up required)
+//    GPIO15 — SD_MMC CMD (SD driver enables internal pull-up)
+//    GPIO16 — FREE
 //
 
 // I2C — OLED Display (SSD1306 128×32)
@@ -42,13 +45,13 @@
 #define OLED_WIDTH        128
 #define OLED_HEIGHT       32
 
-// Buttons (active LOW with pull-ups)
-#define PIN_BTN_UP        13    // GPIO13 — internal pull-up available
-#define PIN_BTN_DOWN      16    // GPIO16 — REQUIRES external 10kΩ pull-up
+// Buttons (active LOW — both use internal pull-ups, ZERO external resistors)
+#define PIN_BTN_UP        13    // GPIO13 — internal pull-up (free in 1-bit SD mode)
+#define PIN_BTN_DOWN      0     // GPIO0  — internal pull-up ⚠️ Don't hold during power-on
 
-// SD_MMC Pins (fixed by hardware — cannot be changed)
-// GPIO14 = CLK, GPIO15 = CMD, GPIO2 = D0, GPIO4 = D1,
-// GPIO12 = D2, GPIO13 = D3
+// SD_MMC Pins — 1-BIT MODE (only 3 pins used)
+// GPIO14 = CLK, GPIO15 = CMD, GPIO2 = D0
+// GPIO4, GPIO12, GPIO13 are FREE (not used in 1-bit mode)
 
 // Flash LED (onboard, GPIO4 — must be turned OFF)
 #define PIN_FLASH_LED     4
