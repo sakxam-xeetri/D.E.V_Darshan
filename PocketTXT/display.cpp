@@ -172,7 +172,7 @@ void display_wifiInfo(const char* ssid, const char* password, const char* ip) {
         snprintf(buf, sizeof(buf), "IP:%s", ip);
         u8g2.drawStr(0, 23, buf);
 
-        u8g2.drawStr(0, 31, "Press SEL to exit");
+        u8g2.drawStr(0, 31, "Hold \x19 to exit");
 
     } while (u8g2.nextPage());
 }
