@@ -62,14 +62,15 @@ static bool displayAsleep = false;
 // ─── Power Management ────────────────────────────────────────────────────────
 
 static void disableRadios() {
-    // Disable WiFi completely
+    // Disable WiFi — use safe high-level API only
     WiFi.disconnect(true);
     WiFi.mode(WIFI_OFF);
-    esp_wifi_stop();
+    // NOTE: Do NOT call esp_wifi_stop() directly — it can crash if WiFi
+    // subsystem wasn't fully initialized. WiFi.mode(WIFI_OFF) handles it.
 
-    // Disable Bluetooth
+    // Disable Bluetooth — btStop() is sufficient and safe
     btStop();
-    esp_bt_controller_disable();
+    // NOTE: Do NOT call esp_bt_controller_disable() directly.
 }
 
 // Note: GPIO4 flash LED should be desoldered since that pin is now BTN_SELECT.
@@ -77,6 +78,24 @@ static void disableRadios() {
 
 static void setLowPowerMode() {
     setCpuFrequencyMhz(LOW_POWER_CPU_MHZ);
+}
+
+// ─── Diagnostic LED Helpers (GPIO33 onboard red LED, ACTIVE LOW) ─────────
+// These blinks let you confirm the firmware is running even without
+// Serial output (since TX/RX pins are repurposed for OLED I2C).
+
+static void diagLedInit() {
+    pinMode(PIN_LED_DIAG, OUTPUT);
+    digitalWrite(PIN_LED_DIAG, HIGH);  // OFF (active LOW)
+}
+
+static void diagBlink(int count, int onMs = 100, int offMs = 100) {
+    for (int i = 0; i < count; i++) {
+        digitalWrite(PIN_LED_DIAG, LOW);   // ON
+        delay(onMs);
+        digitalWrite(PIN_LED_DIAG, HIGH);  // OFF
+        if (i < count - 1) delay(offMs);
+    }
 }
 
 static void resetActivityTimer() {
@@ -260,30 +279,45 @@ static void exitWifiPortal() {
 // ─── Arduino Setup ───────────────────────────────────────────────────────────
 
 void setup() {
+    // ── 0. Diagnostic LED — confirms firmware is running ──
+    diagLedInit();
+    diagBlink(1);  // 1 blink = firmware started
+
     // ── 1. Disable radios IMMEDIATELY for power saving ──
     disableRadios();
     setLowPowerMode();
+    diagBlink(2);  // 2 blinks = radios off OK
 
-    // ── 2. Initialize buttons BEFORE SD_MMC (GPIO13 shared) ──
+    // ── 2. CRITICAL: Release UART0 so GPIO1/GPIO3 can be used for I2C ──
+    // The ESP32 bootloader uses GPIO1 (TX) / GPIO3 (RX) as UART0.
+    // We must explicitly end Serial to free these pins for OLED I2C.
+    Serial.end();
+    delay(50);  // Let UART peripheral fully release
+
+    // ── 3. Initialize buttons BEFORE SD_MMC (GPIO13 shared) ──
     buttons_init();
     buttons_readEarlyState();
 
     // Small delay for hardware stabilization
     delay(100);
+    diagBlink(3);  // 3 blinks = buttons init OK
 
-    // ── 3. Initialize OLED display ──
+    // ── 4. Initialize OLED display ──
     display_init();
     display_splash();
     delay(1500);  // Show splash for 1.5 seconds
+    diagBlink(4);  // 4 blinks = display init OK
 
-    // ── 4. Initialize SD card ──
+    // ── 5. Initialize SD card ──
     if (!sd_init()) {
         display_error("SD Card Error", "Insert & restart");
         appState = STATE_ERROR;
+        diagBlink(10, 50, 50);  // Rapid blinks = SD error
         return;
     }
+    diagBlink(5);  // 5 blinks = SD card OK
 
-    // ── 5. Enter file menu ──
+    // ── 6. Enter file menu ──
     lastActivityMs = millis();
     enterFileMenu();
 }
