@@ -3,7 +3,7 @@
  *  D.E.V_Darshan — ESP32-CAM Mini TXT Reader
  *  Developer : Sakshyam Bastakoti — IOT & Robotics Developer
  *  Board     : AI Thinker ESP32-CAM
- *  Display   : 0.96" SSD1306 OLED 128x64 (I2C via U8g2)
+ *  Display   : 0.91" SSD1306 OLED 128x32 (SW I2C via U8g2)
  *  Storage   : Built-in SD_MMC (1-bit mode)
  * ============================================================
  *
@@ -21,22 +21,29 @@
  * ============================================================
  */
 
+#include <Arduino.h>
 #include <U8g2lib.h>
-#include <Wire.h>
 #include <SD_MMC.h>
 #include <WiFi.h>
 #include <WebServer.h>
 
 // ─── Pin Definitions ────────────────────────────────────────
-#define SDA_PIN   12
-#define SCL_PIN   14
-#define BTN_UP    13
-#define BTN_DOWN  15
+// OLED I2C pins (must NOT conflict with SD_MMC 1-bit: GPIO 2,14,15)
+#define SDA_PIN   13   // OLED SDA — free in 1-bit SD mode, no strapping issue
+#define SCL_PIN   0    // OLED SCL — pull-up keeps HIGH at boot → normal boot
+#define BTN_UP    12   // UP button — free in 1-bit SD mode (no ext pull-up → safe at boot)
+#define BTN_DOWN  3    // DOWN button — Serial RX sacrificed (TX kept for debug)
 
-// ─── Display Setup (Software I2C) ──────────────────────────
-// U8g2 constructor: SW I2C, SDA=GPIO12, SCL=GPIO14
-U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(
-  U8G2_R0,        // rotation
+// NOTE on GPIO 0 (SCL): The OLED's pull-up resistor holds GPIO 0 HIGH at boot,
+//   which means normal boot mode. However, to flash firmware via serial, you must
+//   disconnect the OLED (or use OTA updates after the first flash).
+// NOTE on GPIO 12: No external pull-up here (only internal via INPUT_PULLUP after
+//   boot), so the strapping pin defaults LOW → 3.3V flash voltage → safe.
+
+// ─── Display Setup (Software I2C) ───────────────────────────
+// SW I2C lets us use any GPIO pair — reliable on non-standard pins
+U8G2_SSD1306_128X32_UNIVISION_F_SW_I2C u8g2(
+  U8G2_R0,
   /* clock=*/ SCL_PIN,
   /* data=*/  SDA_PIN,
   /* reset=*/ U8X8_PIN_NONE
@@ -44,12 +51,13 @@ U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(
 
 // ─── Constants ──────────────────────────────────────────────
 static const int  SCREEN_WIDTH      = 128;
-static const int  SCREEN_HEIGHT     = 64;
+static const int  SCREEN_HEIGHT     = 32;
 static const int  CHAR_WIDTH        = 6;     // u8g2 font 6x10
-static const int  LINE_HEIGHT       = 11;    // pixel height per text line
+static const int  LINE_HEIGHT       = 10;    // pixel height per text line
 static const int  MAX_CHARS_PER_LINE = 21;   // 128 / 6 = 21
-static const int  MAX_VISIBLE_LINES = 5;     // 64 / 11 ≈ 5 lines (full OLED)
+static const int  MAX_VISIBLE_LINES = 3;     // 32 / 10 = 3 lines (full OLED)
 static const unsigned long LONG_PRESS_MS = 2000;
+static const unsigned long DEBOUNCE_MS   = 50;  // button debounce
 static const int  MAX_FILES         = 50;
 
 // ─── Application Modes ──────────────────────────────────────
@@ -68,7 +76,7 @@ int    selectedIndex  = 0;   // cursor in file list
 int    scrollOffset   = 0;   // first visible item in home list
 
 // ─── Text Reader State ─────────────────────────────────────
-String wrappedLines[2000];   // wrapped lines buffer
+String wrappedLines[500];    // wrapped lines buffer (reduced to save RAM)
 int    totalWrappedLines = 0;
 int    readScrollIndex   = 0; // first visible line in reader
 
@@ -79,10 +87,12 @@ unsigned long upPressTime   = 0;
 unsigned long downPressTime = 0;
 bool   upHandled        = false;
 bool   downHandled      = false;
+unsigned long lastUpRelease   = 0;  // debounce timestamp
+unsigned long lastDownRelease = 0;
 
 // ─── Wi-Fi Portal ───────────────────────────────────────────
 const char* AP_SSID = "D.E.V AP";
-const char* AP_PASS = "Darshan";
+const char* AP_PASS = "Darshan1";  // WPA2 requires minimum 8 characters
 WebServer server(80);
 bool portalActive = false;
 
@@ -103,14 +113,15 @@ void showMessage(const String &msg);
 //  SETUP
 // =============================================================
 void setup() {
-  Serial.begin(115200);
+  // Serial TX only (RX pin GPIO 3 is used for DOWN button)
+  Serial.begin(115200, SERIAL_8N1, -1, 1);  // RX=-1 (none), TX=GPIO1
   Serial.println("\n[D.E.V_Darshan] Booting...");
 
   // --- Button pins ---
-  pinMode(BTN_UP,   INPUT_PULLUP);
-  pinMode(BTN_DOWN, INPUT_PULLUP);
+  pinMode(BTN_UP,   INPUT_PULLUP);  // GPIO 12 — no external pull-up → safe at boot
+  pinMode(BTN_DOWN, INPUT_PULLUP);  // GPIO 3  — Serial RX released above
 
-  // --- OLED init ---
+  // --- OLED init (Software I2C, no Wire needed) ---
   u8g2.begin();
   u8g2.setFont(u8g2_font_6x10_tr);  // 6-wide, 10-tall ASCII font
   showMessage("D.E.V_Darshan\nStarting...");
@@ -180,10 +191,9 @@ void drawHome() {
   u8g2.clearBuffer();
 
   if (fileCount == 0) {
-    u8g2.drawStr(0, 12, "No .txt files");
-    u8g2.drawStr(0, 26, "Hold BOTH btns");
-    u8g2.drawStr(0, 40, "to open Wi-Fi");
-    u8g2.drawStr(0, 54, "and upload files");
+    u8g2.drawStr(0, 10, "No .txt files");
+    u8g2.drawStr(0, 22, "Hold BOTH btns");
+    u8g2.drawStr(0, 32, "for Wi-Fi upload");
     u8g2.sendBuffer();
     return;
   }
@@ -221,7 +231,7 @@ void drawHome() {
     u8g2.drawTriangle(120, 2, 124, 6, 116, 6);  // up arrow
   }
   if (scrollOffset + MAX_VISIBLE_LINES < fileCount) {
-    u8g2.drawTriangle(120, 62, 124, 58, 116, 58); // down arrow
+    u8g2.drawTriangle(120, 30, 124, 26, 116, 26); // down arrow
   }
 
   u8g2.sendBuffer();
@@ -240,10 +250,16 @@ void openFile(const String &filename) {
     return;
   }
 
-  // Read entire file content
-  String content = "";
+  // Read entire file content (chunked for performance)
+  size_t fileSize = file.size();
+  String content;
+  content.reserve(fileSize + 1);  // pre-allocate to avoid fragmentation
+  char buf[512];
   while (file.available()) {
-    content += (char)file.read();
+    int bytesRead = file.read((uint8_t*)buf, sizeof(buf) - 1);
+    if (bytesRead <= 0) break;
+    buf[bytesRead] = '\0';
+    content += buf;
   }
   file.close();
 
@@ -289,7 +305,7 @@ void wrapText(const String &text) {
   int len = text.length();
   int pos = 0;
 
-  while (pos < len && totalWrappedLines < 2000) {
+  while (pos < len && totalWrappedLines < 500) {
     // Find end of current line (newline or EOF)
     int nlPos = text.indexOf('\n', pos);
     if (nlPos == -1) nlPos = len;
@@ -305,7 +321,7 @@ void wrapText(const String &text) {
 
     // Wrap this line into chunks of MAX_CHARS_PER_LINE
     int linePos = 0;
-    while (linePos < (int)line.length() && totalWrappedLines < 2000) {
+    while (linePos < (int)line.length() && totalWrappedLines < 500) {
       if ((int)line.length() - linePos <= MAX_CHARS_PER_LINE) {
         // Remaining fits in one line
         wrappedLines[totalWrappedLines++] = line.substring(linePos);
@@ -344,13 +360,13 @@ void handleButtons() {
   bool downState = (digitalRead(BTN_DOWN) == LOW);
   unsigned long now = millis();
 
-  // ── Detect press start ──
-  if (upState && !upPressed) {
+  // ── Detect press start (with debounce) ──
+  if (upState && !upPressed && (now - lastUpRelease >= DEBOUNCE_MS)) {
     upPressed    = true;
     upPressTime  = now;
     upHandled    = false;
   }
-  if (downState && !downPressed) {
+  if (downState && !downPressed && (now - lastDownRelease >= DEBOUNCE_MS)) {
     downPressed    = true;
     downPressTime  = now;
     downHandled    = false;
@@ -399,6 +415,7 @@ void handleButtons() {
   // ── UP released → short press ──
   if (!upState && upPressed) {
     upPressed = false;
+    lastUpRelease = now;  // debounce
     if (!upHandled) {
       // Short press UP
       if (currentMode == HOME_MODE) {
@@ -418,6 +435,7 @@ void handleButtons() {
   // ── DOWN released → short press ──
   if (!downState && downPressed) {
     downPressed = false;
+    lastDownRelease = now;  // debounce
     if (!downHandled) {
       // Short press DOWN
       if (currentMode == HOME_MODE) {
@@ -460,11 +478,10 @@ void startPortal() {
   Serial.println("[WiFi] Server started");
 
   u8g2.clearBuffer();
-  u8g2.drawStr(0, 12, "Wi-Fi Portal ON");
-  u8g2.drawStr(0, 28, "SSID: D.E.V AP");
-  u8g2.drawStr(0, 42, "Pass: Darshan");
+  u8g2.drawStr(0, 10, "WiFi: D.E.V AP");
+  u8g2.drawStr(0, 22, "Pass: Darshan1");
   String ipStr = "IP: " + ip.toString();
-  u8g2.drawStr(0, 56, ipStr.c_str());
+  u8g2.drawStr(0, 32, ipStr.c_str());
   u8g2.sendBuffer();
 }
 
