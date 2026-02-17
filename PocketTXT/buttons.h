@@ -2,7 +2,7 @@
  * ============================================================================
  *  PocketTXT — Button Handler Header
  * ============================================================================
- *  Debounced three-button input with short press, long press, combo detection.
+ *  Debounced two-button input with short press, long press, combo detection.
  * ============================================================================
  */
 
@@ -23,6 +23,5 @@ ButtonEvent buttons_update();
 // Get raw button state (for combo detection)
 bool buttons_isUpPressed();
 bool buttons_isDownPressed();
-bool buttons_isSelectPressed();
 
 #endif // BUTTONS_H
