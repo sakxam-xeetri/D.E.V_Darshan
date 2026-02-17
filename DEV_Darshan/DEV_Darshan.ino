@@ -26,6 +26,7 @@
 #include <SD_MMC.h>
 #include <WiFi.h>
 #include <WebServer.h>
+#include <driver/gpio.h>  // for gpio_reset_pin — reclaim pins from SDMMC
 
 // ─── Pin Definitions ────────────────────────────────────────
 // OLED I2C pins (must NOT conflict with SD_MMC 1-bit: GPIO 2,14,15)
@@ -121,14 +122,21 @@ void setup() {
   pinMode(BTN_UP,   INPUT_PULLUP);  // GPIO 12 — no external pull-up → safe at boot
   pinMode(BTN_DOWN, INPUT_PULLUP);  // GPIO 3  — Serial RX released above
 
-  // --- OLED init (Software I2C, no Wire needed) ---
+  // --- SD Card init FIRST (1-bit mode) ---
+  // SD_MMC.begin() may reconfigure GPIO 12/13 (DATA2/DATA3) even in 1-bit mode.
+  // We init SD before OLED, then reclaim GPIO 13 for I2C.
+  bool sdOk = SD_MMC.begin("/sdcard", true);
+
+  // Reclaim GPIO 13 from SDMMC peripheral so SW I2C can use it as SDA
+  gpio_reset_pin((gpio_num_t)SDA_PIN);
+
+  // --- OLED init AFTER SD (Software I2C, no Wire needed) ---
   u8g2.begin();
   u8g2.setFont(u8g2_font_6x10_tr);  // 6-wide, 10-tall ASCII font
   showMessage("D.E.V_Darshan\nStarting...");
   delay(1000);
 
-  // --- SD Card init (1-bit mode) ---
-  if (!SD_MMC.begin("/sdcard", true)) {
+  if (!sdOk) {
     Serial.println("[SD] Mount FAILED");
     showMessage("SD Card\nMount Failed!");
     while (true) delay(1000);  // halt
