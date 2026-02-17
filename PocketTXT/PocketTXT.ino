@@ -8,15 +8,17 @@
  *    - ESP32-CAM (camera module NOT used — repurposed for SD + GPIO)
  *    - 0.91" SSD1306 OLED (128×32, I2C on GPIO1/GPIO3)
  *    - SD card via SD_MMC 1-bit mode (built-in slot, zero resistors)
- *    - Two tactile buttons (GPIO13=UP, GPIO0=DOWN)
- *    - Both buttons use internal pull-ups — zero resistors
+ *    - Three tactile buttons (GPIO13=UP, GPIO0=DOWN, GPIO12=SELECT)
+ *    - All buttons use internal pull-ups — zero resistors
  *    - 3.7V 1100mAh Li-ion + TP4056 charger
  *    - Magnetic reed switch for hardware power control
  *
  *  Controls:
  *    - Short UP/DOWN → scroll text or navigate menu
+ *    - Short SELECT  → open file (menu) / toggle invert (reading)
  *    - Hold UP 2s → select file (menu) / toggle invert (reading)
  *    - Hold DOWN 2s → back to menu (reading) / exit portal (WiFi)
+ *    - Hold SELECT 2s → back to menu (reading) / exit portal (WiFi)
  *    - Hold UP+DOWN 2s → open WiFi upload portal
  *
  *  Author:  PocketTXT Project
@@ -374,8 +376,11 @@ void loop() {
                 case BTN_DOWN_SHORT:
                     menuScrollDown();
                     break;
+                case BTN_SELECT_SHORT:
+                    menuSelectFile();   // SELECT = open file (easy navigation)
+                    break;
                 case BTN_UP_LONG:
-                    menuSelectFile();   // Hold UP = open file
+                    menuSelectFile();   // Hold UP = open file (backward compat)
                     break;
                 case BTN_UP_HELD:
                     menuScrollUp();     // Fast scroll in menu
@@ -396,14 +401,23 @@ void loop() {
                 case BTN_DOWN_SHORT:
                     readingScrollDown();
                     break;
+                case BTN_SELECT_SHORT:
+                    // Toggle inverted display (easy access via SELECT)
+                    displayInverted = !displayInverted;
+                    display_setInverted(displayInverted);
+                    updateReadingView();
+                    break;
                 case BTN_UP_LONG:
-                    // Toggle inverted display
+                    // Toggle inverted display (backward compat)
                     displayInverted = !displayInverted;
                     display_setInverted(displayInverted);
                     updateReadingView();
                     break;
                 case BTN_DOWN_LONG:
                     exitReading();      // Hold DOWN = back to menu
+                    break;
+                case BTN_SELECT_LONG:
+                    exitReading();      // Hold SELECT = back to menu
                     break;
                 case BTN_UP_HELD:
                     readingScrollUp();   // Fast scroll
@@ -417,8 +431,8 @@ void loop() {
             break;
 
         case STATE_WIFI_PORTAL:
-            if (event == BTN_DOWN_LONG) {
-                exitWifiPortal();   // Hold DOWN = exit portal
+            if (event == BTN_DOWN_LONG || event == BTN_SELECT_LONG) {
+                exitWifiPortal();   // Hold DOWN or SELECT = exit portal
             }
             break;
 
