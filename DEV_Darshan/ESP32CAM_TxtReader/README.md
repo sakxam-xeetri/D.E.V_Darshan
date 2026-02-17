@@ -82,8 +82,7 @@ A minimal **text file reader** using the **ESP32-CAM** board (camera disabled), 
 - Select board: **AI Thinker ESP32-CAM**
 
 ### 2. Libraries (install via Library Manager)
-- **Adafruit SSD1306**
-- **Adafruit GFX Library**
+- **U8g2** (by oliver)
 
 ### 3. Board Settings
 | Setting | Value |
