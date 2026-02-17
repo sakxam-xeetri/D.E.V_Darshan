@@ -2,16 +2,17 @@
  * ============================================================================
  *  PocketTXT — SD Card Reader Implementation
  * ============================================================================
- *  Memory-efficient file reader using SD_MMC (4-bit mode).
+ *  Memory-efficient file reader using SD_MMC (1-bit mode).
  *
  *  Key design choices:
  *  - Files are NEVER loaded fully into RAM
  *  - Lines are read on-demand from SD and word-wrapped on the fly
  *  - A lightweight index maps wrapped line numbers to file byte positions
  *  - Bookmarks are stored in ESP32 NVS (Preferences library)
+ *  - 1-bit SD_MMC mode frees GPIO4/12/13 and eliminates all pull resistors
  *
- *  SD_MMC uses fixed pins on ESP32-CAM:
- *    CLK=14, CMD=15, D0=2, D1=4, D2=12, D3=13
+ *  SD_MMC 1-bit mode pins on ESP32-CAM:
+ *    CLK=14, CMD=15, D0=2  (GPIO4/12/13 are FREE)
  * ============================================================================
  */
 
@@ -45,7 +46,7 @@ bool sd_init() {
     if (mounted) return true;
 
     for (int attempt = 0; attempt < SD_MOUNT_RETRIES; attempt++) {
-        if (SD_MMC.begin("/sdcard", false)) {  // false = 4-bit mode
+        if (SD_MMC.begin("/sdcard", true)) {  // true = 1-bit mode (no extra resistors needed)
             // Verify card is present and accessible
             uint8_t cardType = SD_MMC.cardType();
             if (cardType != CARD_NONE) {
