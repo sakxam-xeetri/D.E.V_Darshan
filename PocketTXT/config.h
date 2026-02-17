@@ -30,7 +30,7 @@
 //    GPIO1  — Repurposed from UART TX → I2C SCL (OLED module has pull-up)
 //    GPIO2  — SD_MMC DATA0 (SD driver enables internal pull-up)
 //    GPIO3  — Repurposed from UART RX → I2C SDA (OLED module has pull-up)
-//    GPIO4  — FREE (onboard flash LED — disabled in code)
+//    GPIO4  — BTN_SELECT (internal pull-up) ⚠️ Desolder onboard LED
 //    GPIO12 — FREE (not used in 1-bit SD mode — no pull-down needed)
 //    GPIO13 — BTN_UP (internal pull-up)
 //    GPIO14 — SD_MMC CLK
@@ -45,16 +45,14 @@
 #define OLED_WIDTH        128
 #define OLED_HEIGHT       32
 
-// Buttons (active LOW — both use internal pull-ups, ZERO external resistors)
+// Buttons (active LOW — all use internal pull-ups, ZERO external resistors)
 #define PIN_BTN_UP        13    // GPIO13 — internal pull-up (free in 1-bit SD mode)
 #define PIN_BTN_DOWN      0     // GPIO0  — internal pull-up ⚠️ Don't hold during power-on
+#define PIN_BTN_SELECT    4     // GPIO4  — internal pull-up ⚠️ Desolder onboard flash LED
 
 // SD_MMC Pins — 1-BIT MODE (only 3 pins used)
 // GPIO14 = CLK, GPIO15 = CMD, GPIO2 = D0
-// GPIO4, GPIO12, GPIO13 are FREE (not used in 1-bit mode)
-
-// Flash LED (onboard, GPIO4 — must be turned OFF)
-#define PIN_FLASH_LED     4
+// GPIO12, GPIO16 are FREE (not used in 1-bit mode)
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  BUTTON TIMING (milliseconds)
@@ -127,9 +125,11 @@ enum ButtonEvent {
     BTN_NONE,             // No event
     BTN_UP_SHORT,         // UP button short press
     BTN_DOWN_SHORT,       // DOWN button short press
+    BTN_SELECT_SHORT,     // SELECT button short press
     BTN_UP_LONG,          // UP button held 2s
     BTN_DOWN_LONG,        // DOWN button held 2s
-    BTN_BOTH_LONG,        // Both buttons held 2s
+    BTN_SELECT_LONG,      // SELECT button held 2s
+    BTN_BOTH_LONG,        // UP+DOWN held 2s → WiFi portal
     BTN_UP_HELD,          // UP button still held (fast scroll)
     BTN_DOWN_HELD         // DOWN button still held (fast scroll)
 };
