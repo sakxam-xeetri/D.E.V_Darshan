@@ -48,12 +48,12 @@ See **[CIRCUIT.md](CIRCUIT.md)** for full pin-by-pin connection details and an A
 
 | Connection | OLED / Button | ESP32-CAM Pin |
 |---|---|---|
-| OLED SDA | SDA | GPIO 12 |
-| OLED SCL | SCL | GPIO 14 |
+| OLED SDA | SDA | GPIO 13 |
+| OLED SCL | SCL | GPIO 0 |
 | OLED VCC | VCC | 3.3 V |
 | OLED GND | GND | GND |
-| UP Button | — | GPIO 13 (INPUT_PULLUP) |
-| DOWN Button | — | GPIO 15 (INPUT_PULLUP) |
+| UP Button | — | GPIO 12 (INPUT_PULLUP) |
+| DOWN Button | — | GPIO 3 (INPUT_PULLUP) |
 
 SD card uses the built-in SD_MMC slot (1-bit mode) — no extra wiring.
 
@@ -126,7 +126,7 @@ SD card uses the built-in SD_MMC slot (1-bit mode) — no extra wiring.
 4. **UP / DOWN** short press → scroll through file content.
 5. **Hold DOWN 2 s** → return to file list.
 6. **Hold BOTH 2 s** → start Wi-Fi portal.
-7. Connect to AP **"D.E.V AP"** (password: `Darshan`), open `192.168.4.1` in a browser, upload `.txt` files.
+7. Connect to AP **"D.E.V AP"** (password: `Darshan1`), open `192.168.4.1` in a browser, upload `.txt` files.
 
 ---
 
@@ -143,10 +143,13 @@ DEV_Darshan/
 
 ## Notes
 
-- **GPIO0, GPIO2, GPIO12** should be avoided for buttons to prevent ESP32 boot issues. GPIO12 is used for OLED SDA (configured after boot) which is safe.
+- **Pin assignment is carefully chosen** to avoid SD_MMC conflicts (GPIO 2/14/15 are reserved for SD in 1-bit mode).
+- **GPIO 0 (OLED SCL):** OLED pull-up keeps it HIGH at boot = normal boot. Disconnect OLED to flash firmware via serial, or use OTA after first flash.
+- **GPIO 12 (UP button):** No external pull-up, so defaults LOW at boot = 3.3V flash voltage = safe.
+- **GPIO 3 (DOWN button):** Serial RX is disabled in firmware to free this pin.
 - The camera module is **not used** — this project repurposes the ESP32-CAM purely for its SD slot, Wi-Fi, and GPIO.
-- SD_MMC runs in **1-bit mode** to free up GPIO pins.
-- OLED I2C runs on non-standard pins (GPIO12/14) via software I2C through U8g2.
+- SD_MMC runs in **1-bit mode** to free up GPIO 12 and 13.
+- OLED I2C runs on GPIO 13 (SDA) / GPIO 0 (SCL) via software I2C through U8g2.
 
 ---
 
