@@ -17,8 +17,7 @@
  *    BTN_SELECT →  GPIO 16
  *
  *  LIBRARIES (install via Arduino Library Manager):
- *    - Adafruit SSD1306
- *    - Adafruit GFX Library
+ *    - U8g2  (by oliver)
  *
  *  BOARD SETTINGS in Arduino IDE:
  *    Board → AI Thinker ESP32-CAM
@@ -27,21 +26,19 @@
  */
 
 #include <Wire.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
+#include <U8g2lib.h>
 #include "SD_MMC.h"
 
 // ─── Display ────────────────────────────────────────────────
 #define SCREEN_WIDTH  128
 #define SCREEN_HEIGHT  32
-#define OLED_RESET     -1          // no reset pin
-#define OLED_ADDR      0x3C        // typical address for 0.91"
 
 #define I2C_SDA        13
 #define I2C_SCL        12
 
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT,
-                         &Wire, OLED_RESET);
+// SSD1306 128×32, hardware I2C, full framebuffer
+U8G2_SSD1306_128X32_UNIVISION_F_HW_I2C u8g2(
+    U8G2_R0, /* reset=*/ U8X8_PIN_NONE, /* scl=*/ I2C_SCL, /* sda=*/ I2C_SDA);
 
 // ─── Buttons ────────────────────────────────────────────────
 #define BTN_NEXT    0   // scroll / navigate down
@@ -96,33 +93,25 @@ void setup() {
   pinMode(BTN_NEXT,   INPUT_PULLUP);
   pinMode(BTN_SELECT, INPUT_PULLUP);
 
-  // I2C on custom pins
-  Wire.begin(I2C_SDA, I2C_SCL);
+  // OLED init (U8g2 handles I2C setup internally)
+  u8g2.begin();
+  u8g2.setFont(u8g2_font_6x10_tf);   // 6-wide fixed-width font
 
-  // OLED init
-  if (!display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR)) {
-    Serial.println("[OLED] Init FAILED");
-    while (true) delay(1000);
-  }
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(0, 0);
-  display.println("  TXT File Reader");
-  display.println("  ---------------");
-  display.println("  Init SD card...");
-  display.display();
+  u8g2.clearBuffer();
+  u8g2.drawStr(6, 10, "TXT File Reader");
+  u8g2.drawStr(6, 20, "---------------");
+  u8g2.drawStr(6, 30, "Init SD card...");
+  u8g2.sendBuffer();
   delay(500);
 
   // SD card init (1-bit mode — uses GPIO 2, 14, 15)
   if (!SD_MMC.begin("/sdcard", true)) {          // true = 1-bit mode
     Serial.println("[SD] Mount FAILED");
-    display.clearDisplay();
-    display.setCursor(0, 0);
-    display.println(" SD Card Error!");
-    display.println(" Insert card and");
-    display.println(" press RST to retry");
-    display.display();
+    u8g2.clearBuffer();
+    u8g2.drawStr(0, 10, "SD Card Error!");
+    u8g2.drawStr(0, 20, "Insert card and");
+    u8g2.drawStr(0, 30, "press RST to retry");
+    u8g2.sendBuffer();
     while (true) delay(1000);
   }
   Serial.printf("[SD] Card size: %llu MB\n", SD_MMC.cardSize() / (1024 * 1024));
@@ -131,12 +120,11 @@ void setup() {
   scanTxtFiles();
 
   if (fileCount == 0) {
-    display.clearDisplay();
-    display.setCursor(0, 0);
-    display.println(" No .txt files");
-    display.println(" found on SD card.");
-    display.println(" Add files & reset.");
-    display.display();
+    u8g2.clearBuffer();
+    u8g2.drawStr(0, 10, "No .txt files");
+    u8g2.drawStr(0, 20, "found on SD card.");
+    u8g2.drawStr(0, 30, "Add files & reset.");
+    u8g2.sendBuffer();
     while (true) delay(1000);
   }
 
@@ -226,18 +214,20 @@ void scanTxtFiles() {
 //  DRAW FILE LIST SCREEN
 // ═════════════════════════════════════════════════════════════
 void drawFileList() {
-  display.clearDisplay();
+  u8g2.clearBuffer();
+
   for (int row = 0; row < LINE_COUNT; row++) {
     int idx = listOffset + row;
     if (idx >= fileCount) break;
 
-    display.setCursor(0, row * 8);
+    int y = (row + 1) * 8;  // U8g2 draws text at baseline
 
-    // show cursor arrow
+    // build display string: cursor + filename
+    String line;
     if (idx == fileCursor) {
-      display.print("> ");
+      line = "> ";
     } else {
-      display.print("  ");
+      line = "  ";
     }
 
     // show only the filename (strip path)
@@ -249,18 +239,19 @@ void drawFileList() {
     if (name.length() > LINE_CHARS - 2)
       name = name.substring(0, LINE_CHARS - 2);
 
-    display.print(name);
+    line += name;
+    u8g2.drawStr(0, y, line.c_str());
   }
 
-  // scroll indicator on top-right if there are more files
+  // scroll indicators on top-right if there are more files
   if (fileCount > LINE_COUNT) {
-    display.setCursor(120, 0);
-    if (listOffset > 0) display.print("^");              // more above
-    display.setCursor(120, 24);
-    if (listOffset + LINE_COUNT < fileCount) display.print("v");  // more below
+    if (listOffset > 0)
+      u8g2.drawStr(122, 8, "^");               // more above
+    if (listOffset + LINE_COUNT < fileCount)
+      u8g2.drawStr(122, 32, "v");              // more below
   }
 
-  display.display();
+  u8g2.sendBuffer();
 }
 
 // ═════════════════════════════════════════════════════════════
@@ -270,10 +261,9 @@ void openFile(int index) {
   currentFileName = fileList[index];
   currentFile = SD_MMC.open(currentFileName);
   if (!currentFile) {
-    display.clearDisplay();
-    display.setCursor(0, 0);
-    display.println("Open failed!");
-    display.display();
+    u8g2.clearBuffer();
+    u8g2.drawStr(0, 10, "Open failed!");
+    u8g2.sendBuffer();
     delay(1500);
     return;
   }
@@ -335,24 +325,24 @@ void wrapFileIntoLines(File &f) {
 //  DRAW TEXT READER SCREEN
 // ═════════════════════════════════════════════════════════════
 void drawReader() {
-  display.clearDisplay();
+  u8g2.clearBuffer();
 
   for (int row = 0; row < LINE_COUNT; row++) {
     int idx = viewOffset + row;
     if (idx >= totalLines) break;
 
-    display.setCursor(0, row * 8);
-    display.print(textLines[idx]);
+    int y = (row + 1) * 8;  // baseline
+    u8g2.drawStr(0, y, textLines[idx].c_str());
   }
 
   // thin scroll-bar on the right edge
   if (totalLines > LINE_COUNT) {
     int barHeight = max(2, (int)((float)LINE_COUNT / totalLines * SCREEN_HEIGHT));
     int barY = (int)((float)viewOffset / totalLines * SCREEN_HEIGHT);
-    display.fillRect(SCREEN_WIDTH - 2, barY, 2, barHeight, SSD1306_WHITE);
+    u8g2.drawBox(SCREEN_WIDTH - 2, barY, 2, barHeight);
   }
 
-  display.display();
+  u8g2.sendBuffer();
 }
 
 // ═════════════════════════════════════════════════════════════
