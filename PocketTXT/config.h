@@ -31,11 +31,11 @@
 //    GPIO2  — SD_MMC DATA0 (SD driver enables internal pull-up)
 //    GPIO3  — Repurposed from UART RX → I2C SDA (OLED module has pull-up)
 //    GPIO4  — Flash LED (disabled in firmware — OUTPUT LOW)
-//    GPIO12 — FREE (not used in 1-bit SD mode — no pull-down needed)
+//    GPIO12 — BTN_SELECT (internal pull-up, boot-safe: active LOW = 3.3V)
 //    GPIO13 — BTN_UP (internal pull-up)
 //    GPIO14 — SD_MMC CLK
 //    GPIO15 — SD_MMC CMD (SD driver enables internal pull-up)
-//    GPIO16 — FREE
+//    GPIO16 — PSRAM CS (NOT usable on ESP32-CAM AI Thinker)
 //
 
 // I2C — OLED Display (SSD1306 128×32)
@@ -45,16 +45,21 @@
 #define OLED_WIDTH        128
 #define OLED_HEIGHT       32
 
-// Buttons (active LOW — both use internal pull-ups, ZERO external resistors)
+// Buttons (active LOW — all use internal pull-ups, ZERO external resistors)
 #define PIN_BTN_UP        13    // GPIO13 — internal pull-up (free in 1-bit SD mode)
 #define PIN_BTN_DOWN      0     // GPIO0  — internal pull-up ⚠️ Don't hold during power-on
+#define PIN_BTN_SELECT    12    // GPIO12 — internal pull-up (free in 1-bit SD mode)
+                                //   BOOT SAFETY: GPIO12 is a strapping pin (flash voltage
+                                //   select). Safe because: (1) INPUT_PULLUP set after boot,
+                                //   (2) button pulls LOW = 3.3V flash = correct state,
+                                //   (3) 1-bit SD_MMC does NOT use GPIO12.
 
 // Flash LED
 #define PIN_FLASH_LED     4     // GPIO4 — onboard flash LED (disabled at boot)
 
 // SD_MMC Pins — 1-BIT MODE (only 3 pins used)
 // GPIO14 = CLK, GPIO15 = CMD, GPIO2 = D0
-// GPIO4 = Flash LED (OFF), GPIO12/16 = FREE
+// GPIO4 = Flash LED (OFF), GPIO12 = BTN_SELECT, GPIO16 = PSRAM
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  BUTTON TIMING (milliseconds)
@@ -132,8 +137,10 @@ enum ButtonEvent {
     BTN_NONE,             // No event
     BTN_UP_SHORT,         // UP button short press
     BTN_DOWN_SHORT,       // DOWN button short press
+    BTN_SELECT_SHORT,     // SELECT button short press (open file / confirm)
     BTN_UP_LONG,          // UP button held 2s
     BTN_DOWN_LONG,        // DOWN button held 2s
+    BTN_SELECT_LONG,      // SELECT button held 2s
     BTN_BOTH_LONG,        // UP+DOWN held 2s → WiFi portal
     BTN_UP_HELD,          // UP button still held (fast scroll)
     BTN_DOWN_HELD         // DOWN button still held (fast scroll)
