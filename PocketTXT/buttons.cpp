@@ -3,14 +3,13 @@
  *  PocketTXT — Button Handler Implementation
  * ============================================================================
  *  Handles debouncing, short/long press detection, combo detection,
- *  and fast scroll repeat for the two-button interface.
+ *  and fast scroll repeat for the three-button interface.
  *
  *  Buttons are active LOW (pulled HIGH by internal pull-ups).
- *  Uses GPIO13 (BTN_UP) and GPIO0 (BTN_DOWN) — both have internal pull-ups.
+ *    BTN_UP     = GPIO13  (internal pull-up)
+ *    BTN_DOWN   = GPIO0   (internal pull-up) ⚠️ Don't hold during power-on
+ *    BTN_SELECT = GPIO4   (internal pull-up) ⚠️ Desolder onboard flash LED
  *  NO external resistors needed.
- *
- *  ⚠️ GPIO0 note: If held LOW during power-on, ESP32 enters flash mode.
- *  Normal use is fine — just don't hold BTN_DOWN while powering on.
  * ============================================================================
  */
 
@@ -31,6 +30,7 @@ struct ButtonState {
 
 static ButtonState btnUp;
 static ButtonState btnDown;
+static ButtonState btnSelect;
 static bool comboFired = false;
 
 // ─── Initialization ──────────────────────────────────────────────────────────
@@ -44,16 +44,23 @@ void buttons_init() {
     // Using INPUT_PULLUP keeps it HIGH when not pressed = safe boot.
     pinMode(PIN_BTN_DOWN, INPUT_PULLUP);
 
-    btnUp   = { PIN_BTN_UP,   false, true, false, 0, 0, false, 0 };
-    btnDown = { PIN_BTN_DOWN, false, true, false, 0, 0, false, 0 };
+    // GPIO4 — internal pull-up available
+    // Note: Onboard flash LED is on GPIO4 — desolder it to avoid
+    // dim glow and wasted current when button is not pressed (pin HIGH).
+    pinMode(PIN_BTN_SELECT, INPUT_PULLUP);
+
+    btnUp     = { PIN_BTN_UP,     false, true, false, 0, 0, false, 0 };
+    btnDown   = { PIN_BTN_DOWN,   false, true, false, 0, 0, false, 0 };
+    btnSelect = { PIN_BTN_SELECT, false, true, false, 0, 0, false, 0 };
     comboFired = false;
 }
 
 void buttons_readEarlyState() {
     // Read initial button states at boot (before other peripherals init).
-    // In 1-bit SD_MMC mode, GPIO13 is free so no conflict with SD.
+    // In 1-bit SD_MMC mode, GPIO13 and GPIO4 are free — no SD conflict.
     btnUp.currentState = (digitalRead(PIN_BTN_UP) == LOW);
     btnDown.currentState = (digitalRead(PIN_BTN_DOWN) == LOW);
+    btnSelect.currentState = (digitalRead(PIN_BTN_SELECT) == LOW);
 }
 
 // ─── Internal: Debounce a single button ──────────────────────────────────────
@@ -87,6 +94,7 @@ ButtonEvent buttons_update() {
 
     debounceButton(btnUp);
     debounceButton(btnDown);
+    debounceButton(btnSelect);
 
     // ── Combo detection (both held for COMBO_PRESS_MS) ──
     if (btnUp.currentState && btnDown.currentState) {
@@ -155,6 +163,24 @@ ButtonEvent buttons_update() {
         btnDown.wasPressed = true;
     }
 
+    // ── SELECT button logic ──
+    if (btnSelect.currentState) {
+        if (!btnSelect.longFired && (now - btnSelect.pressStart) >= LONG_PRESS_MS) {
+            btnSelect.longFired = true;
+            return BTN_SELECT_LONG;
+        }
+    } else if (btnSelect.wasPressed && !btnSelect.currentState) {
+        if (!btnSelect.longFired) {
+            btnSelect.wasPressed = false;
+            return BTN_SELECT_SHORT;
+        }
+        btnSelect.wasPressed = false;
+    }
+
+    if (btnSelect.currentState && !btnSelect.wasPressed) {
+        btnSelect.wasPressed = true;
+    }
+
     return BTN_NONE;
 }
 
@@ -166,4 +192,8 @@ bool buttons_isUpPressed() {
 
 bool buttons_isDownPressed() {
     return btnDown.currentState;
+}
+
+bool buttons_isSelectPressed() {
+    return btnSelect.currentState;
 }
