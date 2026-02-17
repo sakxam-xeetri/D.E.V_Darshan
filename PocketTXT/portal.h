@@ -1,6 +1,6 @@
 /*
  * ============================================================================
- *  PocketTXT — WiFi Portal HTML (PROGMEM)
+ *  D.E.V_Darshan — WiFi Portal HTML (PROGMEM)
  * ============================================================================
  *  Mobile-responsive upload page served by the ESP32 web server.
  *  Stored in flash (PROGMEM) to minimize RAM usage.
@@ -27,7 +27,7 @@ static const char PORTAL_HTML[] PROGMEM = R"rawliteral(
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>PocketTXT Upload</title>
+<title>D.E.V_Darshan</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#1a1a2e;color:#e0e0e0;min-height:100vh;padding:16px}
@@ -69,7 +69,7 @@ input[type=file]{display:none}
 </head>
 <body>
 <div class="container">
-<h1>&#128214; PocketTXT</h1>
+<h1>&#128214; D.E.V_Darshan</h1>
 <p class="subtitle">Upload .txt files to your reader</p>
 
 <div class="card">
