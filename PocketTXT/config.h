@@ -30,7 +30,7 @@
 //    GPIO1  — Repurposed from UART TX → I2C SCL (OLED module has pull-up)
 //    GPIO2  — SD_MMC DATA0 (SD driver enables internal pull-up)
 //    GPIO3  — Repurposed from UART RX → I2C SDA (OLED module has pull-up)
-//    GPIO4  — BTN_SELECT (internal pull-up) ⚠️ Desolder onboard LED
+//    GPIO4  — Flash LED (disabled in firmware — OUTPUT LOW)
 //    GPIO12 — FREE (not used in 1-bit SD mode — no pull-down needed)
 //    GPIO13 — BTN_UP (internal pull-up)
 //    GPIO14 — SD_MMC CLK
@@ -45,14 +45,16 @@
 #define OLED_WIDTH        128
 #define OLED_HEIGHT       32
 
-// Buttons (active LOW — all use internal pull-ups, ZERO external resistors)
+// Buttons (active LOW — both use internal pull-ups, ZERO external resistors)
 #define PIN_BTN_UP        13    // GPIO13 — internal pull-up (free in 1-bit SD mode)
 #define PIN_BTN_DOWN      0     // GPIO0  — internal pull-up ⚠️ Don't hold during power-on
-#define PIN_BTN_SELECT    4     // GPIO4  — internal pull-up ⚠️ Desolder onboard flash LED
+
+// Flash LED
+#define PIN_FLASH_LED     4     // GPIO4 — onboard flash LED (disabled at boot)
 
 // SD_MMC Pins — 1-BIT MODE (only 3 pins used)
 // GPIO14 = CLK, GPIO15 = CMD, GPIO2 = D0
-// GPIO12, GPIO16 are FREE (not used in 1-bit mode)
+// GPIO4 = Flash LED (OFF), GPIO12/16 = FREE
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  BUTTON TIMING (milliseconds)
@@ -108,6 +110,11 @@
 #define NORMAL_CPU_MHZ        240     // CPU frequency for WiFi mode
 
 // ─────────────────────────────────────────────────────────────────────────────
+//  DIAGNOSTIC LED (ESP32-CAM onboard red LED on GPIO33, ACTIVE LOW)
+// ─────────────────────────────────────────────────────────────────────────────
+#define PIN_LED_DIAG          33      // Onboard red LED (active LOW)
+
+// ─────────────────────────────────────────────────────────────────────────────
 //  APPLICATION STATES
 // ─────────────────────────────────────────────────────────────────────────────
 enum AppState {
@@ -125,10 +132,8 @@ enum ButtonEvent {
     BTN_NONE,             // No event
     BTN_UP_SHORT,         // UP button short press
     BTN_DOWN_SHORT,       // DOWN button short press
-    BTN_SELECT_SHORT,     // SELECT button short press
     BTN_UP_LONG,          // UP button held 2s
     BTN_DOWN_LONG,        // DOWN button held 2s
-    BTN_SELECT_LONG,      // SELECT button held 2s
     BTN_BOTH_LONG,        // UP+DOWN held 2s → WiFi portal
     BTN_UP_HELD,          // UP button still held (fast scroll)
     BTN_DOWN_HELD         // DOWN button still held (fast scroll)
