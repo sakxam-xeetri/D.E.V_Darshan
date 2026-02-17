@@ -7,8 +7,8 @@
  *  Hardware:
  *    - ESP32-CAM (camera module NOT used — repurposed for SD + GPIO)
  *    - 0.91" SSD1306 OLED (128×32, I2C on GPIO1/GPIO3)
- *    - SD card via SD_MMC 4-bit mode (built-in slot)
- *    - Two tactile buttons (GPIO13, GPIO16)
+ *    - SD card via SD_MMC 1-bit mode (built-in slot, zero resistors)
+ *    - Two tactile buttons (GPIO13=UP, GPIO0=DOWN) — internal pull-ups only
  *    - 3.7V 1100mAh Li-ion + TP4056 charger
  *    - Magnetic reed switch for hardware power control
  *
