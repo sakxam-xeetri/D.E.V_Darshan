@@ -1,11 +1,18 @@
 /*
  * ============================================================================
- *  PocketTXT — Button Handler Header
+ *  D.E.V_Darshan — Button Handler Header
  * ============================================================================
- *  Debounced three-button input with short press, long press, combo detection.
+ *  Debounced three-button input with short press, long press detection.
  *    BTN_UP     = GPIO13  (scroll up / previous)
  *    BTN_DOWN   = GPIO0   (scroll down / next)
- *    BTN_SELECT = GPIO12  (select / confirm)
+ *    BTN_SELECT = GPIO12  (enter / back / WiFi portal)
+ *
+ *  Navigation Rules:
+ *    UP            → Move up
+ *    DOWN          → Move down
+ *    SELECT short  → Enter
+ *    SELECT 3s     → Back
+ *    SELECT 5s     → WiFi Portal (Home screen only)
  * ============================================================================
  */
 
@@ -17,13 +24,13 @@
 // Initialize button pins (must be called AFTER boot strapping completes)
 void buttons_init();
 
-// Read early button state (before SD_MMC takes over GPIO13)
+// Read early button state (before SD_MMC takes over shared pins)
 void buttons_readEarlyState();
 
 // Call every loop iteration — processes debounce and timing
 ButtonEvent buttons_update();
 
-// Get raw button state (for combo detection)
+// Get raw button state
 bool buttons_isUpPressed();
 bool buttons_isDownPressed();
 bool buttons_isSelectPressed();
