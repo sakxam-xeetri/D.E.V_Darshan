@@ -90,34 +90,33 @@
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                    PocketTXT System                      │
+│              PocketTXT System (Zero Resistors)           │
 ├─────────────────────────────────────────────────────────┤
 │                                                         │
 │  ┌──────────┐    I2C     ┌──────────────────────┐      │
 │  │ SSD1306  │◄──────────►│                      │      │
-│  │ 128x32   │            │    ESP32-CAM          │      │
-│  │ OLED     │            │    (AI Thinker)       │      │
-│  └──────────┘            │                      │      │
+│  │ 128x32   │  (module   │    ESP32-CAM          │      │
+│  │ OLED     │  has pull-  │    (AI Thinker)       │      │
+│  └──────────┘  ups)      │                      │      │
 │                          │  ┌────────────────┐  │      │
-│  ┌──────────┐            │  │  SD_MMC 4-bit  │  │      │
+│  ┌──────────┐            │  │  SD_MMC 1-BIT  │  │      │
 │  │ BTN UP   │───GPIO13──►│  │  (built-in)    │  │      │
-│  │ (10kΩ↑)  │            │  └────────────────┘  │      │
+│  │ (int ↑)  │            │  └────────────────┘  │      │
 │  └──────────┘            │                      │      │
-│                          │  SD_MMC Pins:        │      │
+│                          │  SD_MMC 1-bit Pins:  │      │
 │  ┌──────────┐            │  CLK  = GPIO14       │      │
-│  │ BTN DOWN │───GPIO16──►│  CMD  = GPIO15       │      │
-│  │ (10kΩ↑)  │            │  D0   = GPIO2        │      │
-│  └──────────┘            │  D1   = GPIO4        │      │
-│                          │  D2   = GPIO12       │      │
-│  ┌──────────┐            │  D3   = GPIO13       │      │
-│  │ 3.7V     │            └──────────────────────┘      │
-│  │ Li-ion   │──►TP4056──►5V/3.3V                      │
-│  │ 1100mAh  │            │                             │
-│  └──────────┘   ┌────────┘                             │
-│                 │ Reed Switch (power cut)               │
+│  │ BTN DOWN │───GPIO0───►│  CMD  = GPIO15       │      │
+│  │ (int ↑)  │            │  D0   = GPIO2        │      │
+│  └──────────┘            │                      │      │
+│                          │  FREE: GPIO4,12,13,16│      │
+│  ┌──────────┐            └──────────────────────┘      │
+│  │ 3.7V     │──►TP4056──►5V/3.3V                      │
+│  │ Li-ion   │            │                             │
+│  │ 1100mAh  │   ┌────────┘                             │
+│  └──────────┘   │ Reed Switch (power cut)               │
 │                 └──────────────────────────             │
 │                                                         │
-│  470µF cap across 3.3V & GND for brownout protection   │
+│  ⚡ NO external resistors or capacitors required!       │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -159,16 +158,16 @@
 | Component | Specification | Purpose | Approx. Cost |
 |-----------|--------------|---------|-------------|
 | ESP32-CAM (AI Thinker) | ESP32-S, 4MB Flash, PSRAM | Main MCU + SD slot | $3.50 |
-| SSD1306 OLED | 0.91", 128×32, I2C | Display | $1.50 |
+| SSD1306 OLED | 0.91", 128×32, I2C (with onboard pull-ups) | Display + I2C pull-ups | $1.50 |
 | Micro SD Card | 2–32GB, FAT32 | File storage | $2.00 |
 | Push Buttons × 2 | 6mm tactile | Navigation | $0.10 |
-| 10kΩ Resistors × 2 | 1/4W | Button pull-ups | $0.05 |
 | TP4056 Module | With DW01A protection | Charging + battery protection | $0.50 |
 | Li-ion Battery | 3.7V, 1100mAh | Power source | $2.50 |
 | Reed Switch (NO) | Magnetic, normally-open | Power switch | $0.30 |
 | Small Magnet | 5mm neodymium | Reed switch actuator | $0.10 |
-| 470µF Capacitor | 10V electrolytic | Brownout suppression | $0.05 |
-| **Total** | | | **~$10.60** |
+| **Total** | | | **~$10.50** |
+
+> **Zero resistors, zero capacitors** — internal pull-ups and OLED module pull-ups handle everything.
 
 ---
 
@@ -185,101 +184,122 @@ The ESP32 has strict requirements on certain GPIO states during boot. Violating 
 | **GPIO12** (MTDI) | **LOW** | HIGH = sets VDD_SDIO to 1.8V → brownout/crash |
 | **GPIO15** (MTDO) | **HIGH** (pulled up internally) | LOW = suppresses boot log (not fatal but problematic) |
 
-### SD_MMC 4-bit Mode Pin Allocation (Fixed — Cannot Change)
+### How We Eliminate ALL Resistors
+
+The key insight: **SD_MMC 1-bit mode** only uses 3 pins (GPIO2, GPIO14, GPIO15) — freeing GPIO4, GPIO12, and GPIO13. This eliminates the critical GPIO12 problem entirely since it's no longer driven by the SD interface.
+
+| Problem (4-bit mode) | Solution (1-bit mode) |
+|---------------------|----------------------|
+| GPIO12 needs pull-down resistor | GPIO12 is **not used** — floats safely |
+| GPIO15 needs pull-up resistor | SD driver enables **internal pull-up** automatically |
+| GPIO2 needs pull-up resistor | SD driver enables **internal pull-up** automatically |
+| GPIO16 (BTN) needs ext. pull-up | Moved to **GPIO0** which has **internal pull-up** |
+| I2C needs 4.7kΩ pull-ups | OLED module has **built-in pull-ups** on breakout board |
+
+### SD_MMC 1-bit Mode Pin Allocation
 
 | SD_MMC Function | GPIO | Notes |
 |----------------|------|-------|
 | CLK | GPIO14 | SD clock |
-| CMD | GPIO15 | SD command — **must be HIGH at boot** ✅ |
-| DATA0 | GPIO2 | **Must be LOW/floating at boot** ⚠️ |
-| DATA1 | GPIO4 | Also drives onboard flash LED |
-| DATA2 | GPIO12 | **MUST be LOW at boot** ⚠️ |
-| DATA3 | GPIO13 | SD chip select |
+| CMD | GPIO15 | Internal pull-up enabled by SD driver ✅ |
+| DATA0 | GPIO2 | Internal pull-up enabled by SD driver ✅ |
+| ~~DATA1~~ | ~~GPIO4~~ | **FREE** — not used in 1-bit mode |
+| ~~DATA2~~ | ~~GPIO12~~ | **FREE** — not used, no pull-down needed |
+| ~~DATA3~~ | ~~GPIO13~~ | **FREE** — used for BTN_UP instead |
 
-### Final GPIO Assignment Table
+### Final GPIO Assignment Table (ZERO External Resistors)
 
 | Function | GPIO | Direction | Pull | Boot Safety | Notes |
 |----------|------|-----------|------|-------------|-------|
-| **OLED SDA** | GPIO3 (U0RXD) | I2C Data | External 4.7kΩ ↑ | ✅ Safe | Repurposed UART RX (no serial debug) |
-| **OLED SCL** | GPIO1 (U0TXD) | I2C Clock | External 4.7kΩ ↑ | ✅ Safe | Repurposed UART TX (no serial debug) |
-| **BTN_UP** | GPIO13 | INPUT_PULLUP | Internal ↑ | ✅ Safe | Directly usable; shared with SD_MMC D3 — button read before SD init |
-| **BTN_DOWN** | GPIO16 | INPUT_PULLUP | External 10kΩ ↑ | ✅ Safe | No internal pull-up on GPIO16 — use external |
+| **OLED SDA** | GPIO3 (U0RXD) | I2C Data | OLED module built-in ↑ | ✅ Safe | Most I2C OLED breakouts include onboard pull-ups |
+| **OLED SCL** | GPIO1 (U0TXD) | I2C Clock | OLED module built-in ↑ | ✅ Safe | No external resistor needed |
+| **BTN_UP** | GPIO13 | INPUT_PULLUP | Internal ↑ | ✅ Safe | Free in 1-bit SD mode — no pin conflict |
+| **BTN_DOWN** | GPIO0 | INPUT_PULLUP | Internal ↑ | ✅ Safe* | *Don't hold during power-on (enters flash mode) |
 | SD_MMC CLK | GPIO14 | SD | — | ✅ Safe | Fixed |
-| SD_MMC CMD | GPIO15 | SD | 10kΩ ↑ | ✅ HIGH at boot | Fixed |
-| SD_MMC D0 | GPIO2 | SD | 10kΩ ↑ | ⚠️ Needs care | 10kΩ pull-up ensures SD works; boot tolerates it with pull-up value |
-| SD_MMC D1 | GPIO4 | SD | — | ✅ Safe | Onboard flash LED — toggle off in code |
-| SD_MMC D2 | GPIO12 | SD | **10kΩ ↓** | ⚠️ CRITICAL | **MUST have 10kΩ pull-DOWN** to keep LOW at boot |
-| SD_MMC D3 | GPIO13 | SD | 10kΩ ↑ | ✅ Safe | Shared with BTN_UP |
+| SD_MMC CMD | GPIO15 | SD | Internal ↑ (SD driver) | ✅ Safe | Driver handles pull-up |
+| SD_MMC D0 | GPIO2 | SD | Internal ↑ (SD driver) | ✅ Safe | Driver handles pull-up |
+| Flash LED | GPIO4 | OUTPUT LOW | — | ✅ Safe | Disabled in firmware (`digitalWrite(4, LOW)`) |
+| ~~GPIO12~~ | — | Not connected | Floating | ✅ Safe | Not used in 1-bit mode — no boot issue |
+| ~~GPIO16~~ | — | Not connected | — | ✅ Safe | Free for future use |
 
-### Why These Pin Choices Are Safe
+### Why This Works Without Resistors
 
-1. **GPIO1 & GPIO3 (UART) for I2C**: Since we don't need serial debugging in production, repurposing UART TX/RX for I2C is a clean solution. These pins have no boot-state requirements and are freely usable after boot.
+1. **GPIO1 & GPIO3 (UART) for I2C**: No boot-state requirements. The OLED module's breakout board provides the required I2C pull-up resistors onboard (virtually all SSD1306 modules from common suppliers include 4.7kΩ or 10kΩ pull-ups).
 
-2. **GPIO13 for BTN_UP**: This pin is boot-safe (no state requirements). It's shared with SD_MMC DATA3 — we read button state during early boot before initializing SD_MMC.
+2. **GPIO13 for BTN_UP**: Boot-safe pin with built-in internal pull-up. In 1-bit SD_MMC mode, GPIO13 is completely free — no sharing conflict.
 
-3. **GPIO16 for BTN_DOWN**: GPIO16 has no boot restrictions. It lacks internal pull-up, so an external 10kΩ pull-up resistor is required.
+3. **GPIO0 for BTN_DOWN**: Has internal pull-up → HIGH at rest → safe normal boot. Only risk: if held LOW during power-on, ESP32 enters flash mode. In practice, users don't hold buttons while flipping the reed switch.
 
-4. **GPIO12 pull-down**: The most critical pin — GPIO12 sets the flash voltage regulator. An external 10kΩ pull-down resistor **must** be present to ensure it stays LOW at boot. The SD_MMC driver takes over after boot.
+4. **GPIO12 not used**: By using 1-bit SD mode, GPIO12 is never touched. It floats at whatever state the silicon defaults to. Since the SD driver doesn't drive it, and we don't connect anything to it, there's no boot issue.
 
-### Pull-Up/Pull-Down Strategy
+5. **GPIO15 & GPIO2**: The SD_MMC driver calls `gpio_pullup_en()` on these pins internally. No external resistors needed.
 
-```
-GPIO12 ──┤resistor 10kΩ├── GND          (CRITICAL: boot safety)
-GPIO15 ──┤resistor 10kΩ├── 3.3V         (SD CMD line stability)
-GPIO2  ──┤resistor 10kΩ├── 3.3V         (SD DATA0 stability)
-GPIO16 ──┤resistor 10kΩ├── 3.3V         (BTN_DOWN pull-up, no internal)
-GPIO1  ──┤resistor 4.7kΩ├── 3.3V        (I2C SCL pull-up)
-GPIO3  ──┤resistor 4.7kΩ├── 3.3V        (I2C SDA pull-up)
-```
+### Brownout Prevention (Optional)
 
-### Brownout Prevention
-
-Place a **470µF electrolytic capacitor** between **3.3V** and **GND** as close to the ESP32-CAM power pins as possible. This absorbs current spikes during:
-- WiFi transmission bursts
-- SD card write operations
-- Boot-up inrush current
-
-Additionally, a **100nF ceramic capacitor** in parallel is recommended for high-frequency noise filtering.
+With 1-bit SD mode and WiFi disabled during reading, current draw is low enough that most charged Li-ion batteries won't cause brownout. However, if you experience resets during WiFi transmission, you can optionally add a **470µF capacitor** between 3.3V and GND.
 
 ---
 
-## 🔌 Circuit Schematic
+## 🔌 Circuit Schematic (Zero Resistors)
 
 ```
                     ┌─────────────────────────┐
                     │      ESP32-CAM           │
                     │      (AI Thinker)        │
                     │                          │
-    ┌───[4.7kΩ]──3V3─┤GPIO3 (SDA)    GPIO14├──── SD_CLK
-    │               │                          │
-    │  ┌─[4.7kΩ]─3V3─┤GPIO1 (SCL)    GPIO15├──┬─ SD_CMD
-    │  │            │                          │  └─[10kΩ]─3V3
-    │  │            │                          │
-    │  │  ┌──BTN_UP─┤GPIO13          GPIO2 ├──┬─ SD_D0
-    │  │  │         │                          │  └─[10kΩ]─3V3
-    │  │  │         │                          │
-    │  │  │ BTN_DN──┤GPIO16          GPIO4 ├──── SD_D1
-    │  │  │ │       │                          │
-    │  │  │ [10kΩ]  │               GPIO12 ├──┬─ SD_D2
-    │  │  │ │       │                          │  └─[10kΩ]─GND ⚡
-    │  │  │ 3V3     │                          │
-    │  │  │         │               GPIO13 ├──── SD_D3
-    │  │  │         │                          │
-    │  │  │         │  5V──┬─[470µF]─┬──GND   │
-    │  │  │         │      └─[100nF]─┘         │
-    │  │  │         └─────────────────────────┘
-    │  │  │
-  ┌─┴──┴──┘
-  │ SSD1306 │   TP4056      Reed      Battery
-  │ 128x32  │   Module      Switch    3.7V
-  │ I2C     │   ┌─────┐    ┌──┐     ┌─────┐
-  │ SDA SCL │   │IN OUT│────┤RS├─────┤+ Li │
-  │ VCC GND │   │      │    └──┘     │ ion │
-  └─────────┘   │ B+ B-│─────────────┤     │
-                └──┬──┘              └──┬──┘
-                   │GND                 │GND
-                   └────────────────────┘
+         ┌─────────┤GPIO3 (SDA)    GPIO14├──── SD_CLK (internal)
+         │         │                          │
+         │  ┌──────┤GPIO1 (SCL)    GPIO15├──── SD_CMD (internal ↑)
+         │  │      │                          │
+         │  │  ┌───┤GPIO13 (BTN_UP) GPIO2├──── SD_D0  (internal ↑)
+         │  │  │   │  (internal ↑)            │
+         │  │  │   │                          │
+         │  │  │ ┌─┤GPIO0 (BTN_DN) GPIO4├──── (free, LED off)
+         │  │  │ │ │  (internal ↑)            │
+         │  │  │ │ │              GPIO12├──── (free, not connected)
+         │  │  │ │ │                          │
+         │  │  │ │ │              GPIO16├──── (free)
+         │  │  │ │ │                          │
+         │  │  │ │ └─────────────────────────┘
+         │  │  │ │
+  ┌──────┴──┴┐ │ │     Only 4 wires to OLED:
+  │ SSD1306  │ │ │       SDA → GPIO3
+  │ 128x32   │ │ │       SCL → GPIO1
+  │ (has own │ │ │       VCC → 3.3V
+  │  pull-ups│ │ │       GND → GND
+  │ on board)│ │ │
+  └──────────┘ │ │     Only 2 wires per button:
+        ┌──────┘ │       BTN pin → GND (when pressed)
+        │  ┌─────┘
+   [BTN_UP] [BTN_DN]   (simple switches, no resistors)
+     │  │    │  │
+   GPIO13 GND GPIO0 GND
+
+
+   TP4056      Reed         Battery
+   Module      Switch       3.7V
+   ┌─────┐    ┌──┐        ┌─────┐
+   │IN OUT│────┤RS├────────┤+ Li │
+   │      │    └──┘        │ ion │
+   │ B+ B-│────────────────┤     │
+   └──┬──┘                └──┬──┘
+      │GND                   │GND
+      └──────────────────────┘
 ```
+
+### Wiring Summary (Just 8 wires total!)
+
+| Connection | Wire |
+|-----------|------|
+| OLED SDA → GPIO3 | 1 |
+| OLED SCL → GPIO1 | 1 |
+| OLED VCC → 3.3V | 1 |
+| OLED GND → GND | 1 |
+| BTN_UP one leg → GPIO13 | 1 |
+| BTN_UP other leg → GND | 1 |
+| BTN_DOWN one leg → GPIO0 | 1 |
+| BTN_DOWN other leg → GND | 1 |
+| **Total** | **8 wires, 0 resistors** |
 
 ---
 
@@ -385,7 +405,7 @@ PocketTXT/
 
 3. **Bookmark system**: Uses ESP32's built-in NVS (Non-Volatile Storage) via the Preferences library. Stores `{filename_hash: byte_position}` pairs. Automatically saves position every 10 scroll actions and on file exit.
 
-4. **SD_MMC 4-bit mode**: Faster than SPI and uses the built-in slot. No additional wiring needed. The driver is initialized after button reads on GPIO13.
+4. **SD_MMC 1-bit mode**: Uses the built-in slot with only 3 pins (GPIO2/14/15), freeing GPIO4/12/13 and eliminating all external pull resistors. Slightly slower than 4-bit mode but more than sufficient for text reading.
 
 ---
 
@@ -506,7 +526,7 @@ User Phone                          ESP32-CAM
 | **Reading** (WiFi OFF, BT OFF, 80MHz) | ~35mA | OLED on, SD occasional reads |
 | **Idle** (display dimmed) | ~25mA | OLED in low brightness |
 | **WiFi Portal Active** | ~120mA | AP mode + web server |
-| **Deep Sleep** | ~6µA | Wake on button press (GPIO16 RTC) |
+| **Deep Sleep** | ~6µA | Wake on button press (GPIO0 supports wakeup) |
 
 ### Battery Life Estimation (1100mAh)
 
@@ -550,27 +570,27 @@ void disableFlashLED() {
 ```
 Power ON
   │
-  ├─ 1. 470µF cap absorbs inrush current
-  ├─ 2. GPIO12 pulled LOW by external resistor → correct flash voltage
-  ├─ 3. GPIO15 pulled HIGH → boot messages enabled
-  ├─ 4. GPIO0 floating HIGH → normal boot (not flash mode)
+  ├─ 1. GPIO0 pulled HIGH by internal pull-up → normal boot (not flash)
+  ├─ 2. GPIO12 not connected to SD → floats safely (no voltage issue)
+  ├─ 3. GPIO15 internal pull-up → HIGH → boot messages OK
   │
-  ├─ 5. ESP32 boots normally
-  ├─ 6. Firmware disables WiFi + BT immediately
-  ├─ 7. Read button states on GPIO13/16 (before SD init)
+  ├─ 4. ESP32 boots normally
+  ├─ 5. Firmware disables WiFi + BT immediately
+  ├─ 6. Set GPIO4 LOW (disable flash LED)
+  ├─ 7. Initialize buttons on GPIO13/GPIO0 (INPUT_PULLUP)
   ├─ 8. Initialize I2C for OLED on GPIO1/3
-  ├─ 9. Initialize SD_MMC (takes over GPIO2,4,12,13,14,15)
+  ├─ 9. Initialize SD_MMC 1-bit mode (only GPIO2,14,15)
   ├─ 10. Show splash screen → enter file menu
   │
-  └─ ✅ Stable operation
+  └─ ✅ Stable operation — ZERO resistors needed
 ```
 
 ### Failure Prevention
 
 | Failure Mode | Prevention |
 |-------------|-----------|
-| **Boot loop** | GPIO12 pull-down resistor, GPIO0 not connected to button |
-| **Brownout reset** | 470µF + 100nF capacitors, WiFi off during reading |
+| **Boot loop** | 1-bit SD mode avoids GPIO12 issue; GPIO0 has internal pull-up |
+| **Brownout reset** | WiFi off during reading; optional 470µF cap if needed |
 | **SD mount failure** | 3 retry attempts with 500ms delays, error screen shown |
 | **Memory crash** | Line-by-line reading, no dynamic allocation in loop, stack monitoring |
 | **Button ghost triggers** | 50ms debounce, active-low with pull-ups, noise filtering |
@@ -690,14 +710,15 @@ Button Press Timeline:
 
 | Problem | Likely Cause | Solution |
 |---------|-------------|----------|
-| Boot loop | GPIO12 not pulled LOW | Add 10kΩ pull-down on GPIO12 |
-| Brownout reset | Insufficient capacitance | Add 470µF cap, check battery charge |
+| Boot loop | GPIO0 held LOW during power-on | Don't hold BTN_DOWN while powering on |
+| Brownout reset | Battery low or WiFi surge | Charge battery; optionally add 470µF cap |
 | SD not detected | Bad contact / wrong format | FAT32 format, reseat card, check solder joints |
-| OLED blank | Wrong I2C address or wiring | Check SDA/SCL connections, try address 0x3C |
-| Buttons unresponsive | Missing pull-up on GPIO16 | Add external 10kΩ pull-up on GPIO16 |
+| OLED blank | Wrong I2C address or wiring | Check SDA(GPIO3)/SCL(GPIO1), try address 0x3C |
+| OLED blank (no pull-ups) | OLED module lacks onboard pull-ups | Rare — add 4.7kΩ pull-ups to SDA/SCL if needed |
+| Buttons unresponsive | Wiring issue | Check BTN_UP→GPIO13, BTN_DOWN→GPIO0, other leg→GND |
 | WiFi won't start | Memory fragmentation | Restart device, reduce file buffer size |
 | Upload fails | File too large or wrong type | Keep under 2MB, ensure `.txt` extension |
-| Ghost button presses | Noise on GPIO lines | Verify debounce, add 100nF cap on button pins |
+| Ghost button presses | Noise on GPIO lines | Verify debounce; optionally add 100nF cap on buttons |
 
 ---
 
@@ -736,9 +757,10 @@ Button Press Timeline:
 
 **Key Metrics**:
 - **31+ hours** battery life on a single charge
-- **< $11** total component cost
+- **< $11** total component cost (zero resistors)
 - **30mm × 45mm × 18mm** form factor
 - **Unlimited** file size support
+- **Zero** external resistors or capacitors required
 - **Zero** external library dependencies (beyond display driver)
 - **< 2 second** boot time
 
