@@ -3,12 +3,22 @@
  *  PocketTXT — Button Handler Implementation
  * ============================================================================
  *  Handles debouncing, short/long press detection, combo detection,
- *  and fast scroll repeat for the two-button interface.
+ *  and fast scroll repeat for the three-button interface.
  *
  *  Buttons are active LOW (pulled HIGH by internal pull-ups).
  *    BTN_UP     = GPIO13  (internal pull-up)
  *    BTN_DOWN   = GPIO0   (internal pull-up) ⚠️ Don't hold during power-on
+ *    BTN_SELECT = GPIO12  (internal pull-up) — boot-safe: active LOW = 3.3V
  *  NO external resistors needed.
+ *
+ *  GPIO12 BOOT SAFETY:
+ *    GPIO12 is a strapping pin (selects flash voltage: LOW=3.3V, HIGH=1.8V).
+ *    This is safe because:
+ *      1. INPUT_PULLUP is configured in buttons_init(), which runs well
+ *         after the boot strapping has already been sampled at reset.
+ *      2. The button is active LOW — pressing it pulls GPIO12 to GND.
+ *      3. Even if held during power-on: LOW = 3.3V flash = correct state.
+ *      4. 1-bit SD_MMC mode does NOT use GPIO12 — no conflict.
  * ============================================================================
  */
 
@@ -29,6 +39,7 @@ struct ButtonState {
 
 static ButtonState btnUp;
 static ButtonState btnDown;
+static ButtonState btnSelect;
 static bool comboFired = false;
 
 // ─── Initialization ──────────────────────────────────────────────────────────
@@ -42,16 +53,23 @@ void buttons_init() {
     // Using INPUT_PULLUP keeps it HIGH when not pressed = safe boot.
     pinMode(PIN_BTN_DOWN, INPUT_PULLUP);
 
-    btnUp   = { PIN_BTN_UP,   false, true, false, 0, 0, false, 0 };
-    btnDown = { PIN_BTN_DOWN, false, true, false, 0, 0, false, 0 };
+    // GPIO12 — internal pull-up, set AFTER boot strapping is complete.
+    // Strapping was already sampled at hardware reset; changing pin mode
+    // here has zero effect on flash voltage selection. Safe.
+    pinMode(PIN_BTN_SELECT, INPUT_PULLUP);
+
+    btnUp     = { PIN_BTN_UP,     false, true, false, 0, 0, false, 0 };
+    btnDown   = { PIN_BTN_DOWN,   false, true, false, 0, 0, false, 0 };
+    btnSelect = { PIN_BTN_SELECT, false, true, false, 0, 0, false, 0 };
     comboFired = false;
 }
 
 void buttons_readEarlyState() {
     // Read initial button states at boot (before other peripherals init).
-    // In 1-bit SD_MMC mode, GPIO13 is free — no SD conflict.
-    btnUp.currentState = (digitalRead(PIN_BTN_UP) == LOW);
-    btnDown.currentState = (digitalRead(PIN_BTN_DOWN) == LOW);
+    // In 1-bit SD_MMC mode, GPIO13 and GPIO12 are free — no SD conflict.
+    btnUp.currentState     = (digitalRead(PIN_BTN_UP) == LOW);
+    btnDown.currentState   = (digitalRead(PIN_BTN_DOWN) == LOW);
+    btnSelect.currentState = (digitalRead(PIN_BTN_SELECT) == LOW);
 }
 
 // ─── Internal: Debounce a single button ──────────────────────────────────────
@@ -85,8 +103,11 @@ ButtonEvent buttons_update() {
 
     debounceButton(btnUp);
     debounceButton(btnDown);
+    debounceButton(btnSelect);
 
-    // ── Combo detection (both held for COMBO_PRESS_MS) ──
+    // ── Combo detection (UP+DOWN held for COMBO_PRESS_MS) ──
+    // Note: SELECT is intentionally excluded from combo detection.
+    // Combo remains UP+DOWN only to maintain backward compatibility.
     if (btnUp.currentState && btnDown.currentState) {
         // Both are pressed — check for combo long press
         unsigned long comboStart = max(btnUp.pressStart, btnDown.pressStart);
@@ -153,6 +174,25 @@ ButtonEvent buttons_update() {
         btnDown.wasPressed = true;
     }
 
+    // ── SELECT button logic ──
+    if (btnSelect.currentState) {
+        if (!btnSelect.longFired && (now - btnSelect.pressStart) >= LONG_PRESS_MS) {
+            btnSelect.longFired = true;
+            return BTN_SELECT_LONG;
+        }
+        // No fast-scroll repeat for SELECT — it's a confirmation button
+    } else if (btnSelect.wasPressed && !btnSelect.currentState) {
+        if (!btnSelect.longFired) {
+            btnSelect.wasPressed = false;
+            return BTN_SELECT_SHORT;
+        }
+        btnSelect.wasPressed = false;
+    }
+
+    if (btnSelect.currentState && !btnSelect.wasPressed) {
+        btnSelect.wasPressed = true;
+    }
+
     return BTN_NONE;
 }
 
@@ -164,4 +204,8 @@ bool buttons_isUpPressed() {
 
 bool buttons_isDownPressed() {
     return btnDown.currentState;
+}
+
+bool buttons_isSelectPressed() {
+    return btnSelect.currentState;
 }
