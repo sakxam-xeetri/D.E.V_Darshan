@@ -5,8 +5,12 @@
  *  Handles debouncing, short/long press detection, combo detection,
  *  and fast scroll repeat for the two-button interface.
  *
- *  Buttons are active LOW (pulled HIGH by internal/external resistors).
- *  GPIO13 is shared with SD_MMC DATA3 — state is read before SD init.
+ *  Buttons are active LOW (pulled HIGH by internal pull-ups).
+ *  Uses GPIO13 (BTN_UP) and GPIO0 (BTN_DOWN) — both have internal pull-ups.
+ *  NO external resistors needed.
+ *
+ *  ⚠️ GPIO0 note: If held LOW during power-on, ESP32 enters flash mode.
+ *  Normal use is fine — just don't hold BTN_DOWN while powering on.
  * ============================================================================
  */
 
@@ -32,12 +36,12 @@ static bool comboFired = false;
 // ─── Initialization ──────────────────────────────────────────────────────────
 
 void buttons_init() {
-    // GPIO13 has internal pull-up available
+    // GPIO13 — internal pull-up available
     pinMode(PIN_BTN_UP, INPUT_PULLUP);
 
-    // GPIO16 needs external pull-up (no internal pull-up on this pin)
-    // We still set INPUT_PULLUP as a safety measure, but external resistor
-    // is required for reliable operation
+    // GPIO0 — internal pull-up available (no external resistor needed)
+    // Note: GPIO0 must be HIGH at boot for normal operation.
+    // Using INPUT_PULLUP keeps it HIGH when not pressed = safe boot.
     pinMode(PIN_BTN_DOWN, INPUT_PULLUP);
 
     btnUp   = { PIN_BTN_UP,   false, true, false, 0, 0, false, 0 };
@@ -46,8 +50,8 @@ void buttons_init() {
 }
 
 void buttons_readEarlyState() {
-    // Read GPIO13 state before SD_MMC initialization takes over the pin.
-    // This allows detecting if button is held during boot.
+    // Read initial button states at boot (before other peripherals init).
+    // In 1-bit SD_MMC mode, GPIO13 is free so no conflict with SD.
     btnUp.currentState = (digitalRead(PIN_BTN_UP) == LOW);
     btnDown.currentState = (digitalRead(PIN_BTN_DOWN) == LOW);
 }
