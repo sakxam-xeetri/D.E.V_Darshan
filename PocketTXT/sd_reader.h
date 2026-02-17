@@ -1,8 +1,8 @@
 /*
  * ============================================================================
- *  PocketTXT — SD Card Reader Header
+ *  D.E.V_Darshan — SD Card Reader Header
  * ============================================================================
- *  SD_MMC 4-bit mode file operations: mount, list, read, bookmarks.
+ *  SD_MMC 1-bit mode file operations: mount, list, read, bookmarks.
  * ============================================================================
  */
 
