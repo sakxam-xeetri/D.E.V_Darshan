@@ -1,6 +1,6 @@
 /*
  * ============================================================================
- *  PocketTXT — WiFi Portal Implementation
+ *  D.E.V_Darshan — WiFi Portal Implementation
  * ============================================================================
  *  Manages WiFi Access Point mode and HTTP web server for file upload.
  *
