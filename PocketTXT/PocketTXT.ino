@@ -496,15 +496,11 @@ void loop() {
 
         // ── WIFI PORTAL ──────────────────────────────────────────────────
         case STATE_WIFI_PORTAL:
-            // SELECT = exit portal
+            // SELECT = exit portal (manual close only)
             if (event == BTN_SELECT_SHORT) {
                 exitWifiPortal();
             }
-            // Auto shutdown after successful upload or 5 min inactivity
-            if (portal_uploadCompleted() ||
-                (millis() - portal_lastActivity()) > WIFI_TIMEOUT_MS) {
-                exitWifiPortal();
-            }
+            // Portal stays active until manually closed
             break;
 
         // ── SETTINGS MENU ────────────────────────────────────────────────
