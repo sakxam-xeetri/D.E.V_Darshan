@@ -71,7 +71,7 @@ void display_boot() {
     } while (u8g2.nextPage());
 }
 
-// ─── Home Screen (inverted highlight bar) ───────────────────────────────────────────
+// ─── Home Screen (">" cursor indicator) ───────────────────────────────────────────
 
 void display_home(int selectedIndex) {
     static const char* items[] = {"WiFi Portal", "Files", "Settings"};
@@ -80,25 +80,23 @@ void display_home(int selectedIndex) {
     do {
         u8g2.setFont(u8g2_font_5x7_tr);
         for (int i = 0; i < HOME_ITEMS; i++) {
-            int boxY  = yOffset + i * 8;
-            int textY = boxY + 7;
+            int textY = yOffset + (i * 8) + 7;
             if (i == selectedIndex) {
-                u8g2.setDrawColor(1);
-                u8g2.drawBox(0, boxY, 128, 8);
-                u8g2.setDrawColor(0);
-                u8g2.drawStr(2, textY, items[i]);
-                u8g2.setDrawColor(1);
+                // Draw ">" cursor before selected item
+                u8g2.drawStr(0, textY, ">");
+                u8g2.drawStr(8, textY, items[i]);
             } else {
-                u8g2.drawStr(2, textY, items[i]);
+                // No cursor, just indent
+                u8g2.drawStr(8, textY, items[i]);
             }
         }
     } while (u8g2.nextPage());
 }
 
-// ─── File Menu (inverted highlight, "< Back" at index 0) ────────────────────
-//  < Back
-//  physics.txt
-//  math.txt
+// ─── File Menu (">" cursor, "< Back" at index 0) ────────────────────
+//  > < Back
+//    physics.txt
+//    math.txt
 
 void display_fileMenu(int selectedIndex, int topIndex,
                       const char* fileNames[], int fileCount) {
@@ -110,7 +108,6 @@ void display_fileMenu(int selectedIndex, int topIndex,
         // Show menu items
         for (int i = 0; i < MENU_LINES && (topIndex + i) < totalItems; i++) {
             int itemIdx = topIndex + i;
-            int boxY  = i * 8;
             int textY = 7 + i * 8;
 
             // Build display text
@@ -118,27 +115,23 @@ void display_fileMenu(int selectedIndex, int topIndex,
             if (itemIdx == 0) {
                 strcpy(displayBuf, "< Back");
             } else {
-                strncpy(displayBuf, fileNames[itemIdx - 1], 20);
-                displayBuf[20] = '\0';
+                strncpy(displayBuf, fileNames[itemIdx - 1], 19);
+                displayBuf[19] = '\0';
             }
 
-            // Highlight if selected
+            // Draw ">" cursor for selected item
             if (itemIdx == selectedIndex) {
-                u8g2.setDrawColor(1);
-                u8g2.drawBox(0, boxY, 128, 8);
-                u8g2.setDrawColor(0);
-                u8g2.drawStr(2, textY, displayBuf);
-                u8g2.setDrawColor(1);
+                u8g2.drawStr(0, textY, ">");
+                u8g2.drawStr(8, textY, displayBuf);
             } else {
-                u8g2.drawStr(2, textY, displayBuf);
+                u8g2.drawStr(8, textY, displayBuf);
             }
         }
 
         // If no files, show info text on line 2 (non-selectable, greyed)
         if (fileCount == 0) {
             u8g2.setFont(u8g2_font_4x6_tr);
-            u8g2.setDrawColor(1);
-            u8g2.drawStr(4, 15, "No TXT Files Found");
+            u8g2.drawStr(10, 15, "No TXT Files Found");
         }
     } while (u8g2.nextPage());
 }
@@ -184,7 +177,7 @@ void display_wifiPortal(const char* ssid, const char* ip) {
     } while (u8g2.nextPage());
 }
 
-// ─── Settings Menu (inverted highlight, "< Back" at index 0) ─────────────────
+// ─── Settings Menu (">" cursor, "< Back" at index 0) ─────────────────
 
 void display_settingsMenu(int selectedIndex) {
     static const char* items[] = {"< Back", "System Info", "File Count", "Storage"};
@@ -192,16 +185,14 @@ void display_settingsMenu(int selectedIndex) {
     do {
         u8g2.setFont(u8g2_font_5x7_tr);
         for (int i = 0; i < SETTINGS_ITEMS; i++) {
-            int boxY  = i * 8;
             int textY = 7 + i * 8;
             if (i == selectedIndex) {
-                u8g2.setDrawColor(1);
-                u8g2.drawBox(0, boxY, 128, 8);
-                u8g2.setDrawColor(0);
-                u8g2.drawStr(2, textY, items[i]);
-                u8g2.setDrawColor(1);
+                // Draw ">" cursor before selected item
+                u8g2.drawStr(0, textY, ">");
+                u8g2.drawStr(8, textY, items[i]);
             } else {
-                u8g2.drawStr(2, textY, items[i]);
+                // No cursor, just indent
+                u8g2.drawStr(8, textY, items[i]);
             }
         }
     } while (u8g2.nextPage());
