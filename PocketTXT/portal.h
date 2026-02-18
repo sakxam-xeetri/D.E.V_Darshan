@@ -50,7 +50,7 @@ static const char PORTAL_HTML[] PROGMEM = R"rawliteral(
 --ease:cubic-bezier(.4,0,.2,1)
 }
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden}
+body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden;font-size:18px}
 
 /* ── Sidebar ── */
 .sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sb-w);background:var(--sidebar);border-right:1px solid var(--brd);display:flex;flex-direction:column;z-index:200;transition:transform .35s var(--ease)}
