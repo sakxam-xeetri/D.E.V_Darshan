@@ -24,4 +24,10 @@ void portal_handleClient();
 // Check if portal is currently active
 bool portal_isActive();
 
+// Check if an upload was completed successfully
+bool portal_uploadCompleted();
+
+// Get millis() timestamp of last HTTP activity
+unsigned long portal_lastActivity();
+
 #endif // WIFI_PORTAL_H
