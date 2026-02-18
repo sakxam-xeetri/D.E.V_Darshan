@@ -47,29 +47,25 @@ void display_init() {
 //  D.E.V_Darshan
 //  v.1.0
 //  Dev: Sakshyam Bastakoti
-//  Initializing...
 
 void display_boot() {
     u8g2.clearBuffer();
 
-    // Line 1: Product name (5×7 font)
-    u8g2.setFont(u8g2_font_5x7_mr);
-    drawCentered(DEVICE_NAME, 7);
+    // Line 1: Product name (6x10 font - larger)
+    u8g2.setFont(u8g2_font_6x10_mr);
+    drawCentered(DEVICE_NAME, 11);
 
-    // Line 2: Version (4×6 font — smaller)
-    u8g2.setFont(u8g2_font_4x6_mr);
+    // Line 2: Version (5x7 font)
+    u8g2.setFont(u8g2_font_5x7_mr);
     char vBuf[12];
     snprintf(vBuf, sizeof(vBuf), "v.%s", FW_VERSION);
-    drawCentered(vBuf, 15);
+    drawCentered(vBuf, 21);
 
-    // Line 3: Developer (4×6 font)
+    // Line 3: Developer (5x7 font)
+    u8g2.setFont(u8g2_font_5x7_mr);
     char devBuf[32];
     snprintf(devBuf, sizeof(devBuf), "Dev: %s", DEVELOPER_NAME);
-    drawCentered(devBuf, 23);
-
-    // Line 4: Status
-    u8g2.setFont(u8g2_font_5x7_mr);
-    drawCentered("Initializing...", 31);
+    drawCentered(devBuf, 31);
 
     u8g2.sendBuffer();
 }
