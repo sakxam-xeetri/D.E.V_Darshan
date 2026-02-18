@@ -54,16 +54,16 @@
 // ─────────────────────────────────────────────────────────────────────────────
 //  BUTTON TIMING (milliseconds)
 // ─────────────────────────────────────────────────────────────────────────────
-#define DEBOUNCE_MS           50      // Debounce window
-#define SCROLL_HOLD_MS        800     // UP/DOWN continuous scroll threshold
-#define FAST_SCROLL_INTERVAL  150     // Repeat interval during held scroll
+#define DEBOUNCE_MS           30      // Debounce window
+#define SCROLL_HOLD_MS        400     // UP/DOWN continuous scroll threshold
+#define FAST_SCROLL_INTERVAL  80      // Repeat interval during held scroll
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  DISPLAY SETTINGS
 // ─────────────────────────────────────────────────────────────────────────────
-#define CHARS_PER_LINE        21      // 128px ÷ 6px per char (5×7 font)
-#define MENU_LINES            4       // Visible items in file list menu
-#define READING_LINES         4       // Lines in full-screen reading mode
+#define CHARS_PER_LINE        25      // 128px ÷ 5px per char (4×6 font)
+#define MENU_LINES            5       // Visible items in file list menu
+#define READING_LINES         5       // Lines in full-screen reading mode
 #define HOME_ITEMS            3       // Home menu entries
 #define SETTINGS_ITEMS        4       // Settings menu entries (incl. Back)
 
