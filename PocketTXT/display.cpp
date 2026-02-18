@@ -95,32 +95,50 @@ void display_home(int selectedIndex) {
     } while (u8g2.nextPage());
 }
 
-// ─── File Menu (cursor-based, scrollable) ────────────────────────────────────
-//  > physics.txt
-//    math.txt
-//    science.txt
-//    more...
+// ─── File Menu (inverted highlight, "< Back" at index 0) ────────────────────
+//  < Back
+//  physics.txt
+//  math.txt
 
 void display_fileMenu(int selectedIndex, int topIndex,
                       const char* fileNames[], int fileCount) {
+    int totalItems = fileCount + 1;  // +1 for "< Back" at index 0
     u8g2.firstPage();
     do {
         u8g2.setFont(u8g2_font_5x7_tr);
 
-        for (int i = 0; i < MENU_LINES && (topIndex + i) < fileCount; i++) {
-            int fileIdx = topIndex + i;
-            int y = 7 + (i * 8);
+        // Show menu items
+        for (int i = 0; i < MENU_LINES && (topIndex + i) < totalItems; i++) {
+            int itemIdx = topIndex + i;
+            int boxY  = i * 8;
+            int textY = 7 + i * 8;
 
-            // Cursor arrow for selected item
-            if (fileIdx == selectedIndex) {
-                u8g2.drawStr(1, y, ">");
+            // Build display text
+            char displayBuf[22];
+            if (itemIdx == 0) {
+                strcpy(displayBuf, "< Back");
+            } else {
+                strncpy(displayBuf, fileNames[itemIdx - 1], 20);
+                displayBuf[20] = '\0';
             }
 
-            // Truncate filename to fit (19 chars after "> " prefix)
-            char displayName[21];
-            strncpy(displayName, fileNames[fileIdx], 19);
-            displayName[19] = '\0';
-            u8g2.drawStr(10, y, displayName);
+            // Highlight if selected
+            if (itemIdx == selectedIndex) {
+                u8g2.setDrawColor(1);
+                u8g2.drawBox(0, boxY, 128, 8);
+                u8g2.setDrawColor(0);
+                u8g2.drawStr(2, textY, displayBuf);
+                u8g2.setDrawColor(1);
+            } else {
+                u8g2.drawStr(2, textY, displayBuf);
+            }
+        }
+
+        // If no files, show info text on line 2 (non-selectable, greyed)
+        if (fileCount == 0) {
+            u8g2.setFont(u8g2_font_4x6_tr);
+            u8g2.setDrawColor(1);
+            u8g2.drawStr(4, 15, "No TXT Files Found");
         }
     } while (u8g2.nextPage());
 }
@@ -278,17 +296,4 @@ void display_wake() {
 void display_clear() {
     u8g2.firstPage();
     do { } while (u8g2.nextPage());
-}
-
-// ─── No Files Screen ───────────────────────────────────────────────────────────
-
-void display_noFiles() {
-    u8g2.firstPage();
-    do {
-        u8g2.setFont(u8g2_font_5x7_tr);
-        drawCentered("No TXT Files", 12);
-        drawCentered("Found", 22);
-        u8g2.setFont(u8g2_font_4x6_tr);
-        drawCentered("SEL = Back", 31);
-    } while (u8g2.nextPage());
 }
