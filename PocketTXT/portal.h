@@ -157,7 +157,7 @@ body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,'Inter',sans-serif;
 .ed-acts{display:flex;gap:8px}
 .ed-wrap{position:relative;display:flex;height:55vh;min-height:240px;border:1px solid var(--brd);border-radius:10px;overflow:hidden;background:rgba(0,0,0,.3)}
 .line-nums{background:rgba(255,255,255,.02);color:var(--txt3);padding:14px 10px;font:13px/1.5 'Consolas','Courier New',monospace;text-align:right;user-select:none;overflow:hidden;min-width:46px;border-right:1px solid var(--brd)}
-.ed-area{flex:1;resize:none;border:none;padding:14px;font:13px/1.5 'Consolas','Courier New',monospace;outline:none;background:transparent;color:var(--txt);tab-size:4;caret-color:var(--pri)}
+.ed-area{flex:1;resize:none;border:none;padding:14px;font:13px/1.5 'Consolas','Courier New',monospace;outline:none;background:transparent;color:var(--txt);tab-size:4;caret-color:var(--pri);white-space:pre-wrap;word-wrap:break-word;overflow-wrap:break-word}
 .line-hl{position:absolute;left:46px;right:0;height:19.5px;background:rgba(220,20,60,.06);pointer-events:none;transition:top .05s;border-left:2px solid rgba(220,20,60,.4)}
 .ed-foot{display:flex;justify-content:space-between;margin-top:10px;font-size:.73em;color:var(--txt2)}
 
@@ -521,7 +521,7 @@ WiFi Configuration
 Reading Behaviour
 </h3>
 <div id="readInfo">
-<div class="info-row"><span class="info-label">Characters per Line</span><span class="info-value">21</span></div>
+<div class="info-row"><span class="info-label">Characters per Line</span><span class="info-value">32</span></div>
 <div class="info-row"><span class="info-label">Display Lines</span><span class="info-value">4</span></div>
 <div class="info-row"><span class="info-label">Bookmark Auto-save</span><span class="info-value">Every 10 lines</span></div>
 <div class="info-row"><span class="info-label">Sleep Timeout</span><span class="info-value">5 minutes</span></div>
