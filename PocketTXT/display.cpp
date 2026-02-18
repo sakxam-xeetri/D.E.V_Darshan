@@ -5,8 +5,8 @@
  *  All OLED rendering via U8g2lib in full framebuffer mode (fast).
  *  HW I2C @ 400kHz. Custom I2C pins: GPIO1=SCL, GPIO3=SDA.
  *
- *  Screen Layout (128×32, 4×6 monospace font @ 6px line height = 5 lines):
- *    Line 0 (y=6)   Line 1 (y=12)   Line 2 (y=18)   Line 3 (y=24)   Line 4 (y=30)
+ *  Screen Layout (128×32, 4×6 monospace font @ 8px line height = 4 lines):
+ *    Line 0 (y=7)   Line 1 (y=15)   Line 2 (y=23)   Line 3 (y=31)
  *
  *  Reading mode uses the FULL 128×32 area — no header, no icons,
  *  no scroll bar. Pure text immersion.
@@ -136,14 +136,14 @@ void display_fileMenu(int selectedIndex, int topIndex,
 
 // ─── Reading Mode (Full Immersion) ──────────────────────────────────────────
 //  No file name. No header. No UI elements. No icons.
-//  Full 128×32 screen for text only. 5 lines, 4×6 monospace font.
+//  Full 128×32 screen for text only. 4 lines, 4×6 monospace font.
 
 void display_reading(const char* lines[], int lineCount) {
     u8g2.clearBuffer();
     u8g2.setFont(u8g2_font_4x6_mr);
     for (int i = 0; i < READING_LINES && i < lineCount; i++) {
         if (lines[i]) {
-            u8g2.drawStr(0, 6 + (i * 6), lines[i]);
+            u8g2.drawStr(0, 7 + (i * 8), lines[i]);  // y=7, 15, 23, 31
         }
     }
     u8g2.sendBuffer();
