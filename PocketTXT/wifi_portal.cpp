@@ -96,16 +96,11 @@ static void handleUpload() {
 
     switch (upload.status) {
         case UPLOAD_FILE_START: {
-            String filename = upload.filename;
+            String filename = sanitizeFileName(upload.filename);
 
-            // Validate file extension (server-side check)
-            if (!filename.endsWith(".txt") && !filename.endsWith(".TXT")) {
+            // Validate filename (sanitizeFileName ensures .txt extension)
+            if (filename.length() == 0) {
                 return;
-            }
-
-            // Ensure filename starts with /
-            if (!filename.startsWith("/")) {
-                filename = "/" + filename;
             }
 
             // Open file on SD for writing
@@ -152,14 +147,15 @@ static void handleUpload() {
 static void handleUploadComplete() {
     HTTPUpload& upload = server->upload();
 
-    // Check if file was valid
-    if (!upload.filename.endsWith(".txt") && !upload.filename.endsWith(".TXT")) {
-        server->send(400, "text/plain", "Only .txt files allowed");
+    // Get sanitized filename (same path used in handleUpload)
+    String fullPath = sanitizeFileName(upload.filename);
+    
+    if (fullPath.length() == 0) {
+        server->send(400, "text/plain", "Invalid filename");
         return;
     }
 
     // Check if file was written successfully
-    String fullPath = "/" + upload.filename;
     if (SD_MMC.exists(fullPath)) {
         uploadSuccess = true;
         lastPortalActivityMs = millis();
