@@ -147,13 +147,9 @@ static void enterFileMenu() {
     appState = STATE_FILE_MENU;
 
     int count = sd_scanFiles();
-    if (count == 0) {
-        // Show "No TXT Files Found" — SELECT = Back
-        display_noFiles();
-        return;
-    }
-
-    menuSelectedIndex = 1;  // Start at first file (after "< Back")
+    
+    // Always show menu with "< Back" at top
+    menuSelectedIndex = 0;  // Start at "< Back"
     menuTopIndex = 0;
 
     for (int i = 0; i < count && i < MAX_FILES; i++) {
@@ -179,6 +175,10 @@ static void menuScrollUp() {
 
 static void menuScrollDown() {
     int count = sd_getFileCount();
+    
+    // If no files, can't scroll down from "< Back"
+    if (count == 0) return;
+    
     int totalItems = count + 1;  // +1 for "< Back"
     if (menuSelectedIndex >= totalItems - 1) return;
 
@@ -444,13 +444,6 @@ void loop() {
 
         // ── FILE MENU ────────────────────────────────────────────────────
         case STATE_FILE_MENU:
-            if (sd_getFileCount() == 0) {
-                // No files mode — SELECT = back to Home
-                if (event == BTN_SELECT_SHORT) {
-                    enterHome();
-                }
-                break;
-            }
             switch (event) {
                 case BTN_UP_SHORT:
                     menuScrollUp();
