@@ -71,22 +71,26 @@ void display_boot() {
     } while (u8g2.nextPage());
 }
 
-// ─── Home Screen ─────────────────────────────────────────────────────────────
-//  > WiFi Portal
-//    Files
-//    Settings
+// ─── Home Screen (inverted highlight bar) ───────────────────────────────────────────
 
 void display_home(int selectedIndex) {
     static const char* items[] = {"WiFi Portal", "Files", "Settings"};
+    int yOffset = (OLED_HEIGHT - HOME_ITEMS * 8) / 2;  // Center vertically
     u8g2.firstPage();
     do {
         u8g2.setFont(u8g2_font_5x7_tr);
         for (int i = 0; i < HOME_ITEMS; i++) {
-            int y = 10 + i * 10;
+            int boxY  = yOffset + i * 8;
+            int textY = boxY + 7;
             if (i == selectedIndex) {
-                u8g2.drawStr(1, y, ">");
+                u8g2.setDrawColor(1);
+                u8g2.drawBox(0, boxY, 128, 8);
+                u8g2.setDrawColor(0);
+                u8g2.drawStr(2, textY, items[i]);
+                u8g2.setDrawColor(1);
+            } else {
+                u8g2.drawStr(2, textY, items[i]);
             }
-            u8g2.drawStr(10, y, items[i]);
         }
     } while (u8g2.nextPage());
 }
@@ -138,90 +142,90 @@ void display_reading(const char* lines[], int lineCount) {
 }
 
 // ─── WiFi Portal Screen ─────────────────────────────────────────────────────
-//  WiFi Portal
 //  SSID: TXT_Reader
+//  Pass: readmore
 //  IP: 192.168.4.1
-//  Hold SEL = Exit
+//  SEL = Exit
 
 void display_wifiPortal(const char* ssid, const char* ip) {
     u8g2.firstPage();
     do {
-        u8g2.setFont(u8g2_font_5x7_tr);
-        drawCentered("WiFi Portal", 7);
+        u8g2.setFont(u8g2_font_4x6_tr);
 
         char buf[24];
         snprintf(buf, sizeof(buf), "SSID: %s", ssid);
-        u8g2.drawStr(0, 16, buf);
+        u8g2.drawStr(0, 6, buf);
+
+        snprintf(buf, sizeof(buf), "Pass: %s", WIFI_PASSWORD);
+        u8g2.drawStr(0, 14, buf);
 
         snprintf(buf, sizeof(buf), "IP: %s", ip);
-        u8g2.drawStr(0, 25, buf);
+        u8g2.drawStr(0, 22, buf);
 
-        u8g2.setFont(u8g2_font_4x6_tr);
-        drawCentered("Hold SEL = Exit", 32);
+        drawCentered("SEL = Exit", 31);
     } while (u8g2.nextPage());
 }
 
-// ─── Settings Menu ───────────────────────────────────────────────────────────
-//  > System Info
-//    File Count
-//    Storage
+// ─── Settings Menu (inverted highlight, "< Back" at index 0) ─────────────────
 
 void display_settingsMenu(int selectedIndex) {
-    static const char* items[] = {"System Info", "File Count", "Storage"};
+    static const char* items[] = {"< Back", "System Info", "File Count", "Storage"};
     u8g2.firstPage();
     do {
         u8g2.setFont(u8g2_font_5x7_tr);
         for (int i = 0; i < SETTINGS_ITEMS; i++) {
-            int y = 10 + i * 10;
+            int boxY  = i * 8;
+            int textY = 7 + i * 8;
             if (i == selectedIndex) {
-                u8g2.drawStr(1, y, ">");
+                u8g2.setDrawColor(1);
+                u8g2.drawBox(0, boxY, 128, 8);
+                u8g2.setDrawColor(0);
+                u8g2.drawStr(2, textY, items[i]);
+                u8g2.setDrawColor(1);
+            } else {
+                u8g2.drawStr(2, textY, items[i]);
             }
-            u8g2.drawStr(10, y, items[i]);
         }
     } while (u8g2.nextPage());
 }
 
 // ─── System Info Sub-screen ──────────────────────────────────────────────────
-//  DEV_Darshan
-//  ESP32-CAM
-//  FW: v1.0
-//  SD: Mounted
 
 void display_systemInfo(bool sdMounted) {
     u8g2.firstPage();
     do {
-        u8g2.setFont(u8g2_font_5x7_tr);
-        u8g2.drawStr(0, 7,  "DEV_Darshan");
-        u8g2.drawStr(0, 15, "ESP32-CAM");
+        u8g2.setFont(u8g2_font_4x6_tr);
+        u8g2.drawStr(0, 6,  DEVICE_NAME);
 
-        char buf[22];
-        snprintf(buf, sizeof(buf), "FW: v%s", FW_VERSION);
-        u8g2.drawStr(0, 23, buf);
+        char buf[26];
+        snprintf(buf, sizeof(buf), "FW: v%s  ESP32-CAM", FW_VERSION);
+        u8g2.drawStr(0, 14, buf);
 
-        u8g2.drawStr(0, 31, sdMounted ? "SD: Mounted" : "SD: Error");
+        u8g2.drawStr(0, 22, sdMounted ? "SD: Mounted" : "SD: Error");
+
+        drawCentered("SEL = Back", 31);
     } while (u8g2.nextPage());
 }
 
 // ─── File Count Sub-screen ───────────────────────────────────────────────────
-//  Total Files:
-//       3
 
 void display_fileCount(int count) {
     u8g2.firstPage();
     do {
         u8g2.setFont(u8g2_font_5x7_tr);
-        drawCentered("Total Files:", 12);
+        drawCentered("TXT Files:", 10);
 
         char buf[8];
         snprintf(buf, sizeof(buf), "%d", count);
         u8g2.setFont(u8g2_font_6x10_tr);
-        drawCentered(buf, 26);
+        drawCentered(buf, 22);
+
+        u8g2.setFont(u8g2_font_4x6_tr);
+        drawCentered("SEL = Back", 31);
     } while (u8g2.nextPage());
 }
 
 // ─── Storage Sub-screen ──────────────────────────────────────────────────────
-//  Used: 2.3MB
-//  Free: 5.7MB
 
 void display_storageInfo(float usedMB, float freeMB) {
     u8g2.firstPage();
@@ -230,10 +234,13 @@ void display_storageInfo(float usedMB, float freeMB) {
 
         char buf[22];
         snprintf(buf, sizeof(buf), "Used: %.1fMB", usedMB);
-        u8g2.drawStr(0, 14, buf);
+        u8g2.drawStr(0, 8, buf);
 
         snprintf(buf, sizeof(buf), "Free: %.1fMB", freeMB);
-        u8g2.drawStr(0, 26, buf);
+        u8g2.drawStr(0, 18, buf);
+
+        u8g2.setFont(u8g2_font_4x6_tr);
+        drawCentered("SEL = Back", 31);
     } while (u8g2.nextPage());
 }
 
@@ -271,4 +278,17 @@ void display_wake() {
 void display_clear() {
     u8g2.firstPage();
     do { } while (u8g2.nextPage());
+}
+
+// ─── No Files Screen ───────────────────────────────────────────────────────────
+
+void display_noFiles() {
+    u8g2.firstPage();
+    do {
+        u8g2.setFont(u8g2_font_5x7_tr);
+        drawCentered("No TXT Files", 12);
+        drawCentered("Found", 22);
+        u8g2.setFont(u8g2_font_4x6_tr);
+        drawCentered("SEL = Back", 31);
+    } while (u8g2.nextPage());
 }
