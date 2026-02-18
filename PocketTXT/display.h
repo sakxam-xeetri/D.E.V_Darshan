@@ -26,6 +26,9 @@ void display_fileMenu(int selectedIndex, int topIndex,
 // ── Reading Mode (Full Immersion — no header, no UI chrome) ──
 void display_reading(const char* lines[], int lineCount);
 
+// ── No Files Screen ──
+void display_noFiles();
+
 // ── WiFi Portal Screen ──
 void display_wifiPortal(const char* ssid, const char* ip);
 
