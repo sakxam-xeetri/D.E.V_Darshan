@@ -467,6 +467,7 @@ static void handleInfo() {
     json += ",\"ssid\":\"" + String(WIFI_SSID) + "\"";
     json += ",\"maxUpload\":" + String(MAX_UPLOAD_SIZE);
     json += ",\"wifiTimeout\":" + String(WIFI_TIMEOUT_MS);
+    json += ",\"uptime\":" + String((unsigned long)(millis() / 1000));
     json += "}";
 
     server->send(200, "application/json", json);
