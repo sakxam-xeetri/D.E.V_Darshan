@@ -551,6 +551,6 @@ void loop() {
     // Idle timeout check
     checkIdleTimeout();
 
-    // Prevent CPU spinning
-    delay(5);
+    // Yield to RTOS (1ms — minimal latency)
+    delay(1);
 }
