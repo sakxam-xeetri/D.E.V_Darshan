@@ -10,9 +10,7 @@
  *  Navigation Rules:
  *    UP            → Move up
  *    DOWN          → Move down
- *    SELECT short  → Enter
- *    SELECT 3s     → Back
- *    SELECT 5s     → WiFi Portal (Home screen only)
+ *    SELECT short  → Enter (if sub-options) / Back (if terminal screen)
  * ============================================================================
  */
 
