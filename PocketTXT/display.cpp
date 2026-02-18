@@ -5,7 +5,7 @@
  *  All OLED rendering via U8g2lib in full framebuffer mode (fast).
  *  HW I2C @ 400kHz. Custom I2C pins: GPIO1=SCL, GPIO3=SDA.
  *
- *  Screen Layout (128×32, 4×6 font @ 6px line height = 5 lines):
+ *  Screen Layout (128×32, 4×6 monospace font @ 6px line height = 5 lines):
  *    Line 0 (y=6)   Line 1 (y=12)   Line 2 (y=18)   Line 3 (y=24)   Line 4 (y=30)
  *
  *  Reading mode uses the FULL 128×32 area — no header, no icons,
@@ -53,11 +53,11 @@ void display_boot() {
     u8g2.clearBuffer();
 
     // Line 1: Product name (5×7 font)
-    u8g2.setFont(u8g2_font_5x7_tr);
+    u8g2.setFont(u8g2_font_5x7_mr);
     drawCentered(DEVICE_NAME, 7);
 
     // Line 2: Version (4×6 font — smaller)
-    u8g2.setFont(u8g2_font_4x6_tr);
+    u8g2.setFont(u8g2_font_4x6_mr);
     char vBuf[12];
     snprintf(vBuf, sizeof(vBuf), "v.%s", FW_VERSION);
     drawCentered(vBuf, 15);
@@ -68,7 +68,7 @@ void display_boot() {
     drawCentered(devBuf, 23);
 
     // Line 4: Status
-    u8g2.setFont(u8g2_font_5x7_tr);
+    u8g2.setFont(u8g2_font_5x7_mr);
     drawCentered("Initializing...", 31);
 
     u8g2.sendBuffer();
@@ -80,7 +80,7 @@ void display_home(int selectedIndex) {
     static const char* items[] = {"WiFi Portal", "Files", "Settings"};
     int yOffset = (OLED_HEIGHT - HOME_ITEMS * 7) / 2;  // Center vertically
     u8g2.clearBuffer();
-    u8g2.setFont(u8g2_font_4x6_tr);
+    u8g2.setFont(u8g2_font_4x6_mr);
     for (int i = 0; i < HOME_ITEMS; i++) {
         int textY = yOffset + (i * 7) + 6;
         if (i == selectedIndex) {
@@ -102,7 +102,7 @@ void display_fileMenu(int selectedIndex, int topIndex,
                       const char* fileNames[], int fileCount) {
     int totalItems = fileCount + 1;  // +1 for "< Back" at index 0
     u8g2.clearBuffer();
-    u8g2.setFont(u8g2_font_4x6_tr);
+    u8g2.setFont(u8g2_font_4x6_mr);
 
     // Show menu items
     for (int i = 0; i < MENU_LINES && (topIndex + i) < totalItems; i++) {
@@ -110,12 +110,12 @@ void display_fileMenu(int selectedIndex, int topIndex,
         int textY = 6 + i * 6;
 
         // Build display text
-        char displayBuf[26];
+        char displayBuf[34];
         if (itemIdx == 0) {
             strcpy(displayBuf, "< Back");
         } else {
-            strncpy(displayBuf, fileNames[itemIdx - 1], 23);
-            displayBuf[23] = '\0';
+            strncpy(displayBuf, fileNames[itemIdx - 1], 30);
+            displayBuf[30] = '\0';
         }
 
         // Draw ">" cursor for selected item
@@ -136,11 +136,11 @@ void display_fileMenu(int selectedIndex, int topIndex,
 
 // ─── Reading Mode (Full Immersion) ──────────────────────────────────────────
 //  No file name. No header. No UI elements. No icons.
-//  Full 128×32 screen for text only. 5 lines, 4×6 font.
+//  Full 128×32 screen for text only. 5 lines, 4×6 monospace font.
 
 void display_reading(const char* lines[], int lineCount) {
     u8g2.clearBuffer();
-    u8g2.setFont(u8g2_font_4x6_tr);
+    u8g2.setFont(u8g2_font_4x6_mr);
     for (int i = 0; i < READING_LINES && i < lineCount; i++) {
         if (lines[i]) {
             u8g2.drawStr(0, 6 + (i * 6), lines[i]);
@@ -157,7 +157,7 @@ void display_reading(const char* lines[], int lineCount) {
 
 void display_wifiPortal(const char* ssid, const char* ip) {
     u8g2.clearBuffer();
-    u8g2.setFont(u8g2_font_4x6_tr);
+    u8g2.setFont(u8g2_font_4x6_mr);
 
     char buf[24];
     snprintf(buf, sizeof(buf), "SSID: %s", ssid);
@@ -178,7 +178,7 @@ void display_wifiPortal(const char* ssid, const char* ip) {
 void display_settingsMenu(int selectedIndex) {
     static const char* items[] = {"< Back", "System Info", "File Count", "Storage"};
     u8g2.clearBuffer();
-    u8g2.setFont(u8g2_font_4x6_tr);
+    u8g2.setFont(u8g2_font_4x6_mr);
     for (int i = 0; i < SETTINGS_ITEMS; i++) {
         int textY = 6 + i * 7;
         if (i == selectedIndex) {
@@ -195,7 +195,7 @@ void display_settingsMenu(int selectedIndex) {
 
 void display_systemInfo(bool sdMounted) {
     u8g2.clearBuffer();
-    u8g2.setFont(u8g2_font_4x6_tr);
+    u8g2.setFont(u8g2_font_4x6_mr);
     u8g2.drawStr(0, 6,  DEVICE_NAME);
 
     char buf[26];
@@ -212,24 +212,24 @@ void display_systemInfo(bool sdMounted) {
 
 void display_fileCount(int count) {
     u8g2.clearBuffer();
-    u8g2.setFont(u8g2_font_5x7_tr);
+    u8g2.setFont(u8g2_font_5x7_mr);
     drawCentered("TXT Files:", 10);
 
     char buf[8];
     snprintf(buf, sizeof(buf), "%d", count);
-    u8g2.setFont(u8g2_font_6x10_tr);
+    u8g2.setFont(u8g2_font_6x10_mr);
     drawCentered(buf, 22);
 
-    u8g2.setFont(u8g2_font_4x6_tr);
+    u8g2.setFont(u8g2_font_4x6_mr);
     drawCentered("SEL = Back", 31);
     u8g2.sendBuffer();
 }
 
-// ─── Storage Sub-screen ──────────────────────────────────────────────────────
+// ─── Storage Sub-screen ───────────────────────────────────────────────────────
 
 void display_storageInfo(float usedMB, float freeMB) {
     u8g2.clearBuffer();
-    u8g2.setFont(u8g2_font_5x7_tr);
+    u8g2.setFont(u8g2_font_5x7_mr);
 
     char buf[22];
     snprintf(buf, sizeof(buf), "Used: %.1fMB", usedMB);
@@ -238,7 +238,7 @@ void display_storageInfo(float usedMB, float freeMB) {
     snprintf(buf, sizeof(buf), "Free: %.1fMB", freeMB);
     u8g2.drawStr(0, 18, buf);
 
-    u8g2.setFont(u8g2_font_4x6_tr);
+    u8g2.setFont(u8g2_font_4x6_mr);
     drawCentered("SEL = Back", 31);
     u8g2.sendBuffer();
 }
@@ -247,7 +247,7 @@ void display_storageInfo(float usedMB, float freeMB) {
 
 void display_error(const char* line1, const char* line2) {
     u8g2.clearBuffer();
-    u8g2.setFont(u8g2_font_6x10_tr);
+    u8g2.setFont(u8g2_font_6x10_mr);
     if (line1) {
         int w1 = u8g2.getStrWidth(line1);
         u8g2.drawStr((OLED_WIDTH - w1) / 2, line2 ? 14 : 20, line1);
