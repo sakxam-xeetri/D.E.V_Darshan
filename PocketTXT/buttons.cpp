@@ -11,9 +11,7 @@
  *    BTN_SELECT = GPIO12  (internal pull-up) — boot-safe
  *
  *  SELECT timing:
- *    Short release  → BTN_SELECT_SHORT  (Enter)
- *    Hold 3 seconds → BTN_SELECT_LONG   (Back)
- *    Hold 5 seconds → BTN_SELECT_XLONG  (WiFi Portal from Home)
+ *    Short release  → BTN_SELECT_SHORT  (Enter / Back, context-aware)
  *
  *  UP/DOWN timing:
  *    Short release  → BTN_UP/DOWN_SHORT (single step)
@@ -140,26 +138,10 @@ ButtonEvent buttons_update() {
         btnDown.wasPressed = true;
     }
 
-    // ── SELECT button (3s = LONG/Back, 5s = XLONG/WiFi Portal) ──
-    if (btnSelect.currentState) {
-        unsigned long held = now - btnSelect.pressStart;
-
-        // Check 5-second threshold first (fires additionally after LONG)
-        if (!btnSelect.xlongFired && held >= WIFI_PORTAL_HOLD_MS) {
-            btnSelect.xlongFired = true;
-            return BTN_SELECT_XLONG;
-        }
-        // Check 3-second threshold
-        if (!btnSelect.longFired && held >= LONG_PRESS_MS) {
-            btnSelect.longFired = true;
-            return BTN_SELECT_LONG;
-        }
-    } else if (btnSelect.wasPressed && !btnSelect.currentState) {
-        if (!btnSelect.longFired) {
-            btnSelect.wasPressed = false;
-            return BTN_SELECT_SHORT;
-        }
+    // ── SELECT button (short press only — context-aware Enter/Back) ──
+    if (!btnSelect.currentState && btnSelect.wasPressed) {
         btnSelect.wasPressed = false;
+        return BTN_SELECT_SHORT;
     }
     if (btnSelect.currentState && !btnSelect.wasPressed) {
         btnSelect.wasPressed = true;
