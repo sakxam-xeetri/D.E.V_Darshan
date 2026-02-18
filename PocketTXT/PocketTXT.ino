@@ -12,12 +12,11 @@
  *    - 3.7V 1100mAh Li-ion + TP4056 charger
  *    - Magnetic reed switch for hardware power control
  *
- *  Navigation (consistent across all screens):
+ *  Navigation (context-aware SELECT, no long press):
  *    - UP            → Move up / scroll up
  *    - DOWN          → Move down / scroll down
- *    - SELECT short  → Enter / confirm
- *    - SELECT 3s     → Back (return to parent screen)
- *    - SELECT 5s     → WiFi Portal (from Home screen only)
+ *    - SELECT short  → Enter (if sub-options) / Back (if terminal screen)
+ *    - UP/DOWN hold  → Continuous line-by-line scroll (reading mode)
  *
  *  Screen Flow:
  *    Boot → Home → { WiFi Portal, Files → Reading, Settings → Sub-screens }
@@ -37,6 +36,8 @@
 #include <WiFi.h>
 #include <esp_wifi.h>
 #include <esp_bt.h>
+#include <esp_sleep.h>
+#include <driver/gpio.h>
 
 // ─── Application State ───────────────────────────────────────────────────────
 
@@ -64,10 +65,6 @@ static const char* displayLinePtrs[READING_LINES];
 // Activity tracking
 static unsigned long lastActivityMs = 0;
 static bool displayAsleep = false;
-
-// Guard flag: prevents SELECT_XLONG from re-entering WiFi portal
-// after a state transition to Home via SELECT_LONG
-static bool suppressXlong = false;
 
 // ─── Power Management ────────────────────────────────────────────────────────
 
@@ -108,11 +105,31 @@ static void resetActivityTimer() {
     }
 }
 
+static void enterLightSleep() {
+    display_sleep();
+    displayAsleep = true;
+
+    // Configure GPIO wake sources (active LOW buttons)
+    gpio_wakeup_enable((gpio_num_t)PIN_BTN_UP,     GPIO_INTR_LOW_LEVEL);
+    gpio_wakeup_enable((gpio_num_t)PIN_BTN_DOWN,    GPIO_INTR_LOW_LEVEL);
+    gpio_wakeup_enable((gpio_num_t)PIN_BTN_SELECT,  GPIO_INTR_LOW_LEVEL);
+    esp_sleep_enable_gpio_wakeup();
+
+    // Enter light sleep — execution pauses here
+    esp_light_sleep_start();
+
+    // ── Woke up! ──
+    delay(100);           // Let hardware settle
+    buttons_init();       // Reset button states (consume wake press)
+    resetActivityTimer(); // Display ON, timer reset
+}
+
 static void checkIdleTimeout() {
     if (appState == STATE_WIFI_PORTAL) return;
+    if (appState == STATE_BOOT) return;
+    if (appState == STATE_ERROR) return;
     if (!displayAsleep && (millis() - lastActivityMs) > DISPLAY_TIMEOUT_MS) {
-        display_sleep();
-        displayAsleep = true;
+        enterLightSleep();
     }
 }
 
@@ -128,16 +145,16 @@ static void enterHome() {
 
 static void enterFileMenu() {
     appState = STATE_FILE_MENU;
-    menuSelectedIndex = 0;
-    menuTopIndex = 0;
 
     int count = sd_scanFiles();
     if (count == 0) {
-        display_error("No TXT files", "Upload via WiFi");
-        delay(2000);
-        enterHome();
+        // Show "No TXT Files Found" — SELECT = Back
+        display_noFiles();
         return;
     }
+
+    menuSelectedIndex = 1;  // Start at first file (after "< Back")
+    menuTopIndex = 0;
 
     for (int i = 0; i < count && i < MAX_FILES; i++) {
         fileNamePtrs[i] = sd_getFileName(i);
@@ -147,13 +164,11 @@ static void enterFileMenu() {
 
 static void updateFileMenu() {
     int count = sd_getFileCount();
-    if (count == 0) return;
     display_fileMenu(menuSelectedIndex, menuTopIndex, fileNamePtrs, count);
 }
 
 static void menuScrollUp() {
-    int count = sd_getFileCount();
-    if (count == 0 || menuSelectedIndex <= 0) return;
+    if (menuSelectedIndex <= 0) return;
 
     menuSelectedIndex--;
     if (menuSelectedIndex < menuTopIndex) {
@@ -164,7 +179,8 @@ static void menuScrollUp() {
 
 static void menuScrollDown() {
     int count = sd_getFileCount();
-    if (count == 0 || menuSelectedIndex >= count - 1) return;
+    int totalItems = count + 1;  // +1 for "< Back"
+    if (menuSelectedIndex >= totalItems - 1) return;
 
     menuSelectedIndex++;
     if (menuSelectedIndex >= menuTopIndex + MENU_LINES) {
@@ -185,9 +201,10 @@ static void updateReadingView() {
 
 static void menuSelectFile() {
     int count = sd_getFileCount();
-    if (count == 0) return;
+    int fileIndex = menuSelectedIndex - 1;  // Offset for "< Back" at 0
+    if (count == 0 || fileIndex < 0 || fileIndex >= count) return;
 
-    const char* name = sd_getFileName(menuSelectedIndex);
+    const char* name = sd_getFileName(fileIndex);
     strncpy(currentFileName, name, MAX_FILENAME_LEN - 1);
     currentFileName[MAX_FILENAME_LEN - 1] = '\0';
 
@@ -216,36 +233,76 @@ static void menuSelectFile() {
     updateReadingView();
 }
 
-static void readingScrollUp() {
-    if (scrollPosition > 0) {
-        scrollPosition--;
-        scrollCounter++;
-        updateReadingView();
-
-        if (scrollCounter >= BOOKMARK_SAVE_EVERY) {
-            sd_saveBookmark(currentFileName, scrollPosition);
-            scrollCounter = 0;
-        }
+static void readingPageUp() {
+    if (totalLines <= READING_LINES) return;
+    int maxPos = totalLines - READING_LINES;
+    if (scrollPosition <= 0) {
+        scrollPosition = maxPos;  // Wrap to end
+    } else {
+        scrollPosition -= READING_LINES;
+        if (scrollPosition < 0) scrollPosition = 0;
+    }
+    scrollCounter += READING_LINES;
+    updateReadingView();
+    if (scrollCounter >= BOOKMARK_SAVE_EVERY) {
+        sd_saveBookmark(currentFileName, scrollPosition);
+        scrollCounter = 0;
     }
 }
 
-static void readingScrollDown() {
-    if (scrollPosition < totalLines - READING_LINES) {
-        scrollPosition++;
-        scrollCounter++;
-        updateReadingView();
+static void readingPageDown() {
+    if (totalLines <= READING_LINES) return;
+    int maxPos = totalLines - READING_LINES;
+    if (scrollPosition >= maxPos) {
+        scrollPosition = 0;  // Wrap to beginning
+    } else {
+        scrollPosition += READING_LINES;
+        if (scrollPosition > maxPos) scrollPosition = maxPos;
+    }
+    scrollCounter += READING_LINES;
+    updateReadingView();
+    if (scrollCounter >= BOOKMARK_SAVE_EVERY) {
+        sd_saveBookmark(currentFileName, scrollPosition);
+        scrollCounter = 0;
+    }
+}
 
-        if (scrollCounter >= BOOKMARK_SAVE_EVERY) {
-            sd_saveBookmark(currentFileName, scrollPosition);
-            scrollCounter = 0;
-        }
+static void readingLineUp() {
+    if (totalLines <= READING_LINES) return;
+    if (scrollPosition <= 0) {
+        scrollPosition = totalLines - READING_LINES;  // Wrap to end
+    } else {
+        scrollPosition--;
+    }
+    scrollCounter++;
+    updateReadingView();
+    if (scrollCounter >= BOOKMARK_SAVE_EVERY) {
+        sd_saveBookmark(currentFileName, scrollPosition);
+        scrollCounter = 0;
+    }
+}
+
+static void readingLineDown() {
+    if (totalLines <= READING_LINES) return;
+    int maxPos = totalLines - READING_LINES;
+    if (scrollPosition >= maxPos) {
+        scrollPosition = 0;  // Wrap to beginning
+    } else {
+        scrollPosition++;
+    }
+    scrollCounter++;
+    updateReadingView();
+    if (scrollCounter >= BOOKMARK_SAVE_EVERY) {
+        sd_saveBookmark(currentFileName, scrollPosition);
+        scrollCounter = 0;
     }
 }
 
 static void exitReading() {
     sd_saveBookmark(currentFileName, scrollPosition);
     sd_closeFile();
-    enterFileMenu();
+    appState = STATE_FILE_MENU;
+    updateFileMenu();  // Return to file menu at same position
 }
 
 // ─── Screen: WiFi Portal ─────────────────────────────────────────────────────
@@ -273,7 +330,7 @@ static void exitWifiPortal() {
 
 static void enterSettings() {
     appState = STATE_SETTINGS;
-    settingsIndex = 0;
+    settingsIndex = 1;  // Start at first real option (after "< Back")
     display_settingsMenu(settingsIndex);
 }
 
@@ -321,7 +378,7 @@ void setup() {
     // 4. Initialize OLED display + boot screen
     display_init();
     display_boot();
-    delay(2000);  // Boot screen visible for 2 seconds
+    delay(1000);  // Boot screen visible for 1 second
     diagBlink(4);
 
     // 5. Initialize SD card
@@ -360,10 +417,6 @@ void loop() {
 
         // ── HOME SCREEN ──────────────────────────────────────────────────
         case STATE_HOME:
-            // Clear suppressXlong on any real event except XLONG itself
-            if (event != BTN_NONE && event != BTN_SELECT_XLONG) {
-                suppressXlong = false;
-            }
             switch (event) {
                 case BTN_UP_SHORT:
                     if (homeIndex > 0) {
@@ -384,13 +437,6 @@ void loop() {
                         case 2: enterSettings();   break;  // Settings
                     }
                     break;
-                case BTN_SELECT_XLONG:
-                    // 5-second hold from Home → WiFi Portal shortcut
-                    if (!suppressXlong) {
-                        enterWifiPortal();
-                    }
-                    suppressXlong = false;
-                    break;
                 default:
                     break;
             }
@@ -398,13 +444,18 @@ void loop() {
 
         // ── FILE MENU ────────────────────────────────────────────────────
         case STATE_FILE_MENU:
+            if (sd_getFileCount() == 0) {
+                // No files mode — SELECT = back to Home
+                if (event == BTN_SELECT_SHORT) {
+                    enterHome();
+                }
+                break;
+            }
             switch (event) {
                 case BTN_UP_SHORT:
-                case BTN_UP_LONG:
                     menuScrollUp();
                     break;
                 case BTN_DOWN_SHORT:
-                case BTN_DOWN_LONG:
                     menuScrollDown();
                     break;
                 case BTN_UP_HELD:
@@ -414,11 +465,11 @@ void loop() {
                     menuScrollDown();   // Fast scroll
                     break;
                 case BTN_SELECT_SHORT:
-                    menuSelectFile();   // Enter → open file
-                    break;
-                case BTN_SELECT_LONG:
-                    suppressXlong = true;
-                    enterHome();        // Back → Home
+                    if (menuSelectedIndex == 0) {
+                        enterHome();        // "< Back" selected → Home
+                    } else {
+                        menuSelectFile();   // Open file
+                    }
                     break;
                 default:
                     break;
@@ -429,21 +480,21 @@ void loop() {
         case STATE_READING:
             switch (event) {
                 case BTN_UP_SHORT:
-                case BTN_UP_LONG:
-                    readingScrollUp();
+                    readingPageUp();     // Short press = page scroll
                     break;
                 case BTN_DOWN_SHORT:
-                case BTN_DOWN_LONG:
-                    readingScrollDown();
+                    readingPageDown();   // Short press = page scroll
                     break;
+                case BTN_UP_LONG:
                 case BTN_UP_HELD:
-                    readingScrollUp();   // Fast scroll
+                    readingLineUp();     // Long hold = line-by-line
                     break;
+                case BTN_DOWN_LONG:
                 case BTN_DOWN_HELD:
-                    readingScrollDown(); // Fast scroll
+                    readingLineDown();   // Long hold = line-by-line
                     break;
-                case BTN_SELECT_LONG:
-                    exitReading();       // Back → File Menu
+                case BTN_SELECT_SHORT:
+                    exitReading();       // SELECT = Back (terminal screen)
                     break;
                 default:
                     break;
@@ -452,9 +503,14 @@ void loop() {
 
         // ── WIFI PORTAL ──────────────────────────────────────────────────
         case STATE_WIFI_PORTAL:
-            if (event == BTN_SELECT_LONG) {
-                suppressXlong = true;   // Prevent re-entry via XLONG
-                exitWifiPortal();       // Back → Home (disables WiFi+BT)
+            // SELECT = exit portal
+            if (event == BTN_SELECT_SHORT) {
+                exitWifiPortal();
+            }
+            // Auto shutdown after successful upload or 5 min inactivity
+            if (portal_uploadCompleted() ||
+                (millis() - portal_lastActivity()) > WIFI_TIMEOUT_MS) {
+                exitWifiPortal();
             }
             break;
 
@@ -475,25 +531,22 @@ void loop() {
                     break;
                 case BTN_SELECT_SHORT:
                     switch (settingsIndex) {
-                        case 0: showSystemInfo(); break;
-                        case 1: showFileCount();  break;
-                        case 2: showStorage();    break;
+                        case 0: enterHome();      break;  // "< Back"
+                        case 1: showSystemInfo(); break;
+                        case 2: showFileCount();  break;
+                        case 3: showStorage();    break;
                     }
-                    break;
-                case BTN_SELECT_LONG:
-                    suppressXlong = true;
-                    enterHome();        // Back → Home
                     break;
                 default:
                     break;
             }
             break;
 
-        // ── SETTINGS SUB-SCREENS ─────────────────────────────────────────
+        // ── SETTINGS SUB-SCREENS (terminal — SELECT = Back) ─────────────
         case STATE_SETTINGS_INFO:
         case STATE_SETTINGS_FILES:
         case STATE_SETTINGS_STORAGE:
-            if (event == BTN_SELECT_LONG) {
+            if (event == BTN_SELECT_SHORT) {
                 enterSettings();        // Back → Settings menu
             }
             break;
