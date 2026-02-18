@@ -61,7 +61,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 //  DISPLAY SETTINGS
 // ─────────────────────────────────────────────────────────────────────────────
-#define CHARS_PER_LINE        25      // 128px ÷ 5px per char (4×6 font)
+#define CHARS_PER_LINE        32      // 128px ÷ 4px per char (4×6 monospace font)
 #define MENU_LINES            5       // Visible items in file list menu
 #define READING_LINES         5       // Lines in full-screen reading mode
 #define HOME_ITEMS            3       // Home menu entries
