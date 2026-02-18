@@ -78,16 +78,16 @@ void display_boot() {
 
 void display_home(int selectedIndex) {
     static const char* items[] = {"WiFi Portal", "Files", "Settings"};
-    int yOffset = (OLED_HEIGHT - HOME_ITEMS * 7) / 2;  // Center vertically
+    // 6x10 font: 10px height, 3 items × 10px = 30px, fits 32px display
     u8g2.clearBuffer();
-    u8g2.setFont(u8g2_font_4x6_mr);
+    u8g2.setFont(u8g2_font_6x10_mr);
     for (int i = 0; i < HOME_ITEMS; i++) {
-        int textY = yOffset + (i * 7) + 6;
+        int textY = 10 + (i * 11);  // y=10, 21, 32 (baseline)
         if (i == selectedIndex) {
             u8g2.drawStr(0, textY, ">");
-            u8g2.drawStr(6, textY, items[i]);
+            u8g2.drawStr(8, textY, items[i]);
         } else {
-            u8g2.drawStr(6, textY, items[i]);
+            u8g2.drawStr(8, textY, items[i]);
         }
     }
     u8g2.sendBuffer();
@@ -102,34 +102,34 @@ void display_fileMenu(int selectedIndex, int topIndex,
                       const char* fileNames[], int fileCount) {
     int totalItems = fileCount + 1;  // +1 for "< Back" at index 0
     u8g2.clearBuffer();
-    u8g2.setFont(u8g2_font_4x6_mr);
+    u8g2.setFont(u8g2_font_5x7_mr);
 
     // Show menu items
     for (int i = 0; i < MENU_LINES && (topIndex + i) < totalItems; i++) {
         int itemIdx = topIndex + i;
-        int textY = 6 + i * 6;
+        int textY = 7 + i * 8;  // y=7, 15, 23, 31
 
         // Build display text
-        char displayBuf[34];
+        char displayBuf[26];
         if (itemIdx == 0) {
             strcpy(displayBuf, "< Back");
         } else {
-            strncpy(displayBuf, fileNames[itemIdx - 1], 30);
-            displayBuf[30] = '\0';
+            strncpy(displayBuf, fileNames[itemIdx - 1], 23);
+            displayBuf[23] = '\0';
         }
 
         // Draw ">" cursor for selected item
         if (itemIdx == selectedIndex) {
             u8g2.drawStr(0, textY, ">");
-            u8g2.drawStr(6, textY, displayBuf);
+            u8g2.drawStr(7, textY, displayBuf);
         } else {
-            u8g2.drawStr(6, textY, displayBuf);
+            u8g2.drawStr(7, textY, displayBuf);
         }
     }
 
     // If no files, show info text on line 2 (non-selectable)
     if (fileCount == 0) {
-        u8g2.drawStr(10, 12, "No TXT Files Found");
+        u8g2.drawStr(10, 15, "No TXT Files Found");
     }
     u8g2.sendBuffer();
 }
@@ -178,14 +178,14 @@ void display_wifiPortal(const char* ssid, const char* ip) {
 void display_settingsMenu(int selectedIndex) {
     static const char* items[] = {"< Back", "System Info", "File Count", "Storage"};
     u8g2.clearBuffer();
-    u8g2.setFont(u8g2_font_4x6_mr);
+    u8g2.setFont(u8g2_font_5x7_mr);
     for (int i = 0; i < SETTINGS_ITEMS; i++) {
-        int textY = 6 + i * 7;
+        int textY = 7 + i * 8;  // y=7, 15, 23, 31 — fills 32px exactly
         if (i == selectedIndex) {
             u8g2.drawStr(0, textY, ">");
-            u8g2.drawStr(6, textY, items[i]);
+            u8g2.drawStr(7, textY, items[i]);
         } else {
-            u8g2.drawStr(6, textY, items[i]);
+            u8g2.drawStr(7, textY, items[i]);
         }
     }
     u8g2.sendBuffer();
