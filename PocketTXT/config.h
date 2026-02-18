@@ -55,9 +55,7 @@
 //  BUTTON TIMING (milliseconds)
 // ─────────────────────────────────────────────────────────────────────────────
 #define DEBOUNCE_MS           50      // Debounce window
-#define SCROLL_HOLD_MS        800     // UP/DOWN fast scroll threshold
-#define LONG_PRESS_MS         3000    // SELECT hold 3s = Back
-#define WIFI_PORTAL_HOLD_MS   5000    // SELECT hold 5s = WiFi Portal (Home only)
+#define SCROLL_HOLD_MS        800     // UP/DOWN continuous scroll threshold
 #define FAST_SCROLL_INTERVAL  150     // Repeat interval during held scroll
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -67,10 +65,10 @@
 #define MENU_LINES            4       // Visible items in file list menu
 #define READING_LINES         4       // Lines in full-screen reading mode
 #define HOME_ITEMS            3       // Home menu entries
-#define SETTINGS_ITEMS        3       // Settings menu entries
+#define SETTINGS_ITEMS        4       // Settings menu entries (incl. Back)
 
-// Display timeout
-#define DISPLAY_TIMEOUT_MS    60000   // 60s before display sleep
+// Sleep timeout (auto sleep after inactivity)
+#define DISPLAY_TIMEOUT_MS    300000  // 5 min before auto light-sleep
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  SD CARD SETTINGS
@@ -95,6 +93,7 @@
 #define WIFI_CHANNEL          6
 #define MAX_UPLOAD_SIZE       2097152 // 2MB
 #define PORTAL_IP             "192.168.4.1"
+#define WIFI_TIMEOUT_MS       300000  // 5 min WiFi inactivity auto-shutdown
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  POWER SETTINGS
@@ -130,12 +129,10 @@ enum ButtonEvent {
     BTN_NONE,
     BTN_UP_SHORT,             // UP short press
     BTN_DOWN_SHORT,           // DOWN short press
-    BTN_SELECT_SHORT,         // SELECT short press → Enter
-    BTN_UP_LONG,              // UP held past SCROLL_HOLD_MS (fast scroll start)
+    BTN_SELECT_SHORT,         // SELECT short press → Enter / Back (context-aware)
+    BTN_UP_LONG,              // UP held past SCROLL_HOLD_MS (continuous scroll start)
     BTN_DOWN_LONG,            // DOWN held past SCROLL_HOLD_MS
-    BTN_SELECT_LONG,          // SELECT held 3s → Back
-    BTN_SELECT_XLONG,         // SELECT held 5s → WiFi Portal (Home only)
-    BTN_UP_HELD,              // UP still held (fast scroll repeat)
+    BTN_UP_HELD,              // UP still held (continuous scroll repeat)
     BTN_DOWN_HELD             // DOWN still held (fast scroll repeat)
 };
 
