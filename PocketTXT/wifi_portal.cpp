@@ -31,11 +31,14 @@
 static WebServer* server = nullptr;
 static bool portalActive = false;
 static File uploadFile;
+static bool uploadSuccess = false;
+static unsigned long lastPortalActivityMs = 0;
 
 // ─── HTTP Handlers ───────────────────────────────────────────────────────────
 
 // Serve the main upload page
 static void handleRoot() {
+    lastPortalActivityMs = millis();
     server->send_P(200, "text/html", PORTAL_HTML);
 }
 
@@ -113,6 +116,8 @@ static void handleUploadComplete() {
     // Check if file was written successfully
     String fullPath = "/" + upload.filename;
     if (SD_MMC.exists(fullPath)) {
+        uploadSuccess = true;
+        lastPortalActivityMs = millis();
         server->send(200, "text/plain", "OK");
     } else {
         server->send(500, "text/plain", "Failed to save file");
@@ -121,6 +126,7 @@ static void handleUploadComplete() {
 
 // Return JSON list of .txt files
 static void handleFileList() {
+    lastPortalActivityMs = millis();
     File root = SD_MMC.open("/");
     if (!root) {
         server->send(500, "application/json", "[]");
@@ -162,6 +168,7 @@ static void handleFileList() {
 
 // Return JSON SD usage info
 static void handleUsage() {
+    lastPortalActivityMs = millis();
     uint64_t total = SD_MMC.totalBytes();
     uint64_t used  = SD_MMC.usedBytes();
     uint64_t free  = total - used;
@@ -209,6 +216,8 @@ bool portal_start() {
 
     server->begin();
     portalActive = true;
+    uploadSuccess = false;
+    lastPortalActivityMs = millis();
 
     return true;
 }
@@ -240,4 +249,12 @@ void portal_handleClient() {
 
 bool portal_isActive() {
     return portalActive;
+}
+
+bool portal_uploadCompleted() {
+    return uploadSuccess;
+}
+
+unsigned long portal_lastActivity() {
+    return lastPortalActivityMs;
 }
