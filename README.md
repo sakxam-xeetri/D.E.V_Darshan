@@ -65,13 +65,19 @@
 - [x] Smooth 4-line scrolling view
 - [x] Long-press fast scroll
 - [x] File selection menu with scroll support
+- [x] **Wrap-around navigation** — scroll from last file to first (and vice versa)
+- [x] **Newest files first** — automatic sorting by modification date
 - [x] Bookmark save/restore per file (using ESP32 Preferences/NVS)
 - [x] Inverted display mode toggle
 
 ### WiFi Upload Portal
 - [x] On-demand Access Point mode (SSID: `D.E.V_Darshan`)
 - [x] Password-protected network
-- [x] Mobile-responsive HTML upload page
+- [x] **Enhanced mobile-first responsive design** with touch-optimized controls
+- [x] **Larger touch targets** — 42×42px buttons, improved tap zones
+- [x] **Files sorted by upload date** — newest files appear at top
+- [x] Drag-and-drop file upload with progress bar
+- [x] Full-featured web text editor with OLED preview
 - [x] `.txt` file type restriction
 - [x] File size limit protection (max 2MB per file)
 - [x] SD card usage display
@@ -464,14 +470,23 @@ User Phone                          ESP32-CAM
 ```
 
 ### Portal UI Features
-- Clean, dark-themed mobile-first design
-- Drag-and-drop file upload area
-- Upload progress indicator
+- **Mobile-optimized responsive design** — touch-friendly on all screen sizes
+- **Enhanced mobile experience**:
+  - 42×42px touch targets for file actions
+  - Bottom-aligned modals for easier thumb reach
+  - Toast notifications at bottom (mobile-friendly positioning)
+  - Smooth scrolling with `-webkit-overflow-scrolling: touch`
+  - Full-width buttons on mobile devices
+- **Newest files first** — files automatically sorted by modification date
+- Clean, dark-themed interface (light theme toggle available)
+- Drag-and-drop file upload area (or tap to select)
+- Upload progress indicator with percentage
 - File type validation (client + server side)
 - File size validation (client + server side)
 - Success/error toast notifications
 - SD card usage bar with percentages
-- List of existing files on SD card
+- File management: edit, rename, download, delete
+- Live OLED preview with simulated button controls
 
 ---
 
@@ -481,12 +496,18 @@ User Phone                          ESP32-CAM
 
 ```
 ┌──────────────────────┐
-│ ► my_book.txt        │  ← Selected file (inverted)
-│   notes.txt          │
-│   story.txt          │
-│                  1/3 │  ← Item counter
+│ > < Back             │  ← Return to home (index 0)
+│   latest_notes.txt   │  ← Newest file first
+│   yesterday_read.txt │  ← Automatically sorted
+│ ► my_book.txt        │  ← Selected (wraps to/from top)
 └──────────────────────┘
 ```
+
+**Navigation behavior**:
+- Files are **automatically sorted by modification date** (newest first)
+- Pressing DOWN at the last file **wraps to the top** ("< Back")
+- Pressing UP at "< Back" **wraps to the last file**
+- No dead-ends — seamless circular navigation
 
 ### Reading Screen (128×32)
 
@@ -700,9 +721,16 @@ Button Press Timeline:
 |--------|-------|---------|
 | Scroll up in list/text | Short press UP | Any |
 | Scroll down in list/text | Short press DOWN | Any |
+| **Wrap from bottom to top** | DOWN at last item | File menu |
+| **Wrap from top to bottom** | UP at first item | File menu |
 | Fast scroll (line-by-line) | Hold UP or DOWN | Reading |
 | Select / Enter | Short press SELECT | Any |
 | Back to previous screen | Short press SELECT | Reading / WiFi Portal |
+
+**File Menu Behavior**:
+- Files are displayed **newest first** (sorted by modification date)
+- Navigation **wraps around** — no dead ends at top or bottom
+- Natural circular scrolling for quick access to recently added files
 
 ### Uploading Files
 1. From HOME screen, select "WiFi Portal" with SELECT button
@@ -739,11 +767,14 @@ Button Press Timeline:
 
 | Feature | Difficulty | Description |
 |---------|-----------|-------------|
+| ~~Mobile-friendly web UI~~ | ~~Easy~~ | ✅ **Implemented** — touch-optimized controls, larger tap targets |
+| ~~Newest files first~~ | ~~Easy~~ | ✅ **Implemented** — automatic sorting by date (device + web) |
+| ~~File menu wrap-around~~ | ~~Easy~~ | ✅ **Implemented** — circular navigation in file list |
 | Multi-language support | Medium | UTF-8 rendering with appropriate fonts |
 | Font size toggle | Easy | Switch between 2 font sizes in reading mode |
 | Brightness control | Easy | PWM or U8g2 contrast adjustment |
 | Auto-scroll mode | Easy | Timed page advance for hands-free reading |
-| File delete via portal | Easy | Add delete endpoint to web server |
+| Sort options (A-Z/date/size) | Easy | Add user-selectable file sorting modes |
 | OTA firmware update | Medium | Upload firmware via WiFi portal |
 | Battery voltage display | Medium | ADC read on available pin (if any free) |
 | E-ink display variant | Hard | Swap SSD1306 for e-ink for better battery life |
