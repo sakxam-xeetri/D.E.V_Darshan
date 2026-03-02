@@ -2,6 +2,8 @@
  * ============================================================================
  *  D.E.V_Darshan — WiFi Portal Implementation
  * ============================================================================
+ *  By Sakshyam Bastakoti | sakshyambastakoti.com.np
+ *
  *  Manages WiFi Access Point mode and HTTP web server for the full-featured
  *  file management portal.
  *
