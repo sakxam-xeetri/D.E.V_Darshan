@@ -31,6 +31,7 @@ static bool fileOpen = false;
 
 // File list storage
 static char fileNames[MAX_FILES][MAX_FILENAME_LEN];
+static time_t fileTimes[MAX_FILES];
 static int  fileCount = 0;
 
 // Wrapped line index: maps wrapped line number → file byte offset
@@ -103,6 +104,7 @@ int sd_scanFiles() {
 
                 strncpy(fileNames[fileCount], displayName, MAX_FILENAME_LEN - 1);
                 fileNames[fileCount][MAX_FILENAME_LEN - 1] = '\0';
+                fileTimes[fileCount] = entry.getLastWrite();
                 fileCount++;
             }
         }
@@ -110,14 +112,17 @@ int sd_scanFiles() {
     }
     root.close();
 
-    // Sort alphabetically (simple bubble sort — max 50 files)
+    // Sort by modification time — newest first (bubble sort, max 50 files)
     for (int i = 0; i < fileCount - 1; i++) {
         for (int j = 0; j < fileCount - i - 1; j++) {
-            if (strcasecmp(fileNames[j], fileNames[j + 1]) > 0) {
+            if (fileTimes[j] < fileTimes[j + 1]) {
                 char temp[MAX_FILENAME_LEN];
                 memcpy(temp, fileNames[j], MAX_FILENAME_LEN);
                 memcpy(fileNames[j], fileNames[j + 1], MAX_FILENAME_LEN);
                 memcpy(fileNames[j + 1], temp, MAX_FILENAME_LEN);
+                time_t tmpTime = fileTimes[j];
+                fileTimes[j] = fileTimes[j + 1];
+                fileTimes[j + 1] = tmpTime;
             }
         }
     }
