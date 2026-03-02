@@ -2,6 +2,8 @@
  * ============================================================================
  *  D.E.V_Darshan — SD Card Reader Implementation
  * ============================================================================
+ *  By Sakshyam Bastakoti | sakshyambastakoti.com.np
+ * ============================================================================
  *  Memory-efficient file reader using SD_MMC (1-bit mode).
  *
  *  Key design choices:
