@@ -2,6 +2,8 @@
  * ============================================================================
  *  D.E.V_Darshan — SD Card Reader Header
  * ============================================================================
+ *  By Sakshyam Bastakoti | sakshyambastakoti.com.np
+ *
  *  SD_MMC 1-bit mode file operations: mount, list, read, bookmarks.
  * ============================================================================
  */
