@@ -157,13 +157,14 @@ body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,'Inter',sans-serif;
 .ed-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px}
 .ed-fname{font-size:.9em;font-weight:600;color:var(--pri);display:flex;align-items:center;gap:8px}
 .ed-acts{display:flex;gap:8px}
-.ed-wrap{position:relative;display:flex;height:calc(100vh - 320px);min-height:400px;border:1px solid rgba(220,20,60,.25);border-radius:12px;overflow:hidden;background:#0A0A0E;box-shadow:inset 0 2px 10px rgba(0,0,0,.3)}
-.line-nums{background:#0D0D11;color:#4A4A58;padding:16px 12px;font:13px/20px 'JetBrains Mono','Fira Code','Consolas','Courier New',monospace;text-align:right;user-select:none;overflow:hidden;min-width:54px;border-right:2px solid rgba(220,20,60,.2);letter-spacing:-.5px}
-.ed-area{flex:1;resize:none;border:none;padding:16px 18px;font:13px/20px 'JetBrains Mono','Fira Code','Consolas','Courier New',monospace;outline:none;background:transparent;color:#E8E6E3;tab-size:4;caret-color:var(--pri);white-space:pre;overflow-x:auto;overflow-y:auto;word-wrap:normal;overflow-wrap:normal}
+.ed-wrap{display:flex;height:calc(100vh - 320px);min-height:400px;border:1px solid rgba(220,20,60,.25);border-radius:12px;overflow:hidden;background:#0A0A0E;box-shadow:inset 0 2px 10px rgba(0,0,0,.3)}
+.ed-gutter{width:54px;flex-shrink:0;overflow:hidden;background:#0D0D11;border-right:2px solid rgba(220,20,60,.2)}
+.line-nums{padding:16px 10px 16px 0;font:13px/20px 'JetBrains Mono','Fira Code','Consolas','Courier New',monospace;text-align:right;color:#4A4A58;user-select:none;white-space:nowrap}
+.ed-content{flex:1;min-width:0;position:relative;overflow:hidden}
+.ed-area{display:block;width:100%;height:100%;resize:none;border:none;padding:16px 18px;font:13px/20px 'JetBrains Mono','Fira Code','Consolas','Courier New',monospace;outline:none;background:transparent;color:#E8E6E3;tab-size:4;caret-color:var(--pri);white-space:pre;overflow:auto;word-wrap:normal;overflow-wrap:normal}
 .ed-area::selection{background:rgba(220,20,60,.3);color:#FFF}
-.ed-area:focus{box-shadow:inset 0 0 0 1px rgba(220,20,60,.15)}
-.line-hl{position:absolute;left:56px;right:0;height:20px;background:rgba(220,20,60,.05);pointer-events:none;transition:top .05s;border-left:2px solid var(--pri)}
-.ed-foot{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding:8px 4px;font-size:.72em;color:var(--txt2);background:rgba(255,255,255,.02);border-radius:8px}
+.line-hl{position:absolute;left:0;right:0;height:20px;background:rgba(220,20,60,.05);pointer-events:none;transition:top .05s;border-left:2px solid var(--pri)}
+.ed-foot{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding:8px 12px;font-size:.72em;color:var(--txt2);background:rgba(255,255,255,.02);border-radius:8px}
 .ed-foot span:last-child{text-transform:uppercase;letter-spacing:.5px}
 
 /* ── Info Rows ── */
@@ -252,8 +253,8 @@ body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,'Inter',sans-serif;
 .file-actions{width:100%;justify-content:flex-end}
 .ed-wrap{height:calc(100vh - 400px);min-height:300px}
 .ed-area{font-size:12px;padding:12px 14px}
-.line-nums{font-size:12px;padding:12px 8px;min-width:46px}
-.line-hl{left:48px}
+.ed-gutter{width:46px}
+.line-nums{font-size:12px;padding:12px 6px 12px 0}
 .toast{max-width:280px}
 .modal{padding:20px}
 .feat-list{grid-template-columns:1fr}
@@ -489,9 +490,9 @@ Cancel
 </div>
 <div id="edBody" style="display:none">
 <div class="ed-wrap" id="edWrap">
-<div class="line-hl" id="lineHl" style="top:16px"></div>
-<div class="line-nums" id="lineNums">1</div>
-<textarea class="ed-area" id="edArea" spellcheck="false" wrap="off" placeholder="// Start typing or paste your content here..."></textarea>
+<div class="ed-gutter" id="edGutter"><div class="line-nums" id="lineNums">1</div></div>
+<div class="ed-content"><div class="line-hl" id="lineHl" style="top:16px"></div>
+<textarea class="ed-area" id="edArea" spellcheck="false" wrap="off" placeholder="// Start typing or paste your content here..."></textarea></div>
 </div>
 </div>
 <div class="ed-foot" id="edFoot" style="display:none">
@@ -1001,8 +1002,9 @@ document.getElementById('cancelBtn').addEventListener('click',cancelEdit);
 
 /* ═══ Editor events ═══ */
 var edArea=document.getElementById('edArea');
+var edGutter=document.getElementById('edGutter');
 edArea.addEventListener('input',function(){dirty=true;document.getElementById('edStatus').textContent='Modified';updLines();updCount();updHL()});
-edArea.addEventListener('scroll',function(){document.getElementById('lineNums').scrollTop=edArea.scrollTop;updHL()});
+edArea.addEventListener('scroll',function(){edGutter.scrollTop=edArea.scrollTop;updHL()});
 edArea.addEventListener('click',function(){updHL()});
 edArea.addEventListener('keyup',function(e){if(e.key.indexOf('Arrow')===0||e.key==='Home'||e.key==='End')updHL()});
 edArea.addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();saveFile()}});
