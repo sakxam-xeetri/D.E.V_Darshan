@@ -49,8 +49,47 @@ static const char PORTAL_HTML[] PROGMEM = R"rawliteral(
 --err:#FF1744;--err-bg:rgba(255,23,68,0.1);
 --warn:#FFD740;--warn-bg:rgba(255,215,64,0.1);
 --sb-w:250px;--radius:14px;
---ease:cubic-bezier(.4,0,.2,1)
+--ease:cubic-bezier(.4,0,.2,1);
+--ed-bg:#1E1E2E;--ed-gutter:#181825;--ed-gutter-txt:#585B70;--ed-gutter-brd:#313244;--ed-txt:#CDD6F4;--ed-cursor:#F38BA8;--ed-sel:rgba(220,20,60,.28);--ed-hl:rgba(220,20,60,.06);--ed-hl-brd:#DC143C;--ed-tab-bg:#181825;--ed-tab-active:#1E1E2E;--ed-tab-txt:#BAC2DE;--ed-tab-active-txt:#CDD6F4;--ed-foot-bg:#181825;--ed-foot-txt:#6C7086;--ed-brd:#313244
 }
+
+/* Light theme */
+html.light{
+--bg:#F5F5F5;--bg2:#FFFFFF;--sidebar:#FAFAFA;
+--card:rgba(0,0,0,0.03);--card-h:rgba(0,0,0,0.055);
+--glass-brd:rgba(0,0,0,0.08);
+--pri:#DC143C;--pri-lt:#FF2D55;--pri-dk:#A01030;--pri-glow:rgba(220,20,60,0.15);
+--txt:#1E1E2E;--txt2:#555;--txt3:#999;
+--brd:rgba(0,0,0,0.1);
+--ok:#2E7D32;--ok-bg:rgba(46,125,50,0.1);
+--err:#C62828;--err-bg:rgba(198,40,40,0.1);
+--warn:#F57F17;--warn-bg:rgba(245,127,23,0.1);
+--ed-bg:#FFFFFF;--ed-gutter:#F0F0F0;--ed-gutter-txt:#999;--ed-gutter-brd:#DDD;--ed-txt:#1E1E1E;--ed-cursor:#DC143C;--ed-sel:rgba(220,20,60,.18);--ed-hl:rgba(220,20,60,.06);--ed-hl-brd:#DC143C;--ed-tab-bg:#F0F0F0;--ed-tab-active:#FFFFFF;--ed-tab-txt:#666;--ed-tab-active-txt:#1E1E1E;--ed-foot-bg:#F0F0F0;--ed-foot-txt:#666;--ed-brd:#DDD
+}
+html.light .sidebar{background:var(--sidebar);border-right:1px solid var(--brd)}
+html.light .mob-hdr{background:var(--sidebar);border-bottom:1px solid var(--brd)}
+html.light .sb-nav button:hover{background:rgba(0,0,0,.04)}
+html.light .sb-nav button.active{background:rgba(220,20,60,.06)}
+html.light .sb-bk{background:rgba(0,0,0,.3)}
+html.light .card{background:var(--card);border-color:var(--glass-brd);box-shadow:0 1px 3px rgba(0,0,0,.06)}
+html.light .card:hover{background:var(--card-h);box-shadow:0 4px 16px rgba(0,0,0,.08)}
+html.light .stat-card{background:var(--card);border-color:var(--glass-brd)}
+html.light .stat-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.08)}
+html.light .btn-sec{background:rgba(0,0,0,.05);color:var(--txt);border:1px solid var(--brd)}
+html.light .btn-sec:hover{background:rgba(0,0,0,.08)}
+html.light .file-row:hover{background:rgba(220,20,60,.04)}
+html.light .file-actions button:hover{background:rgba(220,20,60,.08)}
+html.light .toast.ok{background:rgba(46,125,50,.1);color:var(--ok);border-color:rgba(46,125,50,.2)}
+html.light .toast.err{background:rgba(198,40,40,.1);color:var(--err);border-color:rgba(198,40,40,.2)}
+html.light .toast.info{background:rgba(220,20,60,.08);color:var(--pri);border-color:rgba(220,20,60,.15)}
+html.light .modal{background:var(--bg2);border-color:var(--glass-brd)}
+html.light .modal input{background:rgba(0,0,0,.03);border-color:var(--brd);color:var(--txt)}
+html.light .drop-zone{border-color:rgba(0,0,0,.15)}
+html.light .drop-zone:hover,.drop-zone.over{border-color:var(--pri);background:rgba(220,20,60,.03)}
+html.light .storage-bar{background:rgba(0,0,0,.08)}
+html.light .info-row{border-bottom-color:rgba(0,0,0,.06)}
+html.light ::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15)}
+html.light ::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,.25)}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden;font-size:18px}
 
@@ -153,19 +192,31 @@ body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,'Inter',sans-serif;
 .file-actions button:hover{background:rgba(220,20,60,.12);color:var(--pri);transform:scale(1.1)}
 .file-actions button.del:hover{background:var(--err-bg);color:var(--err)}
 
-/* ── Editor ── */
-.ed-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px}
-.ed-fname{font-size:.9em;font-weight:600;color:var(--pri);display:flex;align-items:center;gap:8px}
-.ed-acts{display:flex;gap:8px}
-.ed-wrap{display:flex;height:calc(100vh - 320px);min-height:400px;border:1px solid rgba(220,20,60,.25);border-radius:12px;overflow:hidden;background:#0A0A0E;box-shadow:inset 0 2px 10px rgba(0,0,0,.3)}
-.ed-gutter{width:54px;flex-shrink:0;overflow:hidden;background:#0D0D11;border-right:2px solid rgba(220,20,60,.2)}
-.line-nums{padding:16px 10px 16px 0;font:13px/20px 'JetBrains Mono','Fira Code','Consolas','Courier New',monospace;text-align:right;color:#4A4A58;user-select:none;white-space:nowrap}
+/* ── Editor (IDE-style) ── */
+.ed-container{display:flex;flex-direction:column;height:calc(100vh - 200px);min-height:400px;border:1px solid var(--ed-brd);border-radius:8px;overflow:hidden;background:var(--ed-bg)}
+.ed-toolbar{display:flex;justify-content:space-between;align-items:center;padding:0 12px;height:40px;background:var(--ed-tab-bg);border-bottom:1px solid var(--ed-brd);flex-shrink:0}
+.ed-tabs{display:flex;align-items:stretch;height:100%;gap:0}
+.ed-tab{display:flex;align-items:center;gap:6px;padding:0 16px;font:12px/1 'Segoe UI',sans-serif;color:var(--ed-tab-txt);border-right:1px solid var(--ed-brd);cursor:default;user-select:none;position:relative;white-space:nowrap}
+.ed-tab.active{background:var(--ed-tab-active);color:var(--ed-tab-active-txt)}
+.ed-tab.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--pri)}
+.ed-tab svg{width:14px;height:14px;flex-shrink:0;opacity:.6}
+.ed-tab .dot{width:7px;height:7px;border-radius:50%;background:var(--pri);display:none}
+.ed-tab .dot.show{display:inline-block}
+.ed-acts{display:flex;gap:6px;align-items:center}
+.ed-acts .btn{padding:5px 14px;font-size:.75em;border-radius:6px}
+.ed-body-wrap{flex:1;min-height:0;display:flex;flex-direction:column}
+.ed-body{display:flex;flex:1;min-height:0;overflow:hidden}
+.ed-gutter{width:50px;flex-shrink:0;overflow:hidden;background:var(--ed-gutter);border-right:1px solid var(--ed-gutter-brd)}
+.line-nums{padding:8px 8px 8px 0;font:13px/20px 'JetBrains Mono','Fira Code','Consolas','Courier New',monospace;text-align:right;color:var(--ed-gutter-txt);user-select:none;white-space:nowrap}
 .ed-content{flex:1;min-width:0;position:relative;overflow:hidden}
-.ed-area{display:block;width:100%;height:100%;resize:none;border:none;padding:16px 18px;font:13px/20px 'JetBrains Mono','Fira Code','Consolas','Courier New',monospace;outline:none;background:transparent;color:#E8E6E3;tab-size:4;caret-color:var(--pri);white-space:pre;overflow:auto;word-wrap:normal;overflow-wrap:normal}
-.ed-area::selection{background:rgba(220,20,60,.3);color:#FFF}
-.line-hl{position:absolute;left:0;right:0;height:20px;background:rgba(220,20,60,.05);pointer-events:none;transition:top .05s;border-left:2px solid var(--pri)}
-.ed-foot{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding:8px 12px;font-size:.72em;color:var(--txt2);background:rgba(255,255,255,.02);border-radius:8px}
-.ed-foot span:last-child{text-transform:uppercase;letter-spacing:.5px}
+.ed-area{display:block;width:100%;height:100%;resize:none;border:none;padding:8px 16px;font:13px/20px 'JetBrains Mono','Fira Code','Consolas','Courier New',monospace;outline:none;background:transparent;color:var(--ed-txt);tab-size:4;caret-color:var(--ed-cursor);white-space:pre;overflow:auto;word-wrap:normal;overflow-wrap:normal}
+.ed-area::selection{background:var(--ed-sel)}
+.ed-area::placeholder{color:var(--ed-gutter-txt);font-style:italic}
+.line-hl{position:absolute;left:0;right:0;height:20px;background:var(--ed-hl);pointer-events:none;transition:top .05s;border-left:2px solid var(--ed-hl-brd)}
+.ed-statusbar{display:flex;justify-content:space-between;align-items:center;padding:0 14px;height:26px;background:var(--ed-foot-bg);border-top:1px solid var(--ed-brd);font:11px/26px 'Segoe UI',sans-serif;color:var(--ed-foot-txt);flex-shrink:0}
+.ed-statusbar span{white-space:nowrap}
+.ed-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--txt2);padding:36px 16px;text-align:center}
+.ed-empty svg{margin-bottom:12px;color:var(--txt3);opacity:.5}
 
 /* ── Info Rows ── */
 .info-row{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.86em}
@@ -251,10 +302,10 @@ body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,'Inter',sans-serif;
 .stat-grid{grid-template-columns:repeat(2,1fr);gap:10px}
 .file-row{flex-wrap:wrap;gap:8px}
 .file-actions{width:100%;justify-content:flex-end}
-.ed-wrap{height:calc(100vh - 400px);min-height:300px}
-.ed-area{font-size:12px;padding:12px 14px}
-.ed-gutter{width:46px}
-.line-nums{font-size:12px;padding:12px 6px 12px 0}
+.ed-container{height:calc(100vh - 280px);min-height:300px}
+.ed-area{font-size:12px;padding:6px 12px}
+.ed-gutter{width:40px}
+.line-nums{font-size:11px;padding:6px 6px 6px 0}
 .toast{max-width:280px}
 .modal{padding:20px}
 .feat-list{grid-template-columns:1fr}
@@ -325,6 +376,17 @@ Guide
 About
 </button>
 </nav>
+<div style="padding:12px 20px;border-top:1px solid var(--brd)">
+<label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:.76em;color:var(--txt2)">
+<span>Dark</span>
+<div style="position:relative;width:36px;height:20px" id="themeWrap">
+<input type="checkbox" id="themeToggle" style="opacity:0;width:0;height:0;position:absolute">
+<div id="themeTrack" style="position:absolute;inset:0;background:var(--pri);border-radius:10px;transition:background .3s"></div>
+<div id="themeKnob" style="position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform .3s;box-shadow:0 1px 3px rgba(0,0,0,.3)"></div>
+</div>
+<span>Light</span>
+</label>
+</div>
 <div class="sb-footer">
 D.E.V_Darshan <span>v1.0</span><br>
 &copy; Sakshyam Bastakoti<br>
@@ -463,48 +525,51 @@ New File
 
 <!-- ══════════ EDITOR ══════════ -->
 <section id="tab-editor" class="tab-panel">
-<div class="pg-hd">
-<h2>
-<svg viewBox="0 0 24 24" width="26" height="26"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/></svg>
-Text Editor
-</h2>
-<p>Edit files directly in the browser with real-time preview</p>
-</div>
 
-<div class="card" style="padding:16px">
-<div class="ed-hdr">
-<span class="ed-fname" id="edFname">
-<svg viewBox="0 0 24 24" width="18" height="18"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="currentColor"/></svg>
-<span id="fnTxt">No file open</span>
-</span>
+<div class="ed-container" id="edContainer">
+<!-- Toolbar -->
+<div class="ed-toolbar">
+<div class="ed-tabs">
+<div class="ed-tab active" id="edTab">
+<svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="currentColor"/></svg>
+<span id="fnTxt">untitled</span>
+<span class="dot" id="edDot"></span>
+</div>
+</div>
 <div class="ed-acts" id="edActs" style="display:none">
 <button class="btn btn-ok" id="saveBtn">
-<svg viewBox="0 0 24 24" width="16" height="16"><path d="M17 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V7l-4-4zm-5 16a3 3 0 110-6 3 3 0 010 6zm3-10H5V5h10v4z" fill="currentColor"/></svg>
+<svg viewBox="0 0 24 24" width="14" height="14"><path d="M17 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V7l-4-4zm-5 16a3 3 0 110-6 3 3 0 010 6zm3-10H5V5h10v4z" fill="currentColor"/></svg>
 Save
 </button>
 <button class="btn btn-sec" id="cancelBtn">
-<svg viewBox="0 0 24 24" width="16" height="16"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/></svg>
-Cancel
+<svg viewBox="0 0 24 24" width="14" height="14"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/></svg>
+Close
 </button>
 </div>
 </div>
-<div id="edBody" style="display:none">
-<div class="ed-wrap" id="edWrap">
+<!-- Editor body -->
+<div id="edBody" class="ed-body-wrap" style="display:none">
+<div class="ed-body">
 <div class="ed-gutter" id="edGutter"><div class="line-nums" id="lineNums">1</div></div>
-<div class="ed-content"><div class="line-hl" id="lineHl" style="top:16px"></div>
-<textarea class="ed-area" id="edArea" spellcheck="false" wrap="off" placeholder="// Start typing or paste your content here..."></textarea></div>
+<div class="ed-content">
+<div class="line-hl" id="lineHl" style="top:8px"></div>
+<textarea class="ed-area" id="edArea" spellcheck="false" wrap="off" placeholder="Open a file to start editing..."></textarea>
 </div>
 </div>
-<div class="ed-foot" id="edFoot" style="display:none">
-<span id="charCnt">0 characters</span>
-<span id="edStatus" style="color:var(--pri);font-weight:600"></span>
 </div>
-<div id="edEmpty" class="empty-st">
-<svg viewBox="0 0 24 24" width="52" height="52"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/></svg>
-<p style="margin-top:10px;font-size:.88em">Select a file from <strong>Files</strong> to begin editing</p>
-<p style="font-size:.76em;margin-top:6px">Or create a new file using the <strong>New File</strong> button</p>
+<!-- Empty state -->
+<div id="edEmpty" class="ed-empty">
+<svg viewBox="0 0 24 24" width="48" height="48"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="currentColor"/></svg>
+<p style="margin-top:10px;font-size:.86em">Select a file from <strong>Files</strong> to begin editing</p>
+<p style="font-size:.72em;margin-top:4px;opacity:.6">Ctrl+S to save</p>
+</div>
+<!-- Status bar -->
+<div class="ed-statusbar" id="edFoot">
+<span id="charCnt">Ready</span>
+<span id="edStatus"></span>
 </div>
 </div>
+
 </section>
 
 <!-- ══════════ SETTINGS ══════════ -->
@@ -962,18 +1027,18 @@ function editFile(name){
 showTab('editor');
 document.getElementById('fnTxt').textContent=name;
 document.getElementById('edEmpty').style.display='none';
-document.getElementById('edBody').style.display='block';
+document.getElementById('edBody').style.display='flex';
 document.getElementById('edActs').style.display='flex';
-document.getElementById('edFoot').style.display='flex';
 var ta=document.getElementById('edArea');
 ta.value='Loading file content...';ta.disabled=true;
 curFile=name;dirty=false;
+document.getElementById('edDot').classList.remove('show');
 document.getElementById('edStatus').textContent='';
 fetch('/read?name='+encodeURIComponent(name)).then(function(r){
 if(!r.ok)throw new Error(r.statusText);return r.text()
 }).then(function(c){
 ta.value=c;ta.disabled=false;origContent=c;
-updLines();updCount();updHL();ta.focus();
+updLines();updCount();updHL();updCursorPos();ta.focus();
 }).catch(function(e){toast('Failed to load: '+e.message,'err');ta.value='';ta.disabled=false});
 }
 
@@ -984,18 +1049,22 @@ if(c.length>MAX_EDIT){toast('File too large for web editor (max 64 KB)','err');r
 var sb=document.getElementById('saveBtn');sb.disabled=true;
 fetch('/save?name='+encodeURIComponent(curFile),{method:'POST',headers:{'Content-Type':'text/plain'},body:c})
 .then(function(r){if(!r.ok)throw new Error('Save failed');return r.text()})
-.then(function(){toast('File saved successfully!','ok');dirty=false;origContent=c;document.getElementById('edStatus').textContent='Saved';sb.disabled=false})
+.then(function(){toast('File saved successfully!','ok');dirty=false;origContent=c;document.getElementById('edDot').classList.remove('show');document.getElementById('edStatus').textContent='Saved';sb.disabled=false})
 .catch(function(e){toast(e.message,'err');sb.disabled=false});
 }
 
 function cancelEdit(){
 if(dirty&&!confirm('Discard unsaved changes?'))return;
 curFile='';dirty=false;origContent='';
-document.getElementById('fnTxt').textContent='No file open';
-document.getElementById('edEmpty').style.display='block';
+document.getElementById('fnTxt').textContent='untitled';
+document.getElementById('edEmpty').style.display='flex';
 document.getElementById('edBody').style.display='none';
 document.getElementById('edActs').style.display='none';
-document.getElementById('edFoot').style.display='none';
+document.getElementById('edDot').classList.remove('show');
+document.getElementById('edStatus').textContent='';
+document.getElementById('charCnt').textContent='Ready';
+document.getElementById('edArea').value='';
+updLines();
 }
 document.getElementById('saveBtn').addEventListener('click',saveFile);
 document.getElementById('cancelBtn').addEventListener('click',cancelEdit);
@@ -1003,11 +1072,22 @@ document.getElementById('cancelBtn').addEventListener('click',cancelEdit);
 /* ═══ Editor events ═══ */
 var edArea=document.getElementById('edArea');
 var edGutter=document.getElementById('edGutter');
-edArea.addEventListener('input',function(){dirty=true;document.getElementById('edStatus').textContent='Modified';updLines();updCount();updHL()});
+var edDot=document.getElementById('edDot');
+edArea.addEventListener('input',function(){
+dirty=true;
+edDot.classList.add('show');
+document.getElementById('edStatus').textContent='Modified';
+updLines();updCount();updHL();
+});
 edArea.addEventListener('scroll',function(){edGutter.scrollTop=edArea.scrollTop;updHL()});
-edArea.addEventListener('click',function(){updHL()});
-edArea.addEventListener('keyup',function(e){if(e.key.indexOf('Arrow')===0||e.key==='Home'||e.key==='End')updHL()});
-edArea.addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();saveFile()}});
+edArea.addEventListener('click',function(){updHL();updCursorPos()});
+edArea.addEventListener('keyup',function(e){
+if(e.key.indexOf('Arrow')===0||e.key==='Home'||e.key==='End'){updHL();updCursorPos()}
+});
+edArea.addEventListener('keydown',function(e){
+if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();saveFile()}
+if(e.key==='Tab'){e.preventDefault();var s=edArea.selectionStart,en=edArea.selectionEnd;edArea.value=edArea.value.substring(0,s)+'    '+edArea.value.substring(en);edArea.selectionStart=edArea.selectionEnd=s+4;edArea.dispatchEvent(new Event('input'))}
+});
 
 function updLines(){
 var n=edArea.value.split('\n').length;var s='';for(var i=1;i<=n;i++)s+=i+'\n';
@@ -1017,11 +1097,18 @@ function updCount(){
 var v=edArea.value;
 document.getElementById('charCnt').textContent=v.length.toLocaleString()+' chars \u00b7 '+v.split('\n').length+' lines';
 }
+function updCursorPos(){
+var pos=edArea.selectionStart;
+var lines=edArea.value.substr(0,pos).split('\n');
+var ln=lines.length;
+var col=lines[lines.length-1].length+1;
+document.getElementById('edStatus').textContent='Ln '+ln+', Col '+col;
+}
 function updHL(){
 var lh=20;
 var pos=edArea.selectionStart;
 var line=edArea.value.substr(0,pos).split('\n').length-1;
-var top=line*lh-edArea.scrollTop+16;
+var top=line*lh-edArea.scrollTop+8;
 var hl=document.getElementById('lineHl');
 if(top<0||top>edArea.clientHeight){hl.style.display='none'}
 else{hl.style.display='block';hl.style.top=top+'px'}
@@ -1103,6 +1190,19 @@ function toggleAcc(btn){btn.classList.toggle('open');btn.nextElementSibling.clas
 /* ═══ Protection ═══ */
 window.addEventListener('beforeunload',function(e){if(dirty){e.preventDefault();e.returnValue=''}});
 document.getElementById('mInput').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();document.getElementById('mOk').click()}});
+
+/* ═══ Theme Toggle ═══ */
+(function(){
+var toggle=document.getElementById('themeToggle');
+var knob=document.getElementById('themeKnob');
+var saved=localStorage.getItem('devDarshanTheme');
+if(saved==='light'){document.documentElement.classList.add('light');toggle.checked=true;knob.style.transform='translateX(16px)'}
+else{document.documentElement.classList.remove('light')}
+toggle.addEventListener('change',function(){
+if(toggle.checked){document.documentElement.classList.add('light');knob.style.transform='translateX(16px)';localStorage.setItem('devDarshanTheme','light')}
+else{document.documentElement.classList.remove('light');knob.style.transform='translateX(0)';localStorage.setItem('devDarshanTheme','dark')}
+});
+})();
 
 /* ═══ Init ═══ */
 loadDash();
