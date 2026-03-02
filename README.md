@@ -51,7 +51,7 @@
 - **Offline-first**: WiFi is disabled during reading for maximum battery life
 - **Memory-safe**: Line-by-line file reading — never loads full file into RAM
 - **Boot-safe**: Carefully mapped GPIOs to avoid ESP32-CAM boot failures
-- **Minimal UI**: Two-button interface with intuitive long-press actions
+- **Minimal UI**: Three-button interface (UP/DOWN/SELECT) with intuitive navigation
 - **Production-ready**: Debounced inputs, error handling, brownout protection
 
 ---
@@ -108,7 +108,12 @@
 │  │ BTN DOWN │───GPIO0───►│  CMD  = GPIO15       │      │
 │  │ (int ↑)  │            │  D0   = GPIO2        │      │
 │  └──────────┘            │                      │      │
-│                          │  FREE: GPIO4,12,13,16│      │
+│                          │                      │      │
+│  ┌──────────┐            │                      │      │
+│  │BTN SELECT│──GPIO12───►│                      │      │
+│  │ (int ↑)  │            │                      │      │
+│  └──────────┘            │                      │      │
+│                          │  FREE: GPIO4,16      │      │
 │  ┌──────────┐            └──────────────────────┘      │
 │  │ 3.7V     │──►TP4056──►5V/3.3V                      │
 │  │ Li-ion   │            │                             │
@@ -160,7 +165,7 @@
 | ESP32-CAM (AI Thinker) | ESP32-S, 4MB Flash, PSRAM | Main MCU + SD slot | $3.50 |
 | SSD1306 OLED | 0.91", 128×32, I2C (with onboard pull-ups) | Display + I2C pull-ups | $1.50 |
 | Micro SD Card | 2–32GB, FAT32 | File storage | $2.00 |
-| Push Buttons × 2 | 6mm tactile | Navigation | $0.10 |
+| Push Buttons × 3 | 6mm tactile | Navigation (UP/DOWN/SELECT) | $0.15 |
 | TP4056 Module | With DW01A protection | Charging + battery protection | $0.50 |
 | Li-ion Battery | 3.7V, 1100mAh | Power source | $2.50 |
 | Reed Switch (NO) | Magnetic, normally-open | Power switch | $0.30 |
@@ -190,10 +195,10 @@ The key insight: **SD_MMC 1-bit mode** only uses 3 pins (GPIO2, GPIO14, GPIO15) 
 
 | Problem (4-bit mode) | Solution (1-bit mode) |
 |---------------------|----------------------|
-| GPIO12 needs pull-down resistor | GPIO12 is **not used** — floats safely |
+| GPIO12 needs pull-down resistor | GPIO12 is **freed up** — used for BTN_SELECT with internal pull-up |
 | GPIO15 needs pull-up resistor | SD driver enables **internal pull-up** automatically |
 | GPIO2 needs pull-up resistor | SD driver enables **internal pull-up** automatically |
-| GPIO16 (BTN) needs ext. pull-up | Moved to **GPIO0** which has **internal pull-up** |
+| GPIO0/GPIO13 (BTN) free | Used for **BTN_DOWN** and **BTN_UP** with **internal pull-ups** |
 | I2C needs 4.7kΩ pull-ups | OLED module has **built-in pull-ups** on breakout board |
 
 ### SD_MMC 1-bit Mode Pin Allocation
@@ -204,7 +209,7 @@ The key insight: **SD_MMC 1-bit mode** only uses 3 pins (GPIO2, GPIO14, GPIO15) 
 | CMD | GPIO15 | Internal pull-up enabled by SD driver ✅ |
 | DATA0 | GPIO2 | Internal pull-up enabled by SD driver ✅ |
 | ~~DATA1~~ | ~~GPIO4~~ | **FREE** — not used in 1-bit mode |
-| ~~DATA2~~ | ~~GPIO12~~ | **FREE** — not used, no pull-down needed |
+| ~~DATA2~~ | ~~GPIO12~~ | **FREE** — used for BTN_SELECT instead |
 | ~~DATA3~~ | ~~GPIO13~~ | **FREE** — used for BTN_UP instead |
 
 ### Final GPIO Assignment Table (ZERO External Resistors)
@@ -215,11 +220,11 @@ The key insight: **SD_MMC 1-bit mode** only uses 3 pins (GPIO2, GPIO14, GPIO15) 
 | **OLED SCL** | GPIO1 (U0TXD) | I2C Clock | OLED module built-in ↑ | ✅ Safe | No external resistor needed |
 | **BTN_UP** | GPIO13 | INPUT_PULLUP | Internal ↑ | ✅ Safe | Free in 1-bit SD mode — no pin conflict |
 | **BTN_DOWN** | GPIO0 | INPUT_PULLUP | Internal ↑ | ✅ Safe* | *Don't hold during power-on (enters flash mode) |
+| **BTN_SELECT** | GPIO12 | INPUT_PULLUP | Internal ↑ | ✅ Safe | Free in 1-bit SD mode — boot-safe when HIGH |
 | SD_MMC CLK | GPIO14 | SD | — | ✅ Safe | Fixed |
 | SD_MMC CMD | GPIO15 | SD | Internal ↑ (SD driver) | ✅ Safe | Driver handles pull-up |
 | SD_MMC D0 | GPIO2 | SD | Internal ↑ (SD driver) | ✅ Safe | Driver handles pull-up |
 | Flash LED | GPIO4 | OUTPUT LOW | — | ✅ Safe | Disabled in firmware (`digitalWrite(4, LOW)`) |
-| ~~GPIO12~~ | — | Not connected | Floating | ✅ Safe | Not used in 1-bit mode — no boot issue |
 | ~~GPIO16~~ | — | Not connected | — | ✅ Safe | Free for future use |
 
 ### Why This Works Without Resistors
@@ -230,7 +235,7 @@ The key insight: **SD_MMC 1-bit mode** only uses 3 pins (GPIO2, GPIO14, GPIO15) 
 
 3. **GPIO0 for BTN_DOWN**: Has internal pull-up → HIGH at rest → safe normal boot. Only risk: if held LOW during power-on, ESP32 enters flash mode. In practice, users don't hold buttons while flipping the reed switch.
 
-4. **GPIO12 not used**: By using 1-bit SD mode, GPIO12 is never touched. It floats at whatever state the silicon defaults to. Since the SD driver doesn't drive it, and we don't connect anything to it, there's no boot issue.
+4. **GPIO12 for BTN_SELECT**: By using 1-bit SD mode, GPIO12 is freed up. Has internal pull-up → HIGH at rest → boot-safe (LOW during boot would set VDD_SDIO to 1.8V, but HIGH is safe).
 
 5. **GPIO15 & GPIO2**: The SD_MMC driver calls `gpio_pullup_en()` on these pins internally. No external resistors needed.
 
@@ -256,24 +261,24 @@ With 1-bit SD mode and WiFi disabled during reading, current draw is low enough 
          │  │  │   │                          │
          │  │  │ ┌─┤GPIO0 (BTN_DN) GPIO4├──── (free, LED off)
          │  │  │ │ │  (internal ↑)            │
-         │  │  │ │ │              GPIO12├──── (free, not connected)
          │  │  │ │ │                          │
-         │  │  │ │ │              GPIO16├──── (free)
-         │  │  │ │ │                          │
+         │  │  │ │ ├─GPIO12 (BTN_SEL)GPIO16├─ (free)
+         │  │  │ │ │  (internal ↑)            │
          │  │  │ │ └─────────────────────────┘
-         │  │  │ │
-  ┌──────┴──┴┐ │ │     Only 4 wires to OLED:
-  │ SSD1306  │ │ │       SDA → GPIO3
-  │ 128x32   │ │ │       SCL → GPIO1
-  │ (has own │ │ │       VCC → 3.3V
-  │  pull-ups│ │ │       GND → GND
-  │ on board)│ │ │
-  └──────────┘ │ │     Only 2 wires per button:
-        ┌──────┘ │       BTN pin → GND (when pressed)
-        │  ┌─────┘
-   [BTN_UP] [BTN_DN]   (simple switches, no resistors)
-     │  │    │  │
-   GPIO13 GND GPIO0 GND
+         │  │  │ │ │
+  ┌──────┴──┴┐ │ │ │   Only 4 wires to OLED:
+  │ SSD1306  │ │ │ │     SDA → GPIO3
+  │ 128x32   │ │ │ │     SCL → GPIO1
+  │ (has own │ │ │ │     VCC → 3.3V
+  │  pull-ups│ │ │ │     GND → GND
+  │ on board)│ │ │ │
+  └──────────┘ │ │ │   Only 2 wires per button:
+        ┌──────┘ │ │     BTN pin → GND (when pressed)
+        │  ┌─────┘ │
+        │  │  ┌────┘
+   [BTN_UP] [BTN_DN] [BTN_SEL]  (simple switches, no resistors)
+     │  │    │  │      │  │
+   GPIO13 GND GPIO0 GND GPIO12 GND
 
 
    TP4056      Reed         Battery
@@ -287,7 +292,7 @@ With 1-bit SD mode and WiFi disabled during reading, current draw is low enough 
       └──────────────────────┘
 ```
 
-### Wiring Summary (Just 8 wires total!)
+### Wiring Summary (Just 10 wires total!)
 
 | Connection | Wire |
 |-----------|------|
@@ -299,7 +304,9 @@ With 1-bit SD mode and WiFi disabled during reading, current draw is low enough 
 | BTN_UP other leg → GND | 1 |
 | BTN_DOWN one leg → GPIO0 | 1 |
 | BTN_DOWN other leg → GND | 1 |
-| **Total** | **8 wires, 0 resistors** |
+| BTN_SELECT one leg → GPIO12 | 1 |
+| BTN_SELECT other leg → GND | 1 |
+| **Total** | **10 wires, 0 resistors** |
 
 ---
 
@@ -314,7 +321,7 @@ With 1-bit SD mode and WiFi disabled during reading, current draw is low enough 
     │   │  0.91" OLED      │   │  ← Layer 1: Display
     │   │  128 × 32        │   │
     │   └──────────────────┘   │
-    │  [BTN_UP]    [BTN_DOWN]  │  ← Side/front buttons
+    │  [UP] [SELECT] [DOWN]    │  ← Side/front buttons
     └──────────────────────────┘
 
     SIDE VIEW (Layer Stack)
@@ -367,7 +374,7 @@ PocketTXT/
 | `config.h` | All pin mappings, timing constants, display settings, WiFi credentials |
 | `display` | U8g2 initialization, draw file menu, draw reading view, scroll indicator, invert mode |
 | `sd_reader` | SD_MMC mount/unmount, list `.txt` files, read lines into buffer, word wrapping, bookmark save/load |
-| `buttons` | Debounce (50ms), short press detection, long press (2s) detection, combo press detection |
+| `buttons` | Debounce (50ms), short press detection, long press/held detection for fast scroll, three-button input |
 | `wifi_portal` | Start/stop AP, serve upload page, handle multipart file upload, serve SD usage info |
 | `portal.h` | Compressed HTML/CSS/JS for mobile-responsive upload UI stored in PROGMEM |
 
@@ -380,22 +387,31 @@ PocketTXT/
                     └──────┬───────┘
                            │
                     ┌──────▼───────┐
-                    │  FILE_MENU   │◄─────────────────┐
-                    │ (list files) │                   │
-                    └──────┬───────┘                   │
-                           │ Hold UP (select)          │
-                    ┌──────▼───────┐                   │
-                    │   READING    │  Hold DOWN (back) │
-                    │ (text view)  │───────────────────┘
-                    └──────┬───────┘
-                           │ Hold BOTH 2s
-                    ┌──────▼───────┐
-                    │  WIFI_PORTAL │
-                    │ (AP + HTTP)  │
-                    └──────┬───────┘
-                           │ Hold DOWN (exit)
-                           └──────────────────────────┘
+                    │  HOME MENU   │◄────────────┐
+                    │ (WiFi/Files/ │             │
+                    │  Settings)   │             │
+                    └──┬───┬───┬───┘             │
+                       │   │   │                 │
+         SELECT on     │   │   │                 │
+         WiFi Portal   │   │   └─────┐           │
+                       │   │         │           │
+                ┌──────▼───┴──┐   ┌──▼────────┐  │
+                │  FILE_MENU  │   │ SETTINGS  │  │
+                │(list files) │   │  MENU     │  │
+                └──────┬──────┘   └───────────┘  │
+                       │ SELECT                   │
+                       │ on file                  │
+                ┌──────▼───────┐                  │
+                │   READING    │  SELECT (back)   │
+                │ (text view)  │──────────────────┤
+                └──────────────┘                  │
+                       ↓                          │
+            ┌──────────▼──────────┐               │
+            │    WIFI_PORTAL      │  SELECT (exit)│
+            │    (AP + HTTP)      │───────────────┘
+            └─────────────────────┘
 ```
+
 
 ### Key Design Decisions
 
@@ -412,7 +428,7 @@ PocketTXT/
 ## 📡 WiFi Upload Portal
 
 ### Activation
-Hold **both buttons** for 2 seconds → ESP32 enables WiFi AP mode.
+Select **WiFi Portal** from the HOME menu → ESP32 enables WiFi AP mode.
 
 ### Portal Specifications
 
@@ -682,22 +698,19 @@ Button Press Timeline:
 
 | Action | Input | Context |
 |--------|-------|---------|
-| Scroll up in list/text | Short press UP | Menu / Reading |
-| Scroll down in list/text | Short press DOWN | Menu / Reading |
-| Fast scroll | Hold UP or DOWN | Reading |
-| Select file | Hold UP (2s) | Menu |
-| Back to menu | Hold DOWN (2s) | Reading |
-| Open WiFi portal | Hold BOTH (2s) | Any |
-| Exit WiFi portal | Hold DOWN (2s) | WiFi Portal |
-| Toggle display invert | Hold UP (2s) | Reading (configurable) |
+| Scroll up in list/text | Short press UP | Any |
+| Scroll down in list/text | Short press DOWN | Any |
+| Fast scroll (line-by-line) | Hold UP or DOWN | Reading |
+| Select / Enter | Short press SELECT | Any |
+| Back to previous screen | Short press SELECT | Reading / WiFi Portal |
 
 ### Uploading Files
-1. Hold both buttons for 2 seconds
+1. From HOME screen, select "WiFi Portal" with SELECT button
 2. OLED shows WiFi info (SSID, password, IP)
 3. Connect phone to `TXT_Reader` WiFi
 4. Open `192.168.4.1` in browser
 5. Select and upload `.txt` files
-6. Hold DOWN to exit portal and resume reading
+6. Press SELECT to exit portal and return to HOME
 
 ### Bookmarks
 - Position is **automatically saved** every 10 scrolls
@@ -769,7 +782,7 @@ Button Press Timeline:
 - Power optimization
 - Memory-constrained programming
 - Web development (embedded HTTP server)
-- Human-computer interaction (2-button UX design)
+- Human-computer interaction (3-button UX design)
 - Hardware-software co-design
 - PCB-less prototyping and compact assembly
 
