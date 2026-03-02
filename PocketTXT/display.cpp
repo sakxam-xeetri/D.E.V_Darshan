@@ -2,6 +2,8 @@
  * ============================================================================
  *  D.E.V_Darshan — Display Module Implementation
  * ============================================================================
+ *  By Sakshyam Bastakoti | sakshyambastakoti.com.np
+ *
  *  All OLED rendering via U8g2lib in full framebuffer mode (fast).
  *  HW I2C @ 400kHz. Custom I2C pins: GPIO1=SCL, GPIO3=SDA.
  *
