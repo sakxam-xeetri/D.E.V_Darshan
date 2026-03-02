@@ -148,7 +148,7 @@ void display_reading(const char* lines[], int lineCount) {
 }
 
 // ─── WiFi Portal Screen ─────────────────────────────────────────────────────
-//  SSID: TXT_Reader
+//  SSID: D.E.V_Darshan
 //  Pass: readmore
 //  IP: 192.168.4.1
 //  SEL = Exit
