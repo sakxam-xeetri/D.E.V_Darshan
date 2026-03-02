@@ -2,6 +2,8 @@
  * ============================================================================
  *  D.E.V_Darshan — Button Handler Implementation
  * ============================================================================
+ *  By Sakshyam Bastakoti | sakshyambastakoti.com.np
+ *
  *  Handles debouncing, short/long/xlong press detection, and fast scroll
  *  repeat for the three-button interface.
  *
