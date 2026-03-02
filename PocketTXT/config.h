@@ -2,6 +2,8 @@
  * ============================================================================
  *  D.E.V_Darshan — Configuration Header
  * ============================================================================
+ *  By Sakshyam Bastakoti | sakshyambastakoti.com.np
+ *
  *  All pin assignments, timing constants, display settings, and WiFi
  *  credentials. Modify this file to customize your build.
  * ============================================================================
@@ -18,6 +20,7 @@
 #define FW_VERSION        "1.0"
 #define DEVICE_NAME       "D.E.V_Darshan"
 #define DEVELOPER_NAME    "Sakshyam Bastakoti"
+#define DEVELOPER_WEBSITE "sakshyambastakoti.com.np"
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  GPIO PIN MAPPING (ESP32-CAM AI Thinker — ZERO External Resistors)
