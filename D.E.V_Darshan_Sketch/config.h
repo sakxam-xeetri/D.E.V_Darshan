@@ -91,7 +91,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 //  WIFI PORTAL SETTINGS
 // ─────────────────────────────────────────────────────────────────────────────
-#define WIFI_SSID             "TXT_Reader"
+#define WIFI_SSID             "D.E.V_Darshan"
 #define WIFI_PASSWORD         "readmore"
 #define WIFI_CHANNEL          6
 #define MAX_UPLOAD_SIZE       2097152 // 2MB
