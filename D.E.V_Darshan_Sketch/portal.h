@@ -48,7 +48,7 @@ static const char PORTAL_HTML[] PROGMEM = R"rawliteral(
 --ok:#00E676;--ok-bg:rgba(0,230,118,0.1);
 --err:#FF1744;--err-bg:rgba(255,23,68,0.1);
 --warn:#FFD740;--warn-bg:rgba(255,215,64,0.1);
---sb-w:250px;--radius:14px;
+--sb-w:250px;--sb-w-col:60px;--radius:14px;
 --ease:cubic-bezier(.4,0,.2,1);
 --ed-bg:#1E1E2E;--ed-gutter:#181825;--ed-gutter-txt:#585B70;--ed-gutter-brd:#313244;--ed-txt:#CDD6F4;--ed-cursor:#F38BA8;--ed-sel:rgba(220,20,60,.28);--ed-hl:rgba(220,20,60,.06);--ed-hl-brd:#DC143C;--ed-tab-bg:#181825;--ed-tab-active:#1E1E2E;--ed-tab-txt:#BAC2DE;--ed-tab-active-txt:#CDD6F4;--ed-foot-bg:#181825;--ed-foot-txt:#6C7086;--ed-brd:#313244
 }
@@ -91,10 +91,10 @@ html.light .info-row{border-bottom-color:rgba(0,0,0,.06)}
 html.light ::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15)}
 html.light ::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,.25)}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden;font-size:18px}
+body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,'Inter',sans-serif;background:var(--bg);color:var(--txt);height:100vh;overflow:hidden;font-size:18px}
 
 /* ── Sidebar ── */
-.sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sb-w);background:var(--sidebar);border-right:1px solid var(--brd);display:flex;flex-direction:column;z-index:200;transition:transform .35s var(--ease)}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sb-w);background:var(--sidebar);border-right:1px solid var(--brd);display:flex;flex-direction:column;z-index:200;transition:transform .35s var(--ease),width .35s var(--ease);overflow:hidden}
 .sb-logo{padding:28px 20px 22px;border-bottom:1px solid var(--brd);text-align:center}
 .sb-logo h1{font-size:1.1em;color:var(--txt);display:flex;align-items:center;justify-content:center;gap:8px}
 .sb-logo h1 svg{color:var(--pri);filter:drop-shadow(0 0 8px var(--pri-glow))}
@@ -108,6 +108,21 @@ body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,'Inter',sans-serif;
 .sb-footer{padding:16px 20px;border-top:1px solid var(--brd);font-size:.66em;color:var(--txt3);text-align:center;line-height:1.7}
 .sb-footer span{color:var(--pri)}
 
+/* ── Sidebar Toggle ── */
+.sb-toggle{width:100%;padding:12px 22px;border:none;background:transparent;color:var(--txt2);cursor:pointer;display:flex;align-items:center;gap:13px;font-size:.78em;font-weight:500;transition:all .25s var(--ease);border-top:1px solid var(--brd)}
+.sb-toggle:hover{color:var(--pri);background:rgba(220,20,60,.05)}
+.sb-toggle svg{width:20px;height:20px;flex-shrink:0;transition:transform .35s var(--ease)}
+.sidebar.collapsed .sb-toggle svg{transform:rotate(180deg)}
+.sidebar.collapsed .sb-text{display:none}
+.sidebar.collapsed .sb-logo p{display:none}
+.sidebar.collapsed .sb-footer{display:none}
+.sidebar.collapsed .sb-nav button{justify-content:center;padding:13px 0;border-left-width:0}
+.sidebar.collapsed .sb-logo{padding:20px 6px 16px}
+.sidebar.collapsed .sb-logo h1{justify-content:center}
+.sidebar.collapsed .sb-toggle{justify-content:center;padding:12px 0}
+.sidebar.collapsed .theme-area{display:none}
+html.light .sb-toggle:hover{background:rgba(0,0,0,.04)}
+
 /* ── Mobile Header ── */
 .mob-hdr{display:none;position:fixed;top:0;left:0;right:0;height:56px;background:var(--sidebar);border-bottom:1px solid var(--brd);z-index:150;align-items:center;padding:0 14px;gap:12px}
 .ham{width:38px;height:38px;border:none;background:transparent;color:var(--txt);cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:8px;transition:background .2s}
@@ -117,12 +132,15 @@ body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,'Inter',sans-serif;
 .sb-bk{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:199;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
 
 /* ── Main ── */
-.main{margin-left:var(--sb-w);min-height:100vh;padding:28px;transition:margin-left .35s var(--ease)}
+.main{margin-left:var(--sb-w);height:100vh;overflow-y:auto;padding:28px;box-sizing:border-box;transition:margin-left .35s var(--ease)}
 
 /* ── Tabs ── */
 .tab-panel{display:none;animation:fadeSlide .4s var(--ease)}
 .tab-panel.active{display:block}
 @keyframes fadeSlide{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+#tab-editor.active{display:flex;flex-direction:column;overflow:hidden;height:calc(100vh - 56px)}
+.ed-split{display:flex;gap:16px;flex:1;min-height:0;overflow:hidden}
+.ed-split .oled-panel .card{margin-bottom:0}
 
 /* ── Page Header ── */
 .pg-hd{margin-bottom:24px}
@@ -193,7 +211,7 @@ body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,'Inter',sans-serif;
 .file-actions button.del:hover{background:var(--err-bg);color:var(--err)}
 
 /* ── Editor (IDE-style) ── */
-.ed-container{display:flex;flex-direction:column;height:calc(100vh - 200px);min-height:400px;border:1px solid var(--ed-brd);border-radius:8px;overflow:hidden;background:var(--ed-bg)}
+.ed-container{display:flex;flex-direction:column;flex:1;min-height:0;border:1px solid var(--ed-brd);border-radius:8px;overflow:hidden;background:var(--ed-bg)}
 .ed-toolbar{display:flex;justify-content:space-between;align-items:center;padding:0 12px;height:40px;background:var(--ed-tab-bg);border-bottom:1px solid var(--ed-brd);flex-shrink:0}
 .ed-tabs{display:flex;align-items:stretch;height:100%;gap:0}
 .ed-tab{display:flex;align-items:center;gap:6px;padding:0 16px;font:12px/1 'Segoe UI',sans-serif;color:var(--ed-tab-txt);border-right:1px solid var(--ed-brd);cursor:default;user-select:none;position:relative;white-space:nowrap}
@@ -283,7 +301,7 @@ body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,'Inter',sans-serif;
 .vision-block{background:linear-gradient(135deg,rgba(220,20,60,.06),rgba(220,20,60,.02));border-left:3px solid var(--pri);border-radius:0 var(--radius) var(--radius) 0;padding:20px 24px;margin-top:16px;font-size:.84em;line-height:1.8;color:var(--txt2);font-style:italic}
 
 /* ── OLED Preview ── */
-.oled-panel{margin-top:16px;animation:fadeSlide .4s var(--ease)}
+.oled-panel{animation:fadeSlide .4s var(--ease);width:450px;flex-shrink:0;overflow-y:auto}
 .oled-panel h3{font-size:.9em;color:var(--txt);margin-bottom:14px;display:flex;align-items:center;gap:10px;font-weight:600}
 .oled-panel h3 svg{color:var(--pri);flex-shrink:0}
 .oled-wrap{display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap}
@@ -320,16 +338,28 @@ html.light .oled-btn:hover{border-color:var(--pri);background:linear-gradient(14
 .badge-pri{background:rgba(220,20,60,.12);color:var(--pri-lt)}
 
 /* ── Responsive ── */
+@media(max-width:1100px){
+.ed-split{flex-direction:column;overflow-y:auto}
+.oled-panel{width:100%!important;flex-shrink:0}
+#tab-editor.active{height:auto;overflow:visible}
+.ed-container{min-height:400px;flex:none!important;height:calc(100vh - 200px)}
+}
 @media(max-width:768px){
-.sidebar{transform:translateX(-100%)}
+.sidebar{transform:translateX(-100%);width:250px!important}
 .sidebar.open{transform:translateX(0)}
+.sidebar.collapsed{width:250px!important}
+.sb-toggle{display:none}
+.sb-text{display:inline!important}
 .sb-bk.show{display:block}
 .mob-hdr{display:flex}
-.main{margin-left:0;padding:68px 12px 16px}
+.main{margin-left:0!important;padding:68px 12px 16px;height:auto!important;overflow-y:auto}
+#tab-editor.active{height:auto;overflow:visible}
+.ed-split{flex-direction:column;overflow-y:visible}
+.oled-panel{width:100%!important}
+.ed-container{height:calc(100vh - 280px);min-height:300px;flex:none!important}
 .stat-grid{grid-template-columns:repeat(2,1fr);gap:10px}
 .file-row{flex-wrap:wrap;gap:8px}
 .file-actions{width:100%;justify-content:flex-end}
-.ed-container{height:calc(100vh - 280px);min-height:300px}
 .ed-area{font-size:12px;padding:6px 12px}
 .ed-mirror{font-size:12px;padding:0 12px}
 .ed-gutter{width:40px}
@@ -375,37 +405,41 @@ html.light .oled-btn:hover{border-color:var(--pri);background:linear-gradient(14
 <div class="sb-logo">
 <h1>
 <svg viewBox="0 0 24 24" width="24" height="24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z" fill="currentColor"/></svg>
-D.E.V_Darshan
+<span class="sb-text">D.E.V_Darshan</span>
 </h1>
 <p>TXT Reader Portal</p>
 </div>
 <nav class="sb-nav" id="sbNav">
 <button class="active" data-tab="dashboard">
 <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" fill="currentColor"/></svg>
-Dashboard
+<span class="sb-text">Dashboard</span>
 </button>
 <button data-tab="files">
 <svg viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" fill="currentColor"/></svg>
-Files
+<span class="sb-text">Files</span>
 </button>
 <button data-tab="editor">
 <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/></svg>
-Editor
+<span class="sb-text">Editor</span>
 </button>
 <button data-tab="settings">
 <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.48.48 0 00-.48-.41h-3.84a.48.48 0 00-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 00-.59.22L2.74 8.87a.48.48 0 00.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1112 8.4a3.6 3.6 0 010 7.2z" fill="currentColor"/></svg>
-Settings
+<span class="sb-text">Settings</span>
 </button>
 <button data-tab="guide">
 <svg viewBox="0 0 24 24"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z" fill="currentColor"/></svg>
-Guide
+<span class="sb-text">Guide</span>
 </button>
 <button data-tab="about">
 <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="currentColor"/></svg>
-About
+<span class="sb-text">About</span>
 </button>
 </nav>
-<div style="padding:12px 20px;border-top:1px solid var(--brd)">
+<button class="sb-toggle" id="sbToggleBtn" onclick="toggleSbCollapse()" title="Collapse sidebar">
+<svg viewBox="0 0 24 24" width="20" height="20"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor"/></svg>
+<span class="sb-text">Collapse</span>
+</button>
+<div class="theme-area" style="padding:12px 20px;border-top:1px solid var(--brd)">
 <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:.76em;color:var(--txt2)">
 <span>Dark</span>
 <div style="position:relative;width:36px;height:20px" id="themeWrap">
@@ -555,6 +589,7 @@ New File
 <!-- ══════════ EDITOR ══════════ -->
 <section id="tab-editor" class="tab-panel">
 
+<div class="ed-split" id="edSplit">
 <div class="ed-container" id="edContainer">
 <!-- Toolbar -->
 <div class="ed-toolbar">
@@ -633,6 +668,7 @@ OLED Display Preview
 <div class="oled-info-row"><span class="oled-info-lbl">Visible Lines</span><span class="oled-info-val">4</span></div>
 <div class="oled-info-row"><span class="oled-info-lbl">Font</span><span class="oled-info-val">4×6 mono (u8g2)</span></div>
 <div class="oled-info-row"><span class="oled-info-lbl">Resolution</span><span class="oled-info-val">128×32 px</span></div>
+</div>
 </div>
 </div>
 </div>
@@ -963,6 +999,20 @@ function closeSb(){
 document.getElementById('sidebar').classList.remove('open');
 document.getElementById('sbBk').classList.remove('show');
 }
+
+/* ═══ Sidebar Collapse ═══ */
+function toggleSbCollapse(){
+var sb=document.getElementById('sidebar');
+var isCollapsed=sb.classList.toggle('collapsed');
+document.documentElement.style.setProperty('--sb-w',isCollapsed?'60px':'250px');
+localStorage.setItem('devDarshanSbCollapsed',isCollapsed?'1':'0');
+if(curFile){setTimeout(function(){updLines();updHL()},400)}
+}
+(function(){
+var saved=localStorage.getItem('devDarshanSbCollapsed');
+if(saved==='1'){document.getElementById('sidebar').classList.add('collapsed');
+document.documentElement.style.setProperty('--sb-w','60px');}
+})();
 
 /* ═══ Tab Navigation ═══ */
 var navBtns=document.querySelectorAll('.sb-nav button');
