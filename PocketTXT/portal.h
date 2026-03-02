@@ -2,6 +2,8 @@
  * ============================================================================
  *  D.E.V_Darshan — Premium WiFi Portal UI (PROGMEM)
  * ============================================================================
+ *  By Sakshyam Bastakoti | sakshyambastakoti.com.np
+ *
  *  Production-grade, ultra-modern web portal for the D.E.V_Darshan TXT Reader.
  *
  *  Features:
@@ -318,7 +320,8 @@ About
 </nav>
 <div class="sb-footer">
 D.E.V_Darshan <span>v1.0</span><br>
-&copy; Sakshyam Bastakoti
+&copy; Sakshyam Bastakoti<br>
+<a href="http://sakshyambastakoti.com.np" style="color:var(--pri);text-decoration:none;font-size:.9em">sakshyambastakoti.com.np</a>
 </div>
 </aside>
 
@@ -742,6 +745,9 @@ Power Management
 <div class="author-av">SB</div>
 <div class="author-name">Sakshyam Bastakoti</div>
 <div class="author-role">Creator &amp; Developer</div>
+<div style="font-size:.85em;color:var(--txt3);margin-bottom:12px">
+<a href="http://sakshyambastakoti.com.np" target="_blank" style="color:var(--pri);text-decoration:none">sakshyambastakoti.com.np</a>
+</div>
 <div class="author-bio">
 Designer and engineer behind D.E.V_Darshan &mdash; a passion project born from the desire to create a truly minimal, distraction-free reading device. Built entirely from accessible components with zero external resistors, this project demonstrates that powerful embedded systems can be both elegant and simple.
 </div>
@@ -762,7 +768,8 @@ Designer and engineer behind D.E.V_Darshan &mdash; a passion project born from t
 <svg viewBox="0 0 24 24" width="18" height="18" style="color:var(--pri);vertical-align:middle"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z" fill="currentColor"/></svg>
 </div>
 D.E.V_Darshan v1.0 &middot; Designed &amp; Engineered by Sakshyam Bastakoti<br>
-Built with precision. Powered by passion.
+Built with precision. Powered by passion.<br>
+<a href="http://sakshyambastakoti.com.np" style="color:var(--pri);text-decoration:none">sakshyambastakoti.com.np</a>
 </div>
 </section>
 
