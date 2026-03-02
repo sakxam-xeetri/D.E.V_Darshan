@@ -345,37 +345,76 @@ html.light .oled-btn:hover{border-color:var(--pri);background:linear-gradient(14
 .ed-container{min-height:400px;flex:none!important;height:calc(100vh - 200px)}
 }
 @media(max-width:768px){
-.sidebar{transform:translateX(-100%);width:250px!important}
+.sidebar{transform:translateX(-100%);width:280px!important}
 .sidebar.open{transform:translateX(0)}
-.sidebar.collapsed{width:250px!important}
+.sidebar.collapsed{width:280px!important}
 .sb-toggle{display:none}
 .sb-text{display:inline!important}
 .sb-bk.show{display:block}
 .mob-hdr{display:flex}
-.main{margin-left:0!important;padding:68px 12px 16px;height:auto!important;overflow-y:auto}
+.main{margin-left:0!important;padding:68px 14px 20px;height:auto!important;overflow-y:auto;-webkit-overflow-scrolling:touch}
 #tab-editor.active{height:auto;overflow:visible}
 .ed-split{flex-direction:column;overflow-y:visible}
 .oled-panel{width:100%!important}
 .ed-container{height:calc(100vh - 280px);min-height:300px;flex:none!important}
 .stat-grid{grid-template-columns:repeat(2,1fr);gap:10px}
-.file-row{flex-wrap:wrap;gap:8px}
-.file-actions{width:100%;justify-content:flex-end}
-.ed-area{font-size:12px;padding:6px 12px}
-.ed-mirror{font-size:12px;padding:0 12px}
+.file-row{flex-wrap:wrap;gap:10px;padding:14px 12px}
+.file-actions{width:100%;justify-content:flex-end;gap:8px}
+.file-actions button{width:42px;height:42px;border-radius:10px}
+.sb-nav button{padding:16px 22px;font-size:.92em}
+.card{padding:16px;margin-bottom:16px}
+.card h3{font-size:.88em;margin-bottom:12px}
+.drop-zone{padding:44px 20px}
+.drop-zone svg{width:52px;height:52px}
+.drop-zone p{font-size:.9em}
+.btn{padding:12px 20px;font-size:.9em}
+.btn-pri{width:100%!important;justify-content:center}
+.ed-area{font-size:13px;padding:8px 12px}
+.ed-mirror{font-size:13px;padding:0 12px}
 .ed-gutter{width:40px}
 .line-nums{font-size:11px;padding:6px 0}
 .ln{line-height:18px}
-.toast{max-width:280px}
-.modal{padding:20px}
+.toast-box{top:auto;bottom:16px;right:8px;left:8px}
+.toast{max-width:100%;font-size:.85em}
+.modal-ov{padding:12px;align-items:flex-end}
+.modal{padding:22px;border-radius:16px 16px 8px 8px;max-width:100%}
+.modal h3{font-size:1em}
+.modal input{padding:14px;font-size:1em}
+.modal-btns{gap:8px}
+.modal-btns .btn{flex:1;justify-content:center;padding:13px 16px}
+.pg-hd{margin-bottom:18px}
+.pg-hd h2{font-size:1.25em}
+.pg-hd p{font-size:.78em}
 .feat-list{grid-template-columns:1fr}
 .about-hero h2{font-size:1.35em}
 .about-hero{padding:28px 16px}
+.fi-icon{width:42px;height:42px}
+.file-name{font-size:.9em}
+.file-meta{font-size:.74em}
+.info-row{font-size:.88em;padding:12px 0}
+.acc-btn{padding:18px 4px;font-size:.9em}
+.author-bio{font-size:.85em}
+.oled-screen{width:320px;height:80px}
+.oled-row{height:20px;line-height:20px;font-size:13px}
+.oled-btn{width:48px;height:48px}
+.oled-wrap{justify-content:center}
+.ed-toolbar{height:44px}
+.ed-tab{padding:0 12px;font-size:13px}
+.ed-acts .btn{padding:7px 12px;font-size:.78em}
+.ed-statusbar{height:30px;font-size:12px}
+.spec-tbl td{padding:12px 4px;font-size:.86em}
+.storage-bar{height:10px}
 }
 @media(max-width:420px){
-.stat-grid{grid-template-columns:1fr 1fr;gap:8px}
-.stat-card{padding:14px}
-.st-val{font-size:1.05em}
+.stat-grid{grid-template-columns:1fr;gap:8px}
+.stat-card{padding:16px}
+.st-val{font-size:1.1em}
 .pg-hd h2{font-size:1.15em}
+.main{padding:64px 10px 16px}
+.card{padding:14px}
+.oled-screen{width:256px;height:64px}
+.oled-row{height:16px;line-height:16px;font-size:11px}
+.oled-info{min-width:100%}
 }
 </style>
 </head>
@@ -1072,6 +1111,7 @@ function loadFiles(){
 fetch('/files').then(function(r){return r.json()}).then(function(files){
 var el=document.getElementById('fileList');
 if(!files.length){el.innerHTML='<div class="empty-st"><svg viewBox="0 0 24 24" width="44" height="44"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="currentColor"/></svg><p style="margin-top:10px;font-size:.88em">No .txt files found on SD card</p></div>';return}
+files.sort(function(a,b){return(b.modified||0)-(a.modified||0)});
 el.innerHTML=files.map(function(f){return '<div class="file-row" data-name="'+esc(f.name)+'">'
 +'<div class="file-info">'
 +'<div class="fi-icon"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="currentColor"/></svg></div>'
