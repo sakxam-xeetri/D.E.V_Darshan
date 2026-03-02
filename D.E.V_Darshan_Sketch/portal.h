@@ -154,14 +154,17 @@ body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,'Inter',sans-serif;
 .file-actions button.del:hover{background:var(--err-bg);color:var(--err)}
 
 /* ── Editor ── */
-.ed-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px}
+.ed-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px}
 .ed-fname{font-size:.9em;font-weight:600;color:var(--pri);display:flex;align-items:center;gap:8px}
 .ed-acts{display:flex;gap:8px}
-.ed-wrap{position:relative;display:flex;height:55vh;min-height:240px;border:1px solid var(--brd);border-radius:10px;overflow:hidden;background:rgba(0,0,0,.3)}
-.line-nums{background:rgba(255,255,255,.02);color:var(--txt3);padding:14px 10px;font:13px/1.5 'Consolas','Courier New',monospace;text-align:right;user-select:none;overflow:hidden;min-width:46px;border-right:1px solid var(--brd)}
-.ed-area{flex:1;resize:none;border:none;padding:14px;font:13px/1.5 'Consolas','Courier New',monospace;outline:none;background:transparent;color:var(--txt);tab-size:4;caret-color:var(--pri);white-space:pre-wrap;word-wrap:break-word;overflow-wrap:break-word}
-.line-hl{position:absolute;left:46px;right:0;height:19.5px;background:rgba(220,20,60,.06);pointer-events:none;transition:top .05s;border-left:2px solid rgba(220,20,60,.4)}
-.ed-foot{display:flex;justify-content:space-between;margin-top:10px;font-size:.73em;color:var(--txt2)}
+.ed-wrap{position:relative;display:flex;height:calc(100vh - 320px);min-height:400px;border:1px solid rgba(220,20,60,.25);border-radius:12px;overflow:hidden;background:#0A0A0E;box-shadow:inset 0 2px 10px rgba(0,0,0,.3)}
+.line-nums{background:#0D0D11;color:#4A4A58;padding:16px 12px;font:13px/20px 'JetBrains Mono','Fira Code','Consolas','Courier New',monospace;text-align:right;user-select:none;overflow:hidden;min-width:54px;border-right:2px solid rgba(220,20,60,.2);letter-spacing:-.5px}
+.ed-area{flex:1;resize:none;border:none;padding:16px 18px;font:13px/20px 'JetBrains Mono','Fira Code','Consolas','Courier New',monospace;outline:none;background:transparent;color:#E8E6E3;tab-size:4;caret-color:var(--pri);white-space:pre;overflow-x:auto;overflow-y:auto;word-wrap:normal;overflow-wrap:normal}
+.ed-area::selection{background:rgba(220,20,60,.3);color:#FFF}
+.ed-area:focus{box-shadow:inset 0 0 0 1px rgba(220,20,60,.15)}
+.line-hl{position:absolute;left:56px;right:0;height:20px;background:rgba(220,20,60,.05);pointer-events:none;transition:top .05s;border-left:2px solid var(--pri)}
+.ed-foot{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding:8px 4px;font-size:.72em;color:var(--txt2);background:rgba(255,255,255,.02);border-radius:8px}
+.ed-foot span:last-child{text-transform:uppercase;letter-spacing:.5px}
 
 /* ── Info Rows ── */
 .info-row{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.86em}
@@ -247,7 +250,10 @@ body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,'Inter',sans-serif;
 .stat-grid{grid-template-columns:repeat(2,1fr);gap:10px}
 .file-row{flex-wrap:wrap;gap:8px}
 .file-actions{width:100%;justify-content:flex-end}
-.ed-wrap{height:45vh;min-height:200px}
+.ed-wrap{height:calc(100vh - 400px);min-height:300px}
+.ed-area{font-size:12px;padding:12px 14px}
+.line-nums{font-size:12px;padding:12px 8px;min-width:46px}
+.line-hl{left:48px}
 .toast{max-width:280px}
 .modal{padding:20px}
 .feat-list{grid-template-columns:1fr}
@@ -464,7 +470,7 @@ Text Editor
 <p>Edit files directly in the browser with real-time preview</p>
 </div>
 
-<div class="card">
+<div class="card" style="padding:16px">
 <div class="ed-hdr">
 <span class="ed-fname" id="edFname">
 <svg viewBox="0 0 24 24" width="18" height="18"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="currentColor"/></svg>
@@ -483,14 +489,14 @@ Cancel
 </div>
 <div id="edBody" style="display:none">
 <div class="ed-wrap" id="edWrap">
-<div class="line-hl" id="lineHl" style="top:14px"></div>
+<div class="line-hl" id="lineHl" style="top:16px"></div>
 <div class="line-nums" id="lineNums">1</div>
-<textarea class="ed-area" id="edArea" spellcheck="false" placeholder="Start typing..."></textarea>
+<textarea class="ed-area" id="edArea" spellcheck="false" wrap="off" placeholder="// Start typing or paste your content here..."></textarea>
 </div>
 </div>
 <div class="ed-foot" id="edFoot" style="display:none">
 <span id="charCnt">0 characters</span>
-<span id="edStatus"></span>
+<span id="edStatus" style="color:var(--pri);font-weight:600"></span>
 </div>
 <div id="edEmpty" class="empty-st">
 <svg viewBox="0 0 24 24" width="52" height="52"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/></svg>
@@ -1010,10 +1016,10 @@ var v=edArea.value;
 document.getElementById('charCnt').textContent=v.length.toLocaleString()+' chars \u00b7 '+v.split('\n').length+' lines';
 }
 function updHL(){
-var lh=19.5;
+var lh=20;
 var pos=edArea.selectionStart;
 var line=edArea.value.substr(0,pos).split('\n').length-1;
-var top=line*lh-edArea.scrollTop+14;
+var top=line*lh-edArea.scrollTop+16;
 var hl=document.getElementById('lineHl');
 if(top<0||top>edArea.clientHeight){hl.style.display='none'}
 else{hl.style.display='block';hl.style.top=top+'px'}
