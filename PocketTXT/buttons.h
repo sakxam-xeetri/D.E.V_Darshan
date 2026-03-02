@@ -2,6 +2,8 @@
  * ============================================================================
  *  D.E.V_Darshan — Button Handler Header
  * ============================================================================
+ *  By Sakshyam Bastakoti | sakshyambastakoti.com.np
+ *
  *  Debounced three-button input with short press, long press detection.
  *    BTN_UP     = GPIO13  (scroll up / previous)
  *    BTN_DOWN   = GPIO0   (scroll down / next)
