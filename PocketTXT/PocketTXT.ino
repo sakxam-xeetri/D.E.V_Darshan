@@ -22,6 +22,7 @@
  *    Boot → Home → { WiFi Portal, Files → Reading, Settings → Sub-screens }
  *
  *  Author:  Sakshyam Bastakoti
+ *  Website: sakshyambastakoti.com.np
  *  Version: 1.0
  *  License: MIT
  * ============================================================================
