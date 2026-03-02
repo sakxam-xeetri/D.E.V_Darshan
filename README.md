@@ -1,4 +1,4 @@
-# 📖 PocketTXT — Ultra-Compact Offline TXT Reader
+# 📖 D.E.V_Darshan — Ultra-Compact Offline TXT Reader
 
 > **ESP32-CAM (AI Thinker) based pocket-sized offline text file reader with WiFi upload portal**
 
@@ -34,7 +34,7 @@
 
 ## 🎯 Project Overview
 
-**PocketTXT** is a purpose-built, ultra-compact, battery-powered offline text file reader designed around the **ESP32-CAM (AI Thinker)** module — repurposed *without* using the camera. The built-in SD card slot (SD_MMC interface) serves as native file storage, and a **0.91" SSD1306 OLED** (128×32, I2C) provides a clean reading display.
+**D.E.V_Darshan** is a purpose-built, ultra-compact, battery-powered offline text file reader designed around the **ESP32-CAM (AI Thinker)** module — repurposed *without* using the camera. The built-in SD card slot (SD_MMC interface) serves as native file storage, and a **0.91" SSD1306 OLED** (128×32, I2C) provides a clean reading display.
 
 ### Why ESP32-CAM?
 
@@ -90,7 +90,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│              PocketTXT System (Zero Resistors)           │
+│              D.E.V_Darshan System (Zero Resistors)           │
 ├─────────────────────────────────────────────────────────┤
 │                                                         │
 │  ┌──────────┐    I2C     ┌──────────────────────┐      │
@@ -357,14 +357,14 @@ With 1-bit SD mode and WiFi disabled during reading, current draw is low enough 
 ### File Structure
 
 ```
-PocketTXT/
-├── PocketTXT.ino          # Main entry point — setup() and loop()
-├── config.h               # Pin definitions, constants, settings
-├── display.h / .cpp       # OLED drawing functions (U8g2lib)
-├── sd_reader.h / .cpp     # SD_MMC init, file listing, line reader, bookmarks
-├── buttons.h / .cpp       # Debounced button handler with press types
-├── wifi_portal.h / .cpp   # WiFi AP + web server + upload handler
-└── portal.h               # Embedded HTML for upload portal (PROGMEM)
+D.E.V_Darshan_Sketch/
+├── D.E.V_Darshan_Sketch.ino  # Main entry point — setup() and loop()
+├── config.h                   # Pin definitions, constants, settings
+├── display.h / .cpp           # OLED drawing functions (U8g2lib)
+├── sd_reader.h / .cpp         # SD_MMC init, file listing, line reader, bookmarks
+├── buttons.h / .cpp           # Debounced button handler with press types
+├── wifi_portal.h / .cpp       # WiFi AP + web server + upload handler
+└── portal.h                   # Embedded HTML for upload portal (PROGMEM)
 ```
 
 ### Module Responsibilities
@@ -691,7 +691,7 @@ Button Press Timeline:
 ### First Boot
 1. Insert SD card with `.txt` files
 2. Power on via magnet position (reed switch)
-3. Splash screen shows "PocketTXT v1.0"
+3. Splash screen shows "D.E.V_Darshan v1.0"
 4. File menu displays available `.txt` files
 
 ### Navigation
@@ -756,11 +756,11 @@ Button Press Timeline:
 
 ## 🏆 Competition Presentation Summary
 
-### Project: PocketTXT — The Minimalist Digital Reader
+### Project: D.E.V_Darshan — The Minimalist Digital Reader
 
 **Problem Statement**: In an age of constant connectivity and digital distraction, there is no affordable, distraction-free device for reading plain text documents. E-readers cost $100+ and still offer browsers and stores. Phones demand attention constantly.
 
-**Solution**: PocketTXT is an ultra-compact ($10), open-source, offline text reader that fits in your pocket. It uses repurposed IoT hardware (ESP32-CAM) to achieve what commercial products cannot — **pure, focused reading with zero distractions**.
+**Solution**: D.E.V_Darshan is an ultra-compact ($10), open-source, offline text reader that fits in your pocket. It uses repurposed IoT hardware (ESP32-CAM) to achieve what commercial products cannot — **pure, focused reading with zero distractions**.
 
 **Technical Innovation**:
 - Repurposes a $3.50 camera module as a general-purpose reader by leveraging its built-in SD card slot
