@@ -165,11 +165,22 @@ static void updateFileMenu() {
 }
 
 static void menuScrollUp() {
-    if (menuSelectedIndex <= 0) return;
+    int count = sd_getFileCount();
+    int totalItems = count + 1;  // +1 for "< Back"
 
-    menuSelectedIndex--;
-    if (menuSelectedIndex < menuTopIndex) {
-        menuTopIndex = menuSelectedIndex;
+    if (menuSelectedIndex <= 0) {
+        // Wrap to last item
+        menuSelectedIndex = totalItems - 1;
+        if (menuSelectedIndex >= MENU_LINES) {
+            menuTopIndex = menuSelectedIndex - MENU_LINES + 1;
+        } else {
+            menuTopIndex = 0;
+        }
+    } else {
+        menuSelectedIndex--;
+        if (menuSelectedIndex < menuTopIndex) {
+            menuTopIndex = menuSelectedIndex;
+        }
     }
     updateFileMenu();
 }
@@ -181,11 +192,15 @@ static void menuScrollDown() {
     if (count == 0) return;
     
     int totalItems = count + 1;  // +1 for "< Back"
-    if (menuSelectedIndex >= totalItems - 1) return;
-
-    menuSelectedIndex++;
-    if (menuSelectedIndex >= menuTopIndex + MENU_LINES) {
-        menuTopIndex = menuSelectedIndex - MENU_LINES + 1;
+    if (menuSelectedIndex >= totalItems - 1) {
+        // Wrap to first item
+        menuSelectedIndex = 0;
+        menuTopIndex = 0;
+    } else {
+        menuSelectedIndex++;
+        if (menuSelectedIndex >= menuTopIndex + MENU_LINES) {
+            menuTopIndex = menuSelectedIndex - MENU_LINES + 1;
+        }
     }
     updateFileMenu();
 }
