@@ -207,12 +207,14 @@ body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,'Inter',sans-serif;
 .ed-body-wrap{flex:1;min-height:0;display:flex;flex-direction:column}
 .ed-body{display:flex;flex:1;min-height:0;overflow:hidden}
 .ed-gutter{width:50px;flex-shrink:0;overflow:hidden;background:var(--ed-gutter);border-right:1px solid var(--ed-gutter-brd)}
-.line-nums{padding:8px 8px 8px 0;font:13px/20px 'JetBrains Mono','Fira Code','Consolas','Courier New',monospace;text-align:right;color:var(--ed-gutter-txt);user-select:none;white-space:nowrap}
+.line-nums{padding:8px 0;font:13px/20px 'JetBrains Mono','Fira Code','Consolas','Courier New',monospace;color:var(--ed-gutter-txt);user-select:none}
+.ln{text-align:right;padding-right:8px;line-height:20px;box-sizing:border-box}
 .ed-content{flex:1;min-width:0;position:relative;overflow:hidden}
-.ed-area{display:block;width:100%;height:100%;resize:none;border:none;padding:8px 16px;font:13px/20px 'JetBrains Mono','Fira Code','Consolas','Courier New',monospace;outline:none;background:transparent;color:var(--ed-txt);tab-size:4;caret-color:var(--ed-cursor);white-space:pre;overflow:auto;word-wrap:normal;overflow-wrap:normal}
+.ed-area{display:block;width:100%;height:100%;resize:none;border:none;padding:8px 16px;box-sizing:border-box;font:13px/20px 'JetBrains Mono','Fira Code','Consolas','Courier New',monospace;outline:none;background:transparent;color:var(--ed-txt);tab-size:4;caret-color:var(--ed-cursor);white-space:pre-wrap;overflow-y:auto;overflow-x:hidden;word-wrap:break-word;overflow-wrap:break-word}
 .ed-area::selection{background:var(--ed-sel)}
 .ed-area::placeholder{color:var(--ed-gutter-txt);font-style:italic}
-.line-hl{position:absolute;left:0;right:0;height:20px;background:var(--ed-hl);pointer-events:none;transition:top .05s;border-left:2px solid var(--ed-hl-brd)}
+.ed-mirror{position:absolute;top:0;left:0;visibility:hidden;overflow:hidden;pointer-events:none;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:break-word;font:13px/20px 'JetBrains Mono','Fira Code','Consolas','Courier New',monospace;padding:0 16px;box-sizing:border-box;tab-size:4}
+.line-hl{position:absolute;left:0;right:0;height:20px;background:var(--ed-hl);pointer-events:none;transition:top .05s,height .05s;border-left:2px solid var(--ed-hl-brd)}
 .ed-statusbar{display:flex;justify-content:space-between;align-items:center;padding:0 14px;height:26px;background:var(--ed-foot-bg);border-top:1px solid var(--ed-brd);font:11px/26px 'Segoe UI',sans-serif;color:var(--ed-foot-txt);flex-shrink:0}
 .ed-statusbar span{white-space:nowrap}
 .ed-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--txt2);padding:36px 16px;text-align:center}
@@ -280,6 +282,31 @@ body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,'Inter',sans-serif;
 .feat-list li svg{color:var(--pri);flex-shrink:0;width:16px;height:16px}
 .vision-block{background:linear-gradient(135deg,rgba(220,20,60,.06),rgba(220,20,60,.02));border-left:3px solid var(--pri);border-radius:0 var(--radius) var(--radius) 0;padding:20px 24px;margin-top:16px;font-size:.84em;line-height:1.8;color:var(--txt2);font-style:italic}
 
+/* ── OLED Preview ── */
+.oled-panel{margin-top:16px;animation:fadeSlide .4s var(--ease)}
+.oled-panel h3{font-size:.9em;color:var(--txt);margin-bottom:14px;display:flex;align-items:center;gap:10px;font-weight:600}
+.oled-panel h3 svg{color:var(--pri);flex-shrink:0}
+.oled-wrap{display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap}
+.oled-device{display:flex;flex-direction:column;align-items:center;gap:12px}
+.oled-frame{background:#000;border-radius:6px;padding:8px 10px;border:2px solid #222;box-shadow:0 0 20px rgba(0,0,0,.6),inset 0 0 8px rgba(0,0,0,.5);position:relative}
+.oled-frame::before{content:'SSD1306 128\00d732';position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--txt3);white-space:nowrap;letter-spacing:.5px}
+.oled-screen{width:384px;height:96px;background:#000;position:relative;overflow:hidden;image-rendering:pixelated;border:1px solid #111}
+.oled-row{height:24px;line-height:24px;white-space:pre;font-family:'Courier New',monospace;font-size:16px;letter-spacing:1.6px;color:#00e1ff;padding:0 2px;overflow:hidden}
+html.light .oled-row{color:#00e1ff}
+.oled-btns{display:flex;gap:10px;align-items:center}
+.oled-btn{width:44px;height:44px;border-radius:50%;border:2px solid #333;background:linear-gradient(145deg,#1a1a1a,#0a0a0a);color:var(--txt2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;transition:all .15s var(--ease);user-select:none;box-shadow:0 3px 8px rgba(0,0,0,.5)}
+.oled-btn:hover{border-color:var(--pri);color:var(--pri);box-shadow:0 0 12px var(--pri-glow)}
+.oled-btn:active{transform:scale(.92);background:linear-gradient(145deg,#0a0a0a,#1a1a1a)}
+.oled-btn.sel{background:linear-gradient(145deg,var(--pri-dk),#0a0a0a);border-color:var(--pri)}
+html.light .oled-btn{background:linear-gradient(145deg,#e0e0e0,#c0c0c0);border-color:#aaa;box-shadow:0 3px 8px rgba(0,0,0,.15)}
+html.light .oled-btn:hover{border-color:var(--pri);background:linear-gradient(145deg,#d0d0d0,#b0b0b0)}
+.oled-info{flex:1;min-width:200px}
+.oled-info-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.78em}
+.oled-info-row:last-child{border-bottom:none}
+.oled-info-lbl{color:var(--txt2)}
+.oled-info-val{font-weight:600;color:var(--txt);font-variant-numeric:tabular-nums}
+.oled-nav-hint{font-size:.68em;color:var(--txt3);text-align:center;margin-top:4px}
+
 /* ── Scrollbar ── */
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
@@ -304,8 +331,10 @@ body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,'Inter',sans-serif;
 .file-actions{width:100%;justify-content:flex-end}
 .ed-container{height:calc(100vh - 280px);min-height:300px}
 .ed-area{font-size:12px;padding:6px 12px}
+.ed-mirror{font-size:12px;padding:0 12px}
 .ed-gutter{width:40px}
-.line-nums{font-size:11px;padding:6px 6px 6px 0}
+.line-nums{font-size:11px;padding:6px 0}
+.ln{line-height:18px}
 .toast{max-width:280px}
 .modal{padding:20px}
 .feat-list{grid-template-columns:1fr}
@@ -553,7 +582,8 @@ Close
 <div class="ed-gutter" id="edGutter"><div class="line-nums" id="lineNums">1</div></div>
 <div class="ed-content">
 <div class="line-hl" id="lineHl" style="top:8px"></div>
-<textarea class="ed-area" id="edArea" spellcheck="false" wrap="off" placeholder="Open a file to start editing..."></textarea>
+<div class="ed-mirror" id="edMirror"></div>
+<textarea class="ed-area" id="edArea" spellcheck="false" wrap="soft" placeholder="Open a file to start editing..."></textarea>
 </div>
 </div>
 </div>
@@ -567,6 +597,44 @@ Close
 <div class="ed-statusbar" id="edFoot">
 <span id="charCnt">Ready</span>
 <span id="edStatus"></span>
+</div>
+</div>
+
+<!-- OLED Preview -->
+<div class="oled-panel" id="oledPanel" style="display:none">
+<div class="card">
+<h3>
+<svg viewBox="0 0 24 24" width="18" height="18"><path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14z" fill="currentColor"/></svg>
+OLED Display Preview
+<span style="font-size:.7em;font-weight:400;color:var(--txt2);margin-left:auto">128×32 &middot; 4×6 font &middot; 32 chars/line</span>
+</h3>
+<div class="oled-wrap">
+<div class="oled-device">
+<div class="oled-frame">
+<div class="oled-screen" id="oledScreen">
+<div class="oled-row" id="oledR0"></div>
+<div class="oled-row" id="oledR1"></div>
+<div class="oled-row" id="oledR2"></div>
+<div class="oled-row" id="oledR3"></div>
+</div>
+</div>
+<div class="oled-btns">
+<button class="oled-btn" id="oledUp" title="UP (GPIO13)">&#9650;</button>
+<button class="oled-btn" id="oledDown" title="DOWN (GPIO0)">&#9660;</button>
+<button class="oled-btn sel" id="oledSel" title="SELECT (GPIO12)">SEL</button>
+</div>
+<div class="oled-nav-hint">Use buttons or Arrow keys to navigate</div>
+</div>
+<div class="oled-info">
+<div class="oled-info-row"><span class="oled-info-lbl">Display Line</span><span class="oled-info-val" id="oledLine">1 – 4</span></div>
+<div class="oled-info-row"><span class="oled-info-lbl">Total Wrapped Lines</span><span class="oled-info-val" id="oledTotal">0</span></div>
+<div class="oled-info-row"><span class="oled-info-lbl">Scroll Position</span><span class="oled-info-val" id="oledScroll">Top</span></div>
+<div class="oled-info-row"><span class="oled-info-lbl">Chars / Line</span><span class="oled-info-val">32</span></div>
+<div class="oled-info-row"><span class="oled-info-lbl">Visible Lines</span><span class="oled-info-val">4</span></div>
+<div class="oled-info-row"><span class="oled-info-lbl">Font</span><span class="oled-info-val">4×6 mono (u8g2)</span></div>
+<div class="oled-info-row"><span class="oled-info-lbl">Resolution</span><span class="oled-info-val">128×32 px</span></div>
+</div>
+</div>
 </div>
 </div>
 
@@ -1038,7 +1106,7 @@ fetch('/read?name='+encodeURIComponent(name)).then(function(r){
 if(!r.ok)throw new Error(r.statusText);return r.text()
 }).then(function(c){
 ta.value=c;ta.disabled=false;origContent=c;
-updLines();updCount();updHL();updCursorPos();ta.focus();
+updLines();updCount();updHL();updCursorPos();oledBuild();ta.focus();
 }).catch(function(e){toast('Failed to load: '+e.message,'err');ta.value='';ta.disabled=false});
 }
 
@@ -1064,7 +1132,7 @@ document.getElementById('edDot').classList.remove('show');
 document.getElementById('edStatus').textContent='';
 document.getElementById('charCnt').textContent='Ready';
 document.getElementById('edArea').value='';
-updLines();
+updLines();oledReset();
 }
 document.getElementById('saveBtn').addEventListener('click',saveFile);
 document.getElementById('cancelBtn').addEventListener('click',cancelEdit);
@@ -1077,7 +1145,7 @@ edArea.addEventListener('input',function(){
 dirty=true;
 edDot.classList.add('show');
 document.getElementById('edStatus').textContent='Modified';
-updLines();updCount();updHL();
+updLines();updCount();updHL();oledBuild();
 });
 edArea.addEventListener('scroll',function(){edGutter.scrollTop=edArea.scrollTop;updHL()});
 edArea.addEventListener('click',function(){updHL();updCursorPos()});
@@ -1090,8 +1158,15 @@ if(e.key==='Tab'){e.preventDefault();var s=edArea.selectionStart,en=edArea.selec
 });
 
 function updLines(){
-var n=edArea.value.split('\n').length;var s='';for(var i=1;i<=n;i++)s+=i+'\n';
-document.getElementById('lineNums').textContent=s;
+var m=document.getElementById('edMirror'),n=document.getElementById('lineNums'),ls=edArea.value.split('\n');
+m.style.width=edArea.clientWidth+'px';
+m.textContent='';
+var f=document.createDocumentFragment();
+for(var i=0;i<ls.length;i++){var d=document.createElement('div');d.textContent=ls[i]||'\u00a0';f.appendChild(d)}
+m.appendChild(f);
+var ds=m.children,h='';
+for(var i=0;i<ds.length;i++)h+='<div class="ln" style="height:'+ds[i].offsetHeight+'px">'+(i+1)+'</div>';
+n.innerHTML=h;
 }
 function updCount(){
 var v=edArea.value;
@@ -1105,13 +1180,16 @@ var col=lines[lines.length-1].length+1;
 document.getElementById('edStatus').textContent='Ln '+ln+', Col '+col;
 }
 function updHL(){
-var lh=20;
 var pos=edArea.selectionStart;
-var line=edArea.value.substr(0,pos).split('\n').length-1;
-var top=line*lh-edArea.scrollTop+8;
+var curLine=edArea.value.substr(0,pos).split('\n').length-1;
+var m=document.getElementById('edMirror'),ds=m.children;
+var top=8;
+for(var i=0;i<curLine&&i<ds.length;i++)top+=ds[i].offsetHeight;
+var h=ds[curLine]?ds[curLine].offsetHeight:20;
+top-=edArea.scrollTop;
 var hl=document.getElementById('lineHl');
-if(top<0||top>edArea.clientHeight){hl.style.display='none'}
-else{hl.style.display='block';hl.style.top=top+'px'}
+if(top+h<0||top>edArea.clientHeight){hl.style.display='none'}
+else{hl.style.display='block';hl.style.top=top+'px';hl.style.height=h+'px'}
 }
 
 /* ═══ Rename ═══ */
@@ -1203,6 +1281,94 @@ if(toggle.checked){document.documentElement.classList.add('light');knob.style.tr
 else{document.documentElement.classList.remove('light');knob.style.transform='translateX(0)';localStorage.setItem('devDarshanTheme','dark')}
 });
 })();
+
+/* ═══ OLED Preview ═══ */
+var OLED_COLS=32,OLED_ROWS=4,oledWrapped=[],oledTop=0;
+
+function oledWrapLine(raw){
+var out=[];
+if(raw.length===0){out.push('');return out}
+var pos=0,len=raw.length;
+while(pos<len){
+if(len-pos<=OLED_COLS){out.push(raw.substring(pos));break}
+var brk=OLED_COLS,sp=brk;
+while(sp>0&&raw.charAt(pos+sp)!==' ')sp--;
+if(sp>0)brk=sp;
+out.push(raw.substring(pos,pos+brk));
+pos+=brk;
+if(pos<len&&raw.charAt(pos)===' ')pos++;
+}
+return out;
+}
+
+function oledBuild(){
+var txt=document.getElementById('edArea').value;
+var rawLines=txt.split('\n');
+oledWrapped=[];
+for(var i=0;i<rawLines.length;i++){
+var w=oledWrapLine(rawLines[i]);
+for(var j=0;j<w.length;j++)oledWrapped.push(w[j]);
+}
+if(oledWrapped.length===0)oledWrapped.push('');
+oledTop=0;
+oledRender();
+document.getElementById('oledPanel').style.display='block';
+}
+
+function oledRender(){
+for(var i=0;i<OLED_ROWS;i++){
+var el=document.getElementById('oledR'+i);
+var idx=oledTop+i;
+el.textContent=(idx<oledWrapped.length)?oledWrapped[idx]:'';
+}
+var total=oledWrapped.length;
+document.getElementById('oledTotal').textContent=total;
+var endLine=Math.min(oledTop+OLED_ROWS,total);
+document.getElementById('oledLine').textContent=(oledTop+1)+' \u2013 '+endLine;
+var pct=total<=OLED_ROWS?100:Math.round(endLine/total*100);
+var pos=oledTop===0?'Top':(endLine>=total?'Bottom':pct+'%');
+document.getElementById('oledScroll').textContent=pos;
+}
+
+function oledScrollUp(){
+if(oledTop>0){oledTop--;oledRender()}
+}
+function oledScrollDown(){
+if(oledTop<oledWrapped.length-OLED_ROWS){oledTop++;oledRender()}
+}
+function oledPageUp(){
+oledTop=Math.max(0,oledTop-OLED_ROWS);
+oledRender();
+}
+function oledPageDown(){
+oledTop=Math.min(Math.max(0,oledWrapped.length-OLED_ROWS),oledTop+OLED_ROWS);
+oledRender();
+}
+function oledReset(){
+oledWrapped=[];oledTop=0;
+for(var i=0;i<OLED_ROWS;i++)document.getElementById('oledR'+i).textContent='';
+document.getElementById('oledPanel').style.display='none';
+document.getElementById('oledTotal').textContent='0';
+document.getElementById('oledLine').textContent='1 \u2013 4';
+document.getElementById('oledScroll').textContent='Top';
+}
+
+document.getElementById('oledUp').addEventListener('click',oledScrollUp);
+document.getElementById('oledDown').addEventListener('click',oledScrollDown);
+document.getElementById('oledSel').addEventListener('click',function(){oledTop=0;oledRender()});
+
+document.addEventListener('keydown',function(e){
+if(!curFile||document.activeElement===document.getElementById('edArea'))return;
+if(e.key==='ArrowUp'){e.preventDefault();oledScrollUp()}
+else if(e.key==='ArrowDown'){e.preventDefault();oledScrollDown()}
+else if(e.key==='PageUp'){e.preventDefault();oledPageUp()}
+else if(e.key==='PageDown'){e.preventDefault();oledPageDown()}
+else if(e.key==='Home'){e.preventDefault();oledTop=0;oledRender()}
+else if(e.key==='End'){e.preventDefault();oledTop=Math.max(0,oledWrapped.length-OLED_ROWS);oledRender()}
+});
+
+/* ═══ Resize ═══ */
+window.addEventListener('resize',function(){if(curFile){updLines();updHL()}});
 
 /* ═══ Init ═══ */
 loadDash();
