@@ -2,6 +2,8 @@
  * ============================================================================
  *  D.E.V_Darshan — WiFi Portal Header
  * ============================================================================
+ *  By Sakshyam Bastakoti | sakshyambastakoti.com.np
+ *
  *  Access Point mode with mobile-responsive file upload web server.
  * ============================================================================
  */
