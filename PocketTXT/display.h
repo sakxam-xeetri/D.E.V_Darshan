@@ -2,6 +2,8 @@
  * ============================================================================
  *  D.E.V_Darshan — Display Module Header
  * ============================================================================
+ *  By Sakshyam Bastakoti | sakshyambastakoti.com.np
+ *
  *  SSD1306 128×32 OLED display functions using U8g2lib.
  *  Clean, distraction-free UI for an immersive reading device.
  * ============================================================================
