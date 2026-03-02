@@ -69,7 +69,7 @@
 - [x] Inverted display mode toggle
 
 ### WiFi Upload Portal
-- [x] On-demand Access Point mode (SSID: `TXT_Reader`)
+- [x] On-demand Access Point mode (SSID: `D.E.V_Darshan`)
 - [x] Password-protected network
 - [x] Mobile-responsive HTML upload page
 - [x] `.txt` file type restriction
@@ -434,7 +434,7 @@ Select **WiFi Portal** from the HOME menu → ESP32 enables WiFi AP mode.
 
 | Parameter | Value |
 |-----------|-------|
-| SSID | `TXT_Reader` |
+| SSID | `D.E.V_Darshan` |
 | Password | `readmore` (configurable in config.h) |
 | IP Address | `192.168.4.1` |
 | Max file size | 2MB |
@@ -446,7 +446,7 @@ Select **WiFi Portal** from the HOME menu → ESP32 enables WiFi AP mode.
 ```
 User Phone                          ESP32-CAM
     │                                    │
-    │── Connect to "TXT_Reader" WiFi ───►│
+    │── Connect to "D.E.V_Darshan" WiFi ───►│
     │                                    │
     │── Open 192.168.4.1 in browser ────►│
     │                                    │
@@ -503,7 +503,7 @@ User Phone                          ESP32-CAM
 
 ```
 ┌──────────────────────┐
-│ WiFi: TXT_Reader     │
+│ WiFi: D.E.V_Darshan     │
 │ Pass: readmore       │
 │ IP: 192.168.4.1      │
 │ Hold ▼ to exit       │
@@ -707,7 +707,7 @@ Button Press Timeline:
 ### Uploading Files
 1. From HOME screen, select "WiFi Portal" with SELECT button
 2. OLED shows WiFi info (SSID, password, IP)
-3. Connect phone to `TXT_Reader` WiFi
+3. Connect phone to `D.E.V_Darshan` WiFi
 4. Open `192.168.4.1` in browser
 5. Select and upload `.txt` files
 6. Press SELECT to exit portal and return to HOME
