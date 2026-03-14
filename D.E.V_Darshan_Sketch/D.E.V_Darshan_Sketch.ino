@@ -66,6 +66,8 @@ static const char* displayLinePtrs[READING_LINES];
 // Activity tracking
 static unsigned long lastActivityMs = 0;
 static bool displayAsleep = false;
+static bool manualSleepLocked = false;
+static bool sleepComboLatch = false;
 
 // ─── Power Management ────────────────────────────────────────────────────────
 
@@ -129,9 +131,34 @@ static void checkIdleTimeout() {
     if (appState == STATE_WIFI_PORTAL) return;
     if (appState == STATE_BOOT) return;
     if (appState == STATE_ERROR) return;
+    if (manualSleepLocked) return;
     if (!displayAsleep && (millis() - lastActivityMs) > DISPLAY_TIMEOUT_MS) {
         enterLightSleep();
     }
+}
+
+static bool handleManualSleepToggle() {
+    bool comboPressed = buttons_isSelectPressed() && buttons_isDownPressed();
+
+    if (comboPressed && !sleepComboLatch) {
+        sleepComboLatch = true;
+
+        if (manualSleepLocked) {
+            manualSleepLocked = false;
+            resetActivityTimer();
+        } else {
+            manualSleepLocked = true;
+            display_sleep();
+            displayAsleep = true;
+        }
+        return true;
+    }
+
+    if (!comboPressed) {
+        sleepComboLatch = false;
+    }
+
+    return false;
 }
 
 // ─── Screen: Home ────────────────────────────────────────────────────────────
@@ -421,6 +448,22 @@ void loop() {
 
     // Read button input
     ButtonEvent event = buttons_update();
+
+    // Select + Down toggles immediate manual sleep lock
+    if (handleManualSleepToggle()) {
+        delay(1);
+        return;
+    }
+
+    // While locked, keep display asleep until combo toggles it back on
+    if (manualSleepLocked) {
+        if (!displayAsleep) {
+            display_sleep();
+            displayAsleep = true;
+        }
+        delay(1);
+        return;
+    }
 
     // Wake display on any button press
     if (event != BTN_NONE) {
