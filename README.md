@@ -1,6 +1,6 @@
-# 📖 D.E.V_Darshan — Ultra-Compact Offline TXT Reader
+# 🔥 Heating Calculator (ESP32-CAM)
 
-> **ESP32-CAM (AI Thinker) based pocket-sized offline text file reader with WiFi upload portal**
+> **Disclaimer:** This project is built strictly for educational and experimental purposes. It demonstrates embedded systems, low-power design, and hardware hacking concepts. Do not misuse this project in real exams or unethical scenarios.
 
 [![Platform](https://img.shields.io/badge/Platform-ESP32--CAM-blue)]()
 [![Display](https://img.shields.io/badge/Display-SSD1306%20128x32-green)]()
@@ -34,7 +34,7 @@
 
 ## 🎯 Project Overview
 
-**D.E.V_Darshan** is a purpose-built, ultra-compact, battery-powered offline text file reader designed around the **ESP32-CAM (AI Thinker)** module — repurposed *without* using the camera. The built-in SD card slot (SD_MMC interface) serves as native file storage, and a **0.91" SSD1306 OLED** (128×32, I2C) provides a clean reading display.
+This project converts a normal scientific calculator into a smart ESP32-based device using an **ESP32-CAM**. It features a hidden OLED display, magnetic power control, Wi-Fi file upload, and low-power operation.
 
 ### Why ESP32-CAM?
 
@@ -96,7 +96,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│              D.E.V_Darshan System (Zero Resistors)           │
+│              Heating Calculator System (Zero Resistors)      │
 ├─────────────────────────────────────────────────────────┤
 │                                                         │
 │  ┌──────────┐    I2C     ┌──────────────────────┐      │
@@ -712,7 +712,7 @@ Button Press Timeline:
 ### First Boot
 1. Insert SD card with `.txt` files
 2. Power on via magnet position (reed switch)
-3. Splash screen shows "D.E.V_Darshan v1.0"
+3. Splash screen shows firmware version
 4. File menu displays available `.txt` files
 
 ### Navigation
@@ -735,7 +735,7 @@ Button Press Timeline:
 ### Uploading Files
 1. From HOME screen, select "WiFi Portal" with SELECT button
 2. OLED shows WiFi info (SSID, password, IP)
-3. Connect phone to `D.E.V_Darshan` WiFi
+3. Connect phone to the device WiFi (default: `D.E.V_Darshan`)
 4. Open `192.168.4.1` in browser
 5. Select and upload `.txt` files
 6. Press SELECT to exit portal and return to HOME
@@ -787,11 +787,11 @@ Button Press Timeline:
 
 ## 🏆 Competition Presentation Summary
 
-### Project: D.E.V_Darshan — The Minimalist Digital Reader
+### Project: Heating Calculator — Smart ESP32 Device
 
 **Problem Statement**: In an age of constant connectivity and digital distraction, there is no affordable, distraction-free device for reading plain text documents. E-readers cost $100+ and still offer browsers and stores. Phones demand attention constantly.
 
-**Solution**: D.E.V_Darshan is an ultra-compact ($10), open-source, offline text reader that fits in your pocket. It uses repurposed IoT hardware (ESP32-CAM) to achieve what commercial products cannot — **pure, focused reading with zero distractions**.
+**Solution**: The **Heating Calculator** is an ultra-compact ($10), open-source, offline text reader that fits in your pocket. It uses repurposed IoT hardware (ESP32-CAM) to achieve what commercial products cannot — **pure, focused reading with zero distractions**.
 
 **Technical Innovation**:
 - Repurposes a $3.50 camera module as a general-purpose reader by leveraging its built-in SD card slot
