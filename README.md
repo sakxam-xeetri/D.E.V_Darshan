@@ -34,7 +34,7 @@
 
 ## 🎯 Project Overview
 
-This project converts a normal scientific calculator into a smart ESP32-based device using an **ESP32-CAM**. It features a hidden OLED display, magnetic power control, Wi-Fi file upload, and low-power operation.
+**D.E.V_Darshan (v1.0)** converts a normal scientific calculator into a smart ESP32-based device using an **ESP32-CAM**. It features a hidden OLED display, magnetic power control, Wi-Fi file upload, and low-power operation.
 
 ### Why ESP32-CAM?
 
