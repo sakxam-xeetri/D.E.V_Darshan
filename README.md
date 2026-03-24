@@ -1,11 +1,17 @@
-# 🔥 Heating Calculator (ESP32-CAM)
+# D.E.V_Darshan (ESP32-CAM Smart Reading Device)
 
-> **Disclaimer:** This project is built strictly for educational and experimental purposes. It demonstrates embedded systems, low-power design, and hardware hacking concepts. Do not misuse this project in real exams or unethical scenarios.
+> Educational and research project for embedded systems design, low-power optimization, and compact hardware integration. Use responsibly and ethically.
 
 [![Platform](https://img.shields.io/badge/Platform-ESP32--CAM-blue)]()
 [![Display](https://img.shields.io/badge/Display-SSD1306%20128x32-green)]()
 [![License](https://img.shields.io/badge/License-MIT-yellow)]()
 [![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen)]()
+
+<p align="center">
+  <img src="assests/device.jpeg" alt="D.E.V_Darshan device prototype" width="720" />
+</p>
+
+<p align="center"><em>Compact ESP32-CAM based smart reading device prototype.</em></p>
 
 ---
 
@@ -96,7 +102,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│              Heating Calculator System (Zero Resistors)      │
+│            D.E.V_Darshan System (Zero Resistors)             │
 ├─────────────────────────────────────────────────────────┤
 │                                                         │
 │  ┌──────────┐    I2C     ┌──────────────────────┐      │
@@ -253,6 +259,12 @@ With 1-bit SD mode and WiFi disabled during reading, current draw is low enough 
 
 ## 🔌 Circuit Schematic (Zero Resistors)
 
+<p align="center">
+  <img src="assests/circuit.jpeg" alt="D.E.V_Darshan circuit wiring" width="860" />
+</p>
+
+<p align="center"><em>Hardware circuit layout used in the current build.</em></p>
+
 ```
                     ┌─────────────────────────┐
                     │      ESP32-CAM           │
@@ -298,7 +310,7 @@ With 1-bit SD mode and WiFi disabled during reading, current draw is low enough 
       └──────────────────────┘
 ```
 
-### Wiring Summary (Just 10 wires total!)
+### Wiring Summary (10 Total Wires)
 
 | Connection | Wire |
 |-----------|------|
@@ -787,11 +799,11 @@ Button Press Timeline:
 
 ## 🏆 Competition Presentation Summary
 
-### Project: Heating Calculator — Smart ESP32 Device
+### Project: D.E.V_Darshan — Smart ESP32 Reading Device
 
 **Problem Statement**: In an age of constant connectivity and digital distraction, there is no affordable, distraction-free device for reading plain text documents. E-readers cost $100+ and still offer browsers and stores. Phones demand attention constantly.
 
-**Solution**: The **Heating Calculator** is an ultra-compact ($10), open-source, offline text reader that fits in your pocket. It uses repurposed IoT hardware (ESP32-CAM) to achieve what commercial products cannot — **pure, focused reading with zero distractions**.
+**Solution**: **D.E.V_Darshan** is an ultra-compact ($10), open-source, offline text reader that fits in a pocket. It uses repurposed IoT hardware (ESP32-CAM) to deliver focused reading with minimal distractions.
 
 **Technical Innovation**:
 - Repurposes a $3.50 camera module as a general-purpose reader by leveraging its built-in SD card slot
@@ -825,4 +837,4 @@ MIT License — Free for personal and educational use.
 
 ---
 
-*Built with ❤️ using ESP32-CAM, U8g2, and determination.*
+Built using ESP32-CAM and U8g2.
