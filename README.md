@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assests/device.jpeg" alt="D.E.V_Darshan device prototype" width="600" />
+</p>
+
 # D.E.V_Darshan (ESP32-CAM Smart Reading Device)
 
 > Educational and research project for embedded systems design, low-power optimization, and compact hardware integration. Use responsibly and ethically.
@@ -7,9 +11,7 @@
 [![License](https://img.shields.io/badge/License-MIT-yellow)]()
 [![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen)]()
 
-<p align="center">
-  <img src="assests/device.jpeg" alt="D.E.V_Darshan device prototype" width="720" />
-</p>
+
 
 <p align="center"><em>Compact ESP32-CAM based smart reading device prototype.</em></p>
 
@@ -260,7 +262,7 @@ With 1-bit SD mode and WiFi disabled during reading, current draw is low enough 
 ## 🔌 Circuit Schematic (Zero Resistors)
 
 <p align="center">
-  <img src="assests/circuit.jpeg" alt="D.E.V_Darshan circuit wiring" width="860" />
+  <img src="assests/circuit.jpeg" alt="D.E.V_Darshan circuit wiring" width="600" />
 </p>
 
 <p align="center"><em>Hardware circuit layout used in the current build.</em></p>
