@@ -759,6 +759,14 @@ Button Press Timeline:
 - When re-opening a file, reading resumes from last position
 - Bookmarks persist across power cycles (stored in NVS flash)
 
+### Over-The-Air (OTA) Firmware Update
+You can easily update the device firmware via the WiFi Portal, without needing to plug it back into your computer!
+1. Compile your sketch in Arduino IDE: Go to **Sketch > Export compiled Binary**. This creates a `.bin` file in your sketch folder.
+2. On your D.E.V_Darshan device, open the **WiFi Portal** and connect to the displayed WiFi network.
+3. Open the portal in your browser (`192.168.4.1`) and go to the **Settings** tab.
+4. Scroll down to **Firmware Update**, select your compiled `.bin` file, and click **Flash Firmware**.
+5. Wait for the upload to complete. Once successful, the device will automatically reboot and start running the new firmware.
+
 ---
 
 ## 🔧 Troubleshooting
@@ -789,7 +797,7 @@ Button Press Timeline:
 | Brightness control | Easy | PWM or U8g2 contrast adjustment |
 | Auto-scroll mode | Easy | Timed page advance for hands-free reading |
 | Sort options (A-Z/date/size) | Easy | Add user-selectable file sorting modes |
-| OTA firmware update | Medium | Upload firmware via WiFi portal |
+| ~~OTA firmware update~~ | ~~Medium~~ | ✅ **Implemented** — Flash `.bin` files via the WiFi portal settings |
 | Battery voltage display | Medium | ADC read on available pin (if any free) |
 | E-ink display variant | Hard | Swap SSD1306 for e-ink for better battery life |
 | BLE file transfer | Medium | Alternative to WiFi for phone transfer |

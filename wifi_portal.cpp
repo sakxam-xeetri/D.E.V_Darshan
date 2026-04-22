@@ -39,6 +39,7 @@
 
 #include <WiFi.h>
 #include <WebServer.h>
+#include <Update.h>
 #include <SD_MMC.h>
 #include <FS.h>
 
@@ -166,6 +167,49 @@ static void handleUploadComplete() {
         server->send(500, "text/plain", "Failed to save file");
     }
 }
+
+// ─── OTA Firmware Update ─────────────────────────────────────────────────────
+// Handle OTA firmware upload stream
+static void handleUpdate() {
+    HTTPUpload& upload = server->upload();
+    if (upload.status == UPLOAD_FILE_START) {
+        Serial.printf("OTA Update Start: %s\n", upload.filename.c_str());
+        uint32_t maxSketchSpace = (ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000;
+        if (!Update.begin(maxSketchSpace, U_FLASH)) { // start with max available size
+            Update.printError(Serial);
+        }
+    } else if (upload.status == UPLOAD_FILE_WRITE) {
+        if (Update.write(upload.buf, upload.currentSize) != upload.currentSize) {
+            Update.printError(Serial);
+        }
+    } else if (upload.status == UPLOAD_FILE_END) {
+        if (Update.end(true)) { // true to set the size to the current progress
+            Serial.printf("OTA Update Success: %u bytes\nRebooting...\n", upload.totalSize);
+        } else {
+            Update.printError(Serial);
+        }
+    } else if (upload.status == UPLOAD_FILE_ABORTED) {
+        Update.end();
+        Serial.println("OTA Update was aborted");
+    }
+    delay(0);
+}
+
+// Complete OTA firmware upload
+static void handleUpdateComplete() {
+    server->sendHeader("Connection", "close");
+    if (Update.hasError()) {
+        String err = "Update Failed: " + String(Update.errorString());
+        Serial.println(err);
+        server->send(500, "text/plain", err);
+    } else {
+        server->send(200, "text/plain", "Update Success! Device will reboot in 3 seconds.");
+        delay(3000); // Give portal time to display success message
+        ESP.restart(); // Software reset to boot new firmware
+    }
+}
+
+// ─── File Operations ─────────────────────────────────────────────────────────
 
 // Return JSON list of .txt files with size and last modified timestamp
 static void handleFileList() {
@@ -512,6 +556,9 @@ bool portal_start() {
     // File listing & SD info (existing, updated)
     server->on("/files", HTTP_GET, handleFileList);
     server->on("/usage", HTTP_GET, handleUsage);
+
+    // OTA Firmware update (new)
+    server->on("/update", HTTP_POST, handleUpdateComplete, handleUpdate);
 
     // File management (new)
     server->on("/read",     HTTP_GET,  handleReadFile);

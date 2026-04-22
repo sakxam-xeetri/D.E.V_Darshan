@@ -763,6 +763,36 @@ System Resources
 </h3>
 <div id="sysInfo"><div class="empty-st"><p>Loading...</p></div></div>
 </div>
+
+<div class="card">
+<h3>
+<svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" fill="currentColor"/></svg>
+Firmware Update
+</h3>
+<div id="fwUpdate" style="padding: 10px 0;">
+<p style="margin-bottom:12px;font-size:0.9em;color:var(--text-light)">Upload a compiled .bin file via OTA to update the device firmware.</p>
+<form method="POST" action="/update" enctype="multipart/form-data" id="otaForm">
+<input type="file" name="update" id="otaInput" accept=".bin" style="margin-bottom:12px;display:block;width:100%;padding:8px;border:1px dashed var(--border);border-radius:4px;">
+<button type="submit" class="btn" id="otaBtn" style="padding:8px 16px;width:auto">Flash Firmware</button>
+</form>
+<div id="otaStatus" style="margin-top:12px;font-size:0.9em;display:none;font-weight:600;color:var(--ok)">Updating, please wait...</div>
+</div>
+<script>
+setTimeout(function(){
+var form=document.getElementById('otaForm');
+if(form)form.onsubmit=function(e){
+e.preventDefault();
+if(!document.getElementById('otaInput').value)return alert('Select a .bin file first!');
+document.getElementById('otaBtn').disabled=true;
+var s=document.getElementById('otaStatus');
+s.style.display='block';s.style.color='var(--ok)';s.textContent='Updating, please wait...';
+fetch('/update',{method:'POST',body:new FormData(this)})
+.then(function(r){return r.text()})
+.then(function(t){s.textContent=t;})
+.catch(function(){s.textContent='Update failed';s.style.color='var(--err)';});
+}}, 500);
+</script>
+</div>
 </section>
 
 <!-- ══════════ GUIDE ══════════ -->
