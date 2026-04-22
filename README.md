@@ -740,6 +740,8 @@ Button Press Timeline:
 | Fast scroll (line-by-line) | Hold UP or DOWN | Reading |
 | Select / Enter | Short press SELECT | Any |
 | Back to previous screen | Short press SELECT | Reading / WiFi Portal |
+| Instant Sleep | Press UP + DOWN | Any |
+| Wake up | Press UP + DOWN | While asleep |
 
 **File Menu Behavior**:
 - Files are displayed **newest first** (sorted by modification date)

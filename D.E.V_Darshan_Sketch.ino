@@ -138,7 +138,8 @@ static void checkIdleTimeout() {
 }
 
 static bool handleManualSleepToggle() {
-    bool comboPressed = buttons_isSelectPressed() && buttons_isDownPressed();
+    // Up and Down button combo for instant sleep
+    bool comboPressed = buttons_isUpPressed() && buttons_isDownPressed();
 
     if (comboPressed && !sleepComboLatch) {
         sleepComboLatch = true;
@@ -449,7 +450,7 @@ void loop() {
     // Read button input
     ButtonEvent event = buttons_update();
 
-    // Select + Down toggles immediate manual sleep lock
+    // Up + Down toggles immediate manual sleep lock
     if (handleManualSleepToggle()) {
         delay(1);
         return;
