@@ -444,6 +444,10 @@ void setup() {
 void loop() {
     // Handle WiFi portal client requests
     if (appState == STATE_WIFI_PORTAL) {
+        if (millis() - portal_lastActivity() > WIFI_TIMEOUT_MS) {
+            exitWifiPortal();
+            return; // Exit early to process state change
+        }
         portal_handleClient();
     }
 
