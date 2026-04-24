@@ -596,7 +596,7 @@ Upload File
 <p>Tap to select or drag &amp; drop a .txt file</p>
 <p style="font-size:.68em;color:var(--txt3);margin-top:6px">Max 2 MB &middot; .txt files only</p>
 </div>
-<input type="file" id="fileInput" accept=".txt,text/plain" hidden>
+<input type="file" id="fileInput" accept=".txt,text/plain" multiple hidden>
 <div id="selFile" style="font-size:.78em;color:var(--txt2);margin-top:10px;word-break:break-all"></div>
 <button class="btn btn-pri" id="uploadBtn" disabled style="width:100%;margin-top:12px;justify-content:center">
 <svg viewBox="0 0 24 24" width="16" height="16"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z" fill="currentColor"/></svg>
@@ -1028,7 +1028,7 @@ Built with precision. Powered by passion.<br>
 var MAX_SIZE=2*1024*1024,MAX_EDIT=65536;
 
 /* ═══ State ═══ */
-var curFile='',dirty=false,selUpFile=null,origContent='';
+var curFile='',dirty=false,selUpFiles=[],origContent='';
 var tabNames=['dashboard','files','editor','settings','guide','about'];
 
 /* ═══ Utility ═══ */
@@ -1180,34 +1180,57 @@ var ub=document.getElementById('uploadBtn');
 dz.addEventListener('click',function(){fi.click()});
 dz.addEventListener('dragover',function(e){e.preventDefault();dz.classList.add('over')});
 dz.addEventListener('dragleave',function(){dz.classList.remove('over')});
-dz.addEventListener('drop',function(e){e.preventDefault();dz.classList.remove('over');pickFile(e.dataTransfer.files[0])});
-fi.addEventListener('change',function(){pickFile(fi.files[0])});
+dz.addEventListener('drop',function(e){e.preventDefault();dz.classList.remove('over');pickFiles(e.dataTransfer.files)});
+fi.addEventListener('change',function(){pickFiles(fi.files)});
 
-function pickFile(f){
-if(!f)return;
-if(!f.name.toLowerCase().endsWith('.txt')){toast('Only .txt files are allowed','err');return}
-if(f.size>MAX_SIZE){toast('File too large (max 2 MB)','err');return}
-if(f.size===0){toast('File is empty','err');return}
-selUpFile=f;
-document.getElementById('selFile').textContent=f.name+' ('+fmt(f.size)+')';
+function pickFiles(files){
+if(!files||files.length===0)return;
+selUpFiles=[];var totSize=0;
+for(var i=0;i<files.length;i++){
+var f=files[i];
+if(!f.name.toLowerCase().endsWith('.txt')){toast('Skipped '+f.name+': not .txt','err');continue}
+if(f.size>MAX_SIZE){toast('Skipped '+f.name+': over 2 MB','err');continue}
+if(f.size===0){toast('Skipped '+f.name+': empty','err');continue}
+selUpFiles.push(f);totSize+=f.size;
+}
+if(selUpFiles.length>0){
+var txt=selUpFiles.length===1?selUpFiles[0].name:selUpFiles.length+' files selected';
+document.getElementById('selFile').textContent=txt+' ('+fmt(totSize)+')';
 ub.disabled=false;
+}
 }
 
 ub.addEventListener('click',function(){
-if(!selUpFile)return;ub.disabled=true;
+if(selUpFiles.length===0)return;ub.disabled=true;
 var prog=document.getElementById('progress');prog.style.display='block';
+var currentIdx=0;
+
+function uploadNext(){
+if(currentIdx>=selUpFiles.length){
+prog.style.display='none';document.getElementById('progressFill').style.width='0';
+toast(selUpFiles.length>1?'All files uploaded successfully!':'File uploaded successfully!','ok');loadFiles();loadUsage();
+selUpFiles=[];document.getElementById('selFile').textContent='';fi.value='';
+return;
+}
+var f=selUpFiles[currentIdx];
+if(selUpFiles.length>1)document.getElementById('progressText').textContent='Uploading '+(currentIdx+1)+'/'+selUpFiles.length+'...';
 var xhr=new XMLHttpRequest();xhr.open('POST','/upload');
 xhr.upload.onprogress=function(e){
-if(e.lengthComputable){var p=Math.round(e.loaded/e.total*100);document.getElementById('progressFill').style.width=p+'%';document.getElementById('progressText').textContent=p+'%'}
+if(e.lengthComputable){
+var filePct=e.loaded/e.total;
+var p=Math.round(((currentIdx+filePct)/selUpFiles.length)*100);
+document.getElementById('progressFill').style.width=p+'%';
+if(selUpFiles.length===1)document.getElementById('progressText').textContent=p+'%';
+}
 };
 xhr.onload=function(){
-prog.style.display='none';document.getElementById('progressFill').style.width='0';
-if(xhr.status===200){toast('File uploaded successfully!','ok');loadFiles();loadUsage()}
-else{toast('Upload failed: '+xhr.responseText,'err')}
-selUpFile=null;document.getElementById('selFile').textContent='';fi.value='';ub.disabled=true;
+if(xhr.status===200){currentIdx++;uploadNext();}
+else{toast('Failed: '+f.name+' ('+xhr.responseText+')','err');ub.disabled=false;prog.style.display='none';}
 };
-xhr.onerror=function(){prog.style.display='none';toast('Network error during upload','err');ub.disabled=false};
-var fd=new FormData();fd.append('file',selUpFile);xhr.send(fd);
+xhr.onerror=function(){toast('Network error during upload','err');ub.disabled=false;prog.style.display='none';};
+var fd=new FormData();fd.append('file',f);xhr.send(fd);
+}
+uploadNext();
 });
 
 /* ═══ Edit File ═══ */
