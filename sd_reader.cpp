@@ -112,19 +112,19 @@ int sd_scanFiles() {
     }
     root.close();
 
-    // Sort by modification time — newest first (bubble sort, max 50 files)
-    for (int i = 0; i < fileCount - 1; i++) {
-        for (int j = 0; j < fileCount - i - 1; j++) {
-            if (fileTimes[j] < fileTimes[j + 1]) {
-                char temp[MAX_FILENAME_LEN];
-                memcpy(temp, fileNames[j], MAX_FILENAME_LEN);
-                memcpy(fileNames[j], fileNames[j + 1], MAX_FILENAME_LEN);
-                memcpy(fileNames[j + 1], temp, MAX_FILENAME_LEN);
-                time_t tmpTime = fileTimes[j];
-                fileTimes[j] = fileTimes[j + 1];
-                fileTimes[j + 1] = tmpTime;
-            }
+    // Sort by modification time — newest first (Insertion Sort)
+    for (int i = 1; i < fileCount; i++) {
+        char tempName[MAX_FILENAME_LEN];
+        memcpy(tempName, fileNames[i], MAX_FILENAME_LEN);
+        time_t tempTime = fileTimes[i];
+        int j = i - 1;
+        while (j >= 0 && fileTimes[j] < tempTime) {
+            memcpy(fileNames[j + 1], fileNames[j], MAX_FILENAME_LEN);
+            fileTimes[j + 1] = fileTimes[j];
+            j--;
         }
+        memcpy(fileNames[j + 1], tempName, MAX_FILENAME_LEN);
+        fileTimes[j + 1] = tempTime;
     }
 
     return fileCount;
@@ -178,8 +178,14 @@ static int wrapLine(const char* rawLine, char outLines[][CHARS_PER_LINE + 1],
 
         if (spacePos > 0) {
             breakPos = spacePos;
+        } else {
+            // No space found — hard break at CHARS_PER_LINE
+            // Ensure we don't break in the middle of a UTF-8 sequence
+            while (breakPos > 0 && (rawLine[pos + breakPos] & 0xC0) == 0x80) {
+                breakPos--;
+            }
+            if (breakPos == 0) breakPos = 1; // Fallback to at least something
         }
-        // else: no space found — hard break at CHARS_PER_LINE
 
         memcpy(outLines[produced], rawLine + pos, breakPos);
         outLines[produced][breakPos] = '\0';
@@ -236,7 +242,7 @@ static void buildLineIndex() {
 
     totalWrappedLines = 0;
     char rawLine[LINE_BUFFER_SIZE];
-    char wrapped[8][CHARS_PER_LINE + 1];  // Temp buffer for wrap calculation
+    char wrapped[16][CHARS_PER_LINE + 1];  // Temp buffer for wrap calculation
 
     // Record position of first wrapped line
     if (totalWrappedLines < MAX_LINE_INDEX) {
@@ -257,7 +263,7 @@ static void buildLineIndex() {
         rawLine[len] = '\0';
 
         // Calculate how many wrapped lines this produces
-        int wrappedCount = wrapLine(rawLine, wrapped, 8);
+        int wrappedCount = wrapLine(rawLine, wrapped, 16);
 
         // Store byte offset for each wrapped line
         for (int i = 0; i < wrappedCount && totalWrappedLines < MAX_LINE_INDEX; i++) {
@@ -295,14 +301,19 @@ int sd_readWrappedLines(int startLine, char outLines[][CHARS_PER_LINE + 1],
     currentFile.seek(lineIndex[startLine]);
 
     int filled = 0;
+    
+    // Determine the true starting index of the wrapped lines for this raw line
     int currentWrappedLine = startLine;
+    while (currentWrappedLine > 0 && lineIndex[currentWrappedLine - 1] == lineIndex[startLine]) {
+        currentWrappedLine--;
+    }
 
     // We need to track which sub-line within a raw line we need
     // Find the raw line that contains startLine and which wrapped sub-line
     // it corresponds to
 
     char rawLine[LINE_BUFFER_SIZE];
-    char wrapped[8][CHARS_PER_LINE + 1];
+    char wrapped[16][CHARS_PER_LINE + 1];
 
     // Re-scan from the byte position to figure out sub-line offset
     // The lineIndex stores the raw line start, but multiple wrapped lines
@@ -322,7 +333,7 @@ int sd_readWrappedLines(int startLine, char outLines[][CHARS_PER_LINE + 1],
         rawLine[len] = '\0';
 
         // Wrap it
-        int wrappedCount = wrapLine(rawLine, wrapped, 8);
+        int wrappedCount = wrapLine(rawLine, wrapped, 16);
 
         // Determine which sub-lines to copy
         for (int i = 0; i < wrappedCount && filled < count; i++) {
@@ -360,18 +371,13 @@ uint64_t sd_getFreeBytes() {
 // Value: wrapped line position (int)
 
 static void makeBookmarkKey(const char* filename, char* key, size_t keySize) {
-    // Create a short key from filename (max 14 chars for NVS)
-    size_t len = strlen(filename);
-    if (len > 14) len = 14;
-    memcpy(key, filename, len);
-    key[len] = '\0';
-
-    // Replace dots and spaces with underscores for NVS compatibility
-    for (size_t i = 0; i < len; i++) {
-        if (key[i] == '.' || key[i] == ' ' || key[i] == '-') {
-            key[i] = '_';
-        }
+    // Generate a 32-bit FNV-1a hash to ensure a unique NVS key (max 15 chars)
+    uint32_t hash = 2166136261u;
+    for (size_t i = 0; filename[i] != '\0'; i++) {
+        hash ^= (uint8_t)filename[i];
+        hash *= 16777619u;
     }
+    snprintf(key, keySize, "%08X", hash);
 }
 
 void sd_saveBookmark(const char* filename, int wrappedLinePos) {
