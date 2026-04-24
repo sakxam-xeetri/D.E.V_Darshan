@@ -78,13 +78,13 @@
 // ─────────────────────────────────────────────────────────────────────────────
 #define SD_MOUNT_RETRIES      3
 #define SD_RETRY_DELAY_MS     500
-#define MAX_FILES             50
+#define MAX_FILES             200
 #define MAX_FILENAME_LEN      32
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  TEXT READER SETTINGS
 // ─────────────────────────────────────────────────────────────────────────────
-#define LINE_BUFFER_SIZE      128     // Max chars per raw line from file
+#define LINE_BUFFER_SIZE      256     // Max chars per raw line from file
 #define DISPLAY_BUFFER_LINES  20
 #define BOOKMARK_SAVE_EVERY   10
 
