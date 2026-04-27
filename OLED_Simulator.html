@@ -20,9 +20,10 @@
   --txt2: #8A8A95; 
   --txt3: #555560;
   --brd: rgba(255, 255, 255, 0.07);
-  --radius: 14px;
+  --radius: 0px;
   --ease: cubic-bezier(.4, 0, .2, 1);
   --oled-cyan: #00e1ff;
+  --oled-cols: 32;
   --ed-bg: #1E1E2E; 
   --ed-brd: #313244; 
   --ed-txt: #CDD6F4;
@@ -42,28 +43,50 @@ body {
 }
 
 .header {
-  text-align: center;
-  margin-bottom: 40px;
+  position: fixed;
+  top: 12px;
+  left: 14px;
+  z-index: 20;
 }
 
-.header h1 {
-  font-size: 2.2em;
-  font-weight: 800;
+.header-link {
+  text-decoration: none;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 8px;
+  border: 1px solid var(--glass-brd);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.header-title {
+  font-size: 0.84rem;
+  font-weight: 700;
+  line-height: 1.2;
   background: linear-gradient(135deg, var(--pri), var(--pri-lt));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 12px;
+  gap: 6px;
 }
 
-.header p {
+.header-title svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.header-subtitle {
   color: var(--txt2);
-  margin-top: 8px;
-  font-size: 0.95em;
-  letter-spacing: 0.5px;
+  font-size: 0.64rem;
+  letter-spacing: 0.2px;
+  line-height: 1.25;
+}
+
+.header-link:hover .header-subtitle {
+  color: var(--txt);
 }
 
 .container {
@@ -71,7 +94,7 @@ body {
   flex-wrap: wrap;
   gap: 30px;
   max-width: 1100px;
-  width: 100%;
+  width: fit-content;
   justify-content: center;
   align-items: flex-start;
 }
@@ -104,17 +127,20 @@ body {
 
 /* ── Editor Area ── */
 .editor-card {
-  flex: 1;
-  min-width: 320px;
+  flex: 0 0 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .ed-container {
   border: 1px solid var(--ed-brd);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--ed-bg);
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  width: min(100%, calc(var(--oled-cols) * 1ch + 34px));
 }
 
 .ed-toolbar {
@@ -123,14 +149,22 @@ body {
   border-bottom: 1px solid var(--ed-brd);
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   padding: 0 14px;
   font-size: 0.8em;
   color: var(--txt2);
 }
 
+.ed-stats {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
 textarea {
-  width: 100%;
-  height: 380px;
+  width: calc(var(--oled-cols) * 1ch + 32px);
+  max-width: 100%;
+  height: 700px;
   background: transparent;
   color: var(--ed-txt);
   border: none;
@@ -139,11 +173,19 @@ textarea {
   resize: vertical;
   outline: none;
   tab-size: 4;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
 }
 
 textarea::placeholder {
   color: #585B70;
   font-style: italic;
+}
+
+.ed-hint {
+  margin-top: 10px;
+  color: var(--txt2);
+  font-size: 0.8em;
 }
 
 /* ── OLED Preview Area ── */
@@ -172,7 +214,7 @@ textarea::placeholder {
 
 .oled-frame {
   background: #000;
-  border-radius: 8px;
+  border-radius: 0;
   padding: 16px;
   border: 2px solid #222;
   box-shadow: 0 0 24px rgba(0,0,0,0.7), inset 0 0 10px rgba(0,0,0,0.5);
@@ -224,7 +266,7 @@ textarea::placeholder {
 .oled-btn {
   width: 52px;
   height: 52px;
-  border-radius: 50%;
+  border-radius: 0;
   border: 2px solid #333;
   background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
   color: var(--txt2);
@@ -285,7 +327,20 @@ textarea::placeholder {
 }
 
 @media(max-width: 768px) {
-  .preview-card { width: 100%; }
+  .header {
+    top: 8px;
+    left: 8px;
+  }
+
+  .header-title {
+    font-size: 0.76rem;
+  }
+
+  .header-subtitle {
+    font-size: 0.58rem;
+  }
+
+  textarea { height: 500px; }
   .oled-screen { width: 288px; height: 72px; }
   .oled-row { height: 18px; line-height: 18px; font-size: 12px; letter-spacing: 1.2px; }
   .oled-frame { padding: 12px; }
@@ -301,18 +356,20 @@ textarea::placeholder {
 <body>
 
 <div class="header">
-  <h1>
-    <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
-      <path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14z"/>
-    </svg>
-    D.E.V_Darshan Simulator
-  </h1>
-  <p>Live preview of text exactly as it will appear on the hardware display</p>
+  <a class="header-link" href="https://github.com/sakxam-xeetri/D.E.V_Darshan" target="_blank" rel="noopener noreferrer">
+    <span class="header-title">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14z"/>
+      </svg>
+      D.E.V_Darshan Simulator
+    </span>
+    <span class="header-subtitle">Live preview as it appears on hardware</span>
+  </a>
 </div>
 
-<div class="container">
+<div class="container card">
   
-  <div class="card editor-card">
+  <div class="editor-card">
     <h2>
       <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
         <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
@@ -320,12 +377,16 @@ textarea::placeholder {
       Text Input
     </h2>
     <div class="ed-container">
-      <div class="ed-toolbar">Draft text file</div>
-      <textarea id="editor" placeholder="Type or paste your text here to see how the word-wrapping engine processes it for the OLED screen..."></textarea>
+      <div class="ed-toolbar">
+        <span>32-char input width</span>
+        <span class="ed-stats" id="edStats">0 chars · 1 line</span>
+      </div>
+      <textarea id="editor" cols="32" wrap="soft" placeholder="Type or paste your text here to see how the word-wrapping engine processes it for the OLED screen..."></textarea>
     </div>
+    <div class="ed-hint">Paste as much text as you want. The editor width matches 32 characters.</div>
   </div>
 
-  <div class="card preview-card">
+  <div class="preview-card">
     <h2>
       <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
@@ -418,6 +479,9 @@ function oledWrapLine(raw) {
 function processText() {
   const txt = document.getElementById('editor').value;
   const rawLines = txt.split('\n');
+  const editorStats = document.getElementById('edStats');
+
+  editorStats.textContent = txt.length + ' chars · ' + Math.max(rawLines.length, 1) + ' line' + (rawLines.length === 1 ? '' : 's');
   
   oledWrapped = [];
   
