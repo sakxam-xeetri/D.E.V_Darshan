@@ -29,6 +29,9 @@ bool portal_isActive();
 // Check if an upload was completed successfully
 bool portal_uploadCompleted();
 
+// Check if OTA firmware update is currently in progress
+bool portal_isUpdating();
+
 // Get millis() timestamp of last HTTP activity
 unsigned long portal_lastActivity();
 
