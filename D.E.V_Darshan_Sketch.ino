@@ -444,11 +444,13 @@ void setup() {
 void loop() {
     // Handle WiFi portal client requests
     if (appState == STATE_WIFI_PORTAL) {
-        if (millis() - portal_lastActivity() > WIFI_TIMEOUT_MS) {
+        portal_handleClient();
+
+        // Timeout applies only when idle and not flashing firmware.
+        if (!portal_isUpdating() && (millis() - portal_lastActivity() > WIFI_TIMEOUT_MS)) {
             exitWifiPortal();
             return; // Exit early to process state change
         }
-        portal_handleClient();
     }
 
     // Read button input
