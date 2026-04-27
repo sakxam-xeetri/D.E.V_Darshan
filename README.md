@@ -771,11 +771,32 @@ Button Press Timeline:
 
 ### Over-The-Air (OTA) Firmware Update
 You can easily update the device firmware via the WiFi Portal, without needing to plug it back into your computer!
-1. Compile your sketch in Arduino IDE: Go to **Sketch > Export compiled Binary**. This creates a `.bin` file in your sketch folder.
-2. On your D.E.V_Darshan device, open the **WiFi Portal** and connect to the displayed WiFi network.
-3. Open the portal in your browser (`192.168.4.1`) and go to the **Settings** tab.
-4. Scroll down to **Firmware Update**, select your compiled `.bin` file, and click **Flash Firmware**.
-5. Wait for the upload to complete. Once successful, the device will automatically reboot and start running the new firmware.
+
+**Step 1: Generate the `.bin` file**
+*   **Using Arduino IDE:**
+    1.  Open the sketch in Arduino IDE.
+    2.  Go to **Sketch > Export compiled Binary** (`Ctrl+Alt+S`).
+    3.  This creates a `.bin` file in your sketch's `build` folder (or directly in the sketch folder). Look for a file ending in `.bin`.
+*   **Using PlatformIO:**
+    1.  Click the PlatformIO icon in VS Code.
+    2.  Under **Project Tasks**, expand your environment (e.g., `esp32cam`).
+    3.  Click **Build**.
+    4.  The `.bin` file will be generated at `.pio/build/esp32cam/firmware.bin`.
+
+**Step 2: Connect to the Device**
+1.  On your D.E.V_Darshan device, navigate to the **HOME** menu and select **WiFi Portal**.
+2.  Connect your phone or computer to the displayed WiFi network (default SSID: `D.E.V_Darshan`).
+3.  Open a web browser and navigate to `http://192.168.4.1`.
+
+**Step 3: Upload the Firmware**
+1.  In the WiFi Portal, tap the **Settings** tab (gear icon).
+2.  Scroll down to the **Firmware Update** section.
+3.  Tap **Choose File** and select the `.bin` file you generated in Step 1.
+4.  Click **Flash Firmware**.
+5.  Wait for the upload to complete (usually 10-30 seconds). A progress bar will show the status.
+6.  Once successful, the portal will display a confirmation message, and the device will automatically reboot and start running the new firmware.
+
+> **Warning:** Do not power off the device or disconnect from the WiFi network during the firmware flashing process! If the process is interrupted, you may need to re-flash the firmware via a physical serial connection.
 
 ---
 
