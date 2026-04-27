@@ -41,10 +41,10 @@ body {
 .header-actions { display: flex; gap: 16px; }
 
 .main-grid {
-  display: grid; grid-template-columns: 280px 1fr 380px; gap: 24px; padding: 24px;
+  display: grid; grid-template-columns: 280px 380px 380px; gap: 24px; padding: 24px; justify-content: center;
   flex: 1; height: calc(100vh - 72px); overflow: hidden;
 }
-@media (max-width: 1200px) { .main-grid { grid-template-columns: 240px 1fr 340px; gap: 16px;} }
+@media (max-width: 1200px) { .main-grid { grid-template-columns: 240px 360px 340px; gap: 16px; justify-content: center;} }
 @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; height: auto; overflow: auto; } body {overflow: auto;} }
 
 .panel {
