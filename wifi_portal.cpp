@@ -53,6 +53,7 @@ static WebServer* server = nullptr;
 static bool portalActive = false;
 static File uploadFile;
 static bool uploadSuccess = false;
+static bool otaInProgress = false;
 static unsigned long lastPortalActivityMs = 0;
 
 // ─── Filename Sanitization ───────────────────────────────────────────────────
@@ -172,31 +173,48 @@ static void handleUploadComplete() {
 // Handle OTA firmware upload stream
 static void handleUpdate() {
     HTTPUpload& upload = server->upload();
+    lastPortalActivityMs = millis();
+
     if (upload.status == UPLOAD_FILE_START) {
+        otaInProgress = true;
         Serial.printf("OTA Update Start: %s\n", upload.filename.c_str());
-        uint32_t maxSketchSpace = (ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000;
-        if (!Update.begin(maxSketchSpace, U_FLASH)) { // start with max available size
+
+        // Let Update select the inactive OTA partition size automatically.
+        if (!Update.begin(UPDATE_SIZE_UNKNOWN, U_FLASH)) {
+            otaInProgress = false;
             Update.printError(Serial);
         }
     } else if (upload.status == UPLOAD_FILE_WRITE) {
+        if (!otaInProgress) {
+            return;
+        }
+
         if (Update.write(upload.buf, upload.currentSize) != upload.currentSize) {
             Update.printError(Serial);
+            otaInProgress = false;
+            Update.end();
         }
     } else if (upload.status == UPLOAD_FILE_END) {
+        otaInProgress = false;
+
         if (Update.end(true)) { // true to set the size to the current progress
             Serial.printf("OTA Update Success: %u bytes\nRebooting...\n", upload.totalSize);
         } else {
             Update.printError(Serial);
         }
     } else if (upload.status == UPLOAD_FILE_ABORTED) {
+        otaInProgress = false;
         Update.end();
         Serial.println("OTA Update was aborted");
     }
+
     delay(0);
 }
 
 // Complete OTA firmware upload
 static void handleUpdateComplete() {
+    lastPortalActivityMs = millis();
+
     server->sendHeader("Connection", "close");
     if (Update.hasError()) {
         String err = "Update Failed: " + String(Update.errorString());
@@ -599,6 +617,7 @@ void portal_stop() {
     setCpuFrequencyMhz(LOW_POWER_CPU_MHZ);
 
     portalActive = false;
+    otaInProgress = false;
 }
 
 void portal_handleClient() {
@@ -613,6 +632,10 @@ bool portal_isActive() {
 
 bool portal_uploadCompleted() {
     return uploadSuccess;
+}
+
+bool portal_isUpdating() {
+    return otaInProgress;
 }
 
 unsigned long portal_lastActivity() {
