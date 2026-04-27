@@ -485,14 +485,18 @@ void loop() {
                 case BTN_UP_SHORT:
                     if (homeIndex > 0) {
                         homeIndex--;
-                        display_home(homeIndex);
+                    } else {
+                        homeIndex = HOME_ITEMS - 1;
                     }
+                    display_home(homeIndex);
                     break;
                 case BTN_DOWN_SHORT:
                     if (homeIndex < HOME_ITEMS - 1) {
                         homeIndex++;
-                        display_home(homeIndex);
+                    } else {
+                        homeIndex = 0;
                     }
+                    display_home(homeIndex);
                     break;
                 case BTN_SELECT_SHORT:
                     switch (homeIndex) {
