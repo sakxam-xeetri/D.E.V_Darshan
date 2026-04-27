@@ -113,16 +113,16 @@ body {
 }
 .code-area { flex: 1; position: relative; overflow: auto; cursor: text;}
 .lines-backdrop {
-  position: absolute; top: 0; left: 0; min-width: 100%; padding: 16px;
+  position: absolute; top: 0; left: 0; min-width: 100%; padding: 16px; min-width: 100%; white-space: pre-wrap; word-break: break-all;
   font-family: var(--font-mono); font-size: 14px; line-height: 1.6; color: transparent;
-  pointer-events: none; white-space: pre; z-index: 1; margin: 0;
+  pointer-events: none; white-space: pre-wrap; word-break: break-all; z-index: 1; margin: 0;
 }
 .lines-backdrop span.overflow { background: rgba(255, 0, 60, 0.2); border-bottom: 1px dashed var(--secondary); }
 textarea {
-  position: absolute; top: 0; left: 0; min-width: 100%; min-height: 100%;
+  position: absolute; top: 0; left: 0; width: 100%; min-height: 100%;
   background: transparent; color: var(--text-main); border: none; padding: 16px;
   font-family: var(--font-mono); font-size: 14px; line-height: 1.6; resize: none;
-  outline: none; white-space: pre; z-index: 2; caret-color: var(--primary); margin: 0; overflow: hidden;
+  outline: none; white-space: pre-wrap; word-break: break-all; z-index: 2; caret-color: var(--primary); margin: 0; overflow: hidden;
 }
 
 .code-area::-webkit-scrollbar { width: 10px; height: 10px; }
@@ -141,16 +141,16 @@ textarea {
   font-size: 0.6rem; color: #444; letter-spacing: 1px;
 }
 .oled-screen {
-  background: #000; border: 1px solid #111; width: calc(32 * 9.6px); height: calc(4 * 20px);
-  position: relative; overflow: hidden; box-shadow: inset 0 0 20px rgba(220, 20, 60, 0.05);
-  display: flex; flex-direction: column;
+  background: #000; border: 1px solid #111; width: 384px; height: 96px;
+  position: relative; overflow: hidden; box-shadow: inset 0 0 20px rgba(0, 225, 255, 0.1);
+  display: flex; flex-direction: column; image-rendering: pixelated;
 }
-.oled-screen.inverted { background: var(--primary); }
-.oled-screen.inverted .oled-row { color: #000; text-shadow: none; font-weight: 600; }
+.oled-screen.inverted { background: #00e1ff; }
+.oled-screen.inverted .oled-row { color: #000; text-shadow: none; font-weight: 700; }
 .oled-row {
-  height: 20px; line-height: 20px; font-family: var(--font-mono); font-size: 16px;
-  color: var(--primary); text-shadow: 0 0 5px var(--primary-glow); white-space: pre;
-  letter-spacing: 0; transform-origin: left center; width: 110%; transform: scaleX(0.60); padding-left: 2px;
+  height: 24px; line-height: 24px; font-family: "Courier New", Courier, monospace; font-size: 16px;
+  color: #00e1ff; text-shadow: 0 0 4px rgba(0, 225, 255, 0.5); white-space: pre-wrap; word-break: break-all;
+  letter-spacing: 2px; transform: none; width: 100%; padding-left: 4px;
 }
 
 .hardware-controls { display: flex; gap: 12px; margin-top: 10px; }
@@ -256,7 +256,7 @@ textarea {
           <div class="line-numbers" id="lineNumbers">1</div>
           <div class="code-area" id="codeArea">
             <div class="lines-backdrop" id="backdrop"></div>
-            <textarea id="editor" spellcheck="false" maxlength="128" placeholder="Type data... max 32 chars per line (128 chars total)"></textarea>
+            <textarea id="editor" spellcheck="false" placeholder="Type or paste long data..."></textarea>
           </div>
         </div>
       </div>
@@ -444,7 +444,16 @@ ca.addEventListener('mousemove', e => { if(!idn) return; e.preventDefault(); ca.
 
 elEd.addEventListener('paste', e => {
   if(document.getElementById('chkAutoFormat').checked) {
-    setTimeout(()=>mut(v=>v.replace(/\s{2,}/g,' ')), 10);
+    setTimeout(() => {
+      mut(v => {
+        let cleaned = v.replace(/\s{2,}/g, ' ');
+        return wTxt(cleaned).join("\n");
+      });
+    }, 10);
+  } else {
+    setTimeout(() => {
+       mut(v => wTxt(v).join("\n"));
+    }, 10);
   }
 });
 
@@ -458,26 +467,7 @@ document.getElementById('btnSave').addEventListener('click', () => {
   window.URL.revokeObjectURL(anchor.href);
 });
 
-// Limit to exactly 32 chars per line logic if needed (enforced by hardware anyway)
-elEd.addEventListener("input", function() {
-    let lines = this.value.split("\n");
-    let changed = false;
-    for (let i = 0; i < lines.length; i++) {
-        if (lines[i].length > 32) {
-            lines[i] = lines[i].substring(0, 32);
-            changed = true;
-        }
-    }
-    // Limit to 4 lines
-    if (lines.length > 4) {
-        lines = lines.slice(0, 4);
-        changed = true;
-    }
-    if (changed) {
-        this.value = lines.join("\n");
-        updEd();
-    }
-});
+
 
 </script>
 </body>
