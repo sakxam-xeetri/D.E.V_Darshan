@@ -50,7 +50,8 @@ static const char PORTAL_HTML[] PROGMEM = R"rawliteral(
 --warn:#FFD740;--warn-bg:rgba(255,215,64,0.1);
 --sb-w:250px;--sb-w-col:60px;--radius:0px;
 --ease:cubic-bezier(.4,0,.2,1);
---ed-bg:#1E1E2E;--ed-gutter:#181825;--ed-gutter-txt:#585B70;--ed-gutter-brd:#313244;--ed-txt:#CDD6F4;--ed-cursor:#F38BA8;--ed-sel:rgba(220,20,60,.28);--ed-hl:rgba(220,20,60,.06);--ed-hl-brd:#DC143C;--ed-tab-bg:#181825;--ed-tab-active:#1E1E2E;--ed-tab-txt:#BAC2DE;--ed-tab-active-txt:#CDD6F4;--ed-foot-bg:#181825;--ed-foot-txt:#6C7086;--ed-brd:#313244
+--ed-bg:#1E1E2E;--ed-gutter:#181825;--ed-gutter-txt:#585B70;--ed-gutter-brd:#313244;--ed-txt:#CDD6F4;--ed-cursor:#F38BA8;--ed-sel:rgba(220,20,60,.28);--ed-hl:rgba(220,20,60,.06);--ed-hl-brd:#DC143C;--ed-tab-bg:#181825;--ed-tab-active:#1E1E2E;--ed-tab-txt:#BAC2DE;--ed-tab-active-txt:#CDD6F4;--ed-foot-bg:#181825;--ed-foot-txt:#6C7086;--ed-brd:#313244;
+--oled-cols:32;--editor-char-width:calc(var(--oled-cols) * 1ch);--editor-content-width:calc(var(--editor-char-width) + 32px);--editor-panel-width:calc(var(--editor-content-width) + 51px)
 }
 
 /* Light theme */
@@ -139,7 +140,7 @@ html.light .sb-toggle:hover{background:rgba(0,0,0,.04)}
 .tab-panel.active{display:block}
 @keyframes fadeSlide{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 #tab-editor.active{display:flex;flex-direction:column;overflow:hidden;height:calc(100vh - 56px)}
-.ed-split{display:flex;gap:16px;flex:1;min-height:0;overflow:hidden}
+.ed-split{display:flex;gap:16px;flex:1;min-height:0;overflow:hidden;align-items:flex-start}
 .ed-split .oled-panel .card{margin-bottom:0}
 
 /* ── Page Header ── */
@@ -216,7 +217,7 @@ html.light .sb-toggle:hover{background:rgba(0,0,0,.04)}
 .file-actions button.del:hover{background:var(--err-bg);color:var(--err)}
 
 /* ── Editor (IDE-style) ── */
-.ed-container{display:flex;flex-direction:column;flex:1;min-height:0;border:1px solid var(--ed-brd);border-radius:8px;overflow:hidden;background:var(--ed-bg)}
+.ed-container{display:flex;flex-direction:column;flex:0 0 auto;width:var(--editor-panel-width);max-width:100%;min-height:0;border:1px solid var(--ed-brd);border-radius:8px;overflow:hidden;background:var(--ed-bg)}
 .ed-toolbar{display:flex;justify-content:space-between;align-items:center;padding:0 12px;height:40px;background:var(--ed-tab-bg);border-bottom:1px solid var(--ed-brd);flex-shrink:0}
 .ed-tabs{display:flex;align-items:stretch;height:100%;gap:0}
 .ed-tab{display:flex;align-items:center;gap:6px;padding:0 16px;font:12px/1 'Segoe UI',sans-serif;color:var(--ed-tab-txt);border-right:1px solid var(--ed-brd);cursor:default;user-select:none;position:relative;white-space:nowrap}
@@ -232,7 +233,7 @@ html.light .sb-toggle:hover{background:rgba(0,0,0,.04)}
 .ed-gutter{width:50px;flex-shrink:0;overflow:hidden;background:var(--ed-gutter);border-right:1px solid var(--ed-gutter-brd)}
 .line-nums{padding:8px 0;font:13px/20px 'JetBrains Mono','Fira Code','Consolas','Courier New',monospace;color:var(--ed-gutter-txt);user-select:none}
 .ln{text-align:right;padding-right:8px;line-height:20px;box-sizing:border-box}
-.ed-content{flex:1;min-width:0;position:relative;overflow:hidden}
+.ed-content{flex:0 0 auto;width:var(--editor-content-width);max-width:var(--editor-content-width);min-width:0;position:relative;overflow:hidden}
 .ed-area{display:block;width:100%;height:100%;resize:none;border:none;padding:8px 16px;box-sizing:border-box;font:13px/20px 'JetBrains Mono','Fira Code','Consolas','Courier New',monospace;outline:none;background:transparent;color:var(--ed-txt);tab-size:4;caret-color:var(--ed-cursor);white-space:pre-wrap;overflow-y:auto;overflow-x:hidden;word-wrap:break-word;overflow-wrap:break-word}
 .ed-area::selection{background:var(--ed-sel)}
 .ed-area::placeholder{color:var(--ed-gutter-txt);font-style:italic}
@@ -306,15 +307,15 @@ html.light .sb-toggle:hover{background:rgba(0,0,0,.04)}
 .vision-block{background:linear-gradient(135deg,rgba(220,20,60,.06),rgba(220,20,60,.02));border-left:3px solid var(--pri);border-radius:0 var(--radius) var(--radius) 0;padding:20px 24px;margin-top:16px;font-size:.84em;line-height:1.8;color:var(--txt2);font-style:italic}
 
 /* ── OLED Preview ── */
-.oled-panel{animation:fadeSlide .4s var(--ease);width:450px;flex-shrink:0;overflow-y:auto}
+.oled-panel{animation:fadeSlide .4s var(--ease);width:var(--editor-panel-width);max-width:100%;flex-shrink:0;overflow-y:auto}
 .oled-panel h3{font-size:.9em;color:var(--txt);margin-bottom:14px;display:flex;align-items:center;gap:10px;font-weight:600}
 .oled-panel h3 svg{color:var(--pri);flex-shrink:0}
 .oled-wrap{display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap}
 .oled-device{display:flex;flex-direction:column;align-items:center;gap:12px}
 .oled-frame{background:#000;border-radius:6px;padding:8px 10px;border:2px solid #222;box-shadow:0 0 20px rgba(0,0,0,.6),inset 0 0 8px rgba(0,0,0,.5);position:relative}
 .oled-frame::before{content:'SSD1306 128\00d732';position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--txt3);white-space:nowrap;letter-spacing:.5px}
-.oled-screen{width:384px;height:96px;background:#000;position:relative;overflow:hidden;image-rendering:pixelated;border:1px solid #111}
-.oled-row{height:24px;line-height:24px;white-space:pre;font-family:'Courier New',monospace;font-size:16px;letter-spacing:1.6px;color:#00e1ff;padding:0 2px;overflow:hidden}
+.oled-screen{width:var(--editor-char-width);height:96px;background:#000;position:relative;overflow:hidden;image-rendering:pixelated;border:1px solid #111}
+.oled-row{height:24px;line-height:24px;white-space:pre;font-family:'Consolas','Courier New',monospace;font-size:16px;letter-spacing:0;color:#00e1ff;padding:0;overflow:hidden}
 html.light .oled-row{color:#00e1ff}
 .oled-btns{display:flex;gap:10px;align-items:center}
 .oled-btn{width:44px;height:44px;border-radius:50%;border:2px solid #333;background:linear-gradient(145deg,#1a1a1a,#0a0a0a);color:var(--txt2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;transition:all .15s var(--ease);user-select:none;box-shadow:0 3px 8px rgba(0,0,0,.5)}
@@ -345,9 +346,9 @@ html.light .oled-btn:hover{border-color:var(--pri);background:linear-gradient(14
 /* ── Responsive ── */
 @media(max-width:1100px){
 .ed-split{flex-direction:column;overflow-y:auto}
-.oled-panel{width:100%!important;flex-shrink:0}
+.oled-panel{width:var(--editor-panel-width)!important;max-width:100%;margin:0 auto;flex-shrink:0}
 #tab-editor.active{height:auto;overflow:visible}
-.ed-container{min-height:400px;flex:none!important;height:calc(100vh - 200px)}
+.ed-container{min-height:400px;flex:none!important;height:calc(100vh - 200px);width:var(--editor-panel-width);max-width:100%;margin:0 auto}
 }
 @media(max-width:768px){
 .sidebar{transform:translateX(-100%);width:280px!important}
@@ -360,8 +361,8 @@ html.light .oled-btn:hover{border-color:var(--pri);background:linear-gradient(14
 .main{margin-left:0!important;padding:68px 14px 20px;height:auto!important;overflow-y:auto;-webkit-overflow-scrolling:touch}
 #tab-editor.active{height:auto;overflow:visible}
 .ed-split{flex-direction:column;overflow-y:visible}
-.oled-panel{width:100%!important}
-.ed-container{height:calc(100vh - 280px);min-height:300px;flex:none!important}
+.oled-panel{width:var(--editor-panel-width)!important;max-width:100%;margin:0 auto}
+.ed-container{height:calc(100vh - 280px);min-height:300px;flex:none!important;width:var(--editor-panel-width);max-width:100%;margin:0 auto}
 .stat-grid{grid-template-columns:repeat(2,1fr);gap:10px}
 .file-row{flex-wrap:wrap;gap:10px;padding:14px 12px}
 .file-actions{width:100%;justify-content:flex-end;gap:8px}
@@ -399,7 +400,7 @@ html.light .oled-btn:hover{border-color:var(--pri);background:linear-gradient(14
 .info-row{font-size:.88em;padding:12px 0}
 .acc-btn{padding:18px 4px;font-size:.9em}
 .author-bio{font-size:.85em}
-.oled-screen{width:320px;height:80px}
+.oled-screen{width:var(--editor-char-width);height:80px}
 .oled-row{height:20px;line-height:20px;font-size:13px}
 .oled-btn{width:48px;height:48px}
 .oled-wrap{justify-content:center}
@@ -417,7 +418,7 @@ html.light .oled-btn:hover{border-color:var(--pri);background:linear-gradient(14
 .pg-hd h2{font-size:1.15em}
 .main{padding:64px 10px 16px}
 .card{padding:14px}
-.oled-screen{width:256px;height:64px}
+.oled-screen{width:var(--editor-char-width);height:64px}
 .oled-row{height:16px;line-height:16px;font-size:11px}
 .oled-info{min-width:100%}
 }
