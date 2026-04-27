@@ -140,8 +140,30 @@ html.light .sb-toggle:hover{background:rgba(0,0,0,.04)}
 .tab-panel.active{display:block}
 @keyframes fadeSlide{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 #tab-editor.active{display:flex;flex-direction:column;overflow:hidden;height:calc(100vh - 56px)}
-.ed-split{display:flex;gap:16px;flex:1;min-height:0;overflow:hidden;align-items:flex-start}
-.ed-split .oled-panel .card{margin-bottom:0}
+.ed-split{display:flex;gap:16px;flex:1;min-height:0;overflow:auto;align-items:stretch;padding-bottom:8px}
+
+/* ── Editor Simulator Panels (index-like) ── */
+.sim-panel{background:var(--card);border:1px solid var(--glass-brd);border-radius:0px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;flex-direction:column;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.35)}
+.sim-panel-hd{padding:14px 16px;border-bottom:1px solid var(--brd);font-size:.92em;font-weight:600;display:flex;align-items:center;gap:8px;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,0))}
+.sim-panel-hd svg{color:var(--pri);flex-shrink:0}
+.sim-panel-bd{padding:14px;overflow:auto;flex:1;min-height:0}
+
+.ed-tools-panel{width:260px;flex:0 0 260px;min-height:0}
+.sim-tools-sec{margin-bottom:18px}
+.sim-tools-sec summary{list-style:none;cursor:pointer;font-size:.78em;color:var(--txt2);text-transform:uppercase;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;padding:2px 0}
+.sim-tools-sec summary::-webkit-details-marker{display:none}
+.sim-tools-sec summary::after{content:'\25BE';font-size:.8em;color:var(--txt2)}
+.sim-tools-sec[open] summary::after{content:'\25B4'}
+.sim-tools-grid{display:grid;gap:8px;margin-top:10px}
+.sim-tool-btn{width:100%;padding:9px 11px;border:1px solid var(--brd);background:rgba(255,255,255,.03);color:var(--txt);font-size:.82em;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .2s var(--ease)}
+.sim-tool-btn:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18)}
+.sim-tool-btn svg{width:14px;height:14px;color:var(--txt2);flex-shrink:0}
+.sim-ctrl{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.sim-ctrl label{font-size:.8em;color:var(--txt2)}
+.sim-ctrl select{background:rgba(0,0,0,.35);color:var(--txt);border:1px solid var(--brd);padding:8px 10px;border-radius:6px;outline:none}
+.sim-ctrl select:focus{border-color:var(--pri)}
+.sim-check{display:flex;align-items:center;justify-content:space-between;margin-top:10px;font-size:.8em;color:var(--txt2)}
+.sim-check input{accent-color:var(--pri);transform:scale(1.1)}
 
 /* ── Page Header ── */
 .pg-hd{margin-bottom:24px}
@@ -216,30 +238,28 @@ html.light .sb-toggle:hover{background:rgba(0,0,0,.04)}
 .file-actions button:hover{background:rgba(220,20,60,.12);color:var(--pri);transform:scale(1.1)}
 .file-actions button.del:hover{background:var(--err-bg);color:var(--err)}
 
-/* ── Editor (IDE-style) ── */
-.ed-container{display:flex;flex-direction:column;flex:0 0 auto;width:var(--editor-panel-width);max-width:100%;min-height:0;border:1px solid var(--ed-brd);border-radius:8px;overflow:hidden;background:var(--ed-bg)}
-.ed-toolbar{display:flex;justify-content:space-between;align-items:center;padding:0 12px;height:40px;background:var(--ed-tab-bg);border-bottom:1px solid var(--ed-brd);flex-shrink:0}
-.ed-tabs{display:flex;align-items:stretch;height:100%;gap:0}
-.ed-tab{display:flex;align-items:center;gap:6px;padding:0 16px;font:12px/1 'Segoe UI',sans-serif;color:var(--ed-tab-txt);border-right:1px solid var(--ed-brd);cursor:default;user-select:none;position:relative;white-space:nowrap}
-.ed-tab.active{background:var(--ed-tab-active);color:var(--ed-tab-active-txt)}
-.ed-tab.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--pri)}
-.ed-tab svg{width:14px;height:14px;flex-shrink:0;opacity:.6}
+/* ── Editor (index-like data editor) ── */
+.ed-container{display:flex;flex-direction:column;flex:0 0 auto;width:var(--editor-panel-width);max-width:100%;min-height:0}
+.ed-toolbar{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(0,0,0,.35);border-bottom:1px solid var(--ed-brd);flex-shrink:0;font-size:.78em;color:var(--txt2)}
+.ed-tabs{display:flex;align-items:center;height:100%;gap:8px;min-width:0}
+.ed-tab{display:flex;align-items:center;gap:6px;font:12px/1 'Segoe UI',sans-serif;color:var(--ed-tab-active-txt);white-space:nowrap;min-width:0}
+.ed-tab svg{width:14px;height:14px;flex-shrink:0;opacity:.75}
 .ed-tab .dot{width:7px;height:7px;border-radius:50%;background:var(--pri);display:none}
 .ed-tab .dot.show{display:inline-block}
 .ed-acts{display:flex;gap:6px;align-items:center}
-.ed-acts .btn{padding:5px 14px;font-size:.75em;border-radius:6px}
+.ed-acts .btn{padding:5px 12px;font-size:.74em;border-radius:6px}
 .ed-body-wrap{flex:1;min-height:0;display:flex;flex-direction:column}
-.ed-body{display:flex;flex:1;min-height:0;overflow:hidden}
-.ed-gutter{width:50px;flex-shrink:0;overflow:hidden;background:var(--ed-gutter);border-right:1px solid var(--ed-gutter-brd)}
+.ed-body{display:flex;flex:1;min-height:0;overflow:hidden;background:#0d0f15;border-left:1px solid var(--ed-brd);border-right:1px solid var(--ed-brd)}
+.ed-gutter{width:50px;flex-shrink:0;overflow:hidden;background:rgba(0,0,0,.22);border-right:1px solid var(--ed-gutter-brd)}
 .line-nums{padding:8px 0;font:13px/20px 'JetBrains Mono','Fira Code','Consolas','Courier New',monospace;color:var(--ed-gutter-txt);user-select:none}
 .ln{text-align:right;padding-right:8px;line-height:20px;box-sizing:border-box}
 .ed-content{flex:0 0 auto;width:var(--editor-content-width);max-width:var(--editor-content-width);min-width:0;position:relative;overflow:hidden}
-.ed-area{display:block;width:100%;height:100%;resize:none;border:none;padding:8px 16px;box-sizing:border-box;font:13px/20px 'JetBrains Mono','Fira Code','Consolas','Courier New',monospace;outline:none;background:transparent;color:var(--ed-txt);tab-size:4;caret-color:var(--ed-cursor);white-space:pre-wrap;overflow-y:auto;overflow-x:hidden;word-wrap:break-word;overflow-wrap:break-word;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.ed-area{display:block;width:100%;height:100%;resize:none;border:none;padding:8px 16px;box-sizing:border-box;font:13px/20px 'Fira Code','JetBrains Mono','Consolas','Courier New',monospace;outline:none;background:transparent;color:var(--ed-txt);tab-size:4;caret-color:var(--ed-cursor);white-space:pre-wrap;overflow-y:auto;overflow-x:hidden;word-wrap:break-word;overflow-wrap:break-word;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .ed-area::selection{background:var(--ed-sel)}
 .ed-area::placeholder{color:var(--ed-gutter-txt);font-style:italic}
-.ed-mirror{position:absolute;top:0;left:0;visibility:hidden;overflow:hidden;pointer-events:none;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:break-word;font:13px/20px 'JetBrains Mono','Fira Code','Consolas','Courier New',monospace;padding:0 16px;box-sizing:border-box;tab-size:4}
-.line-hl{position:absolute;left:0;right:0;height:20px;background:var(--ed-hl);pointer-events:none;transition:top .05s,height .05s;border-left:2px solid var(--ed-hl-brd)}
-.ed-statusbar{display:flex;justify-content:space-between;align-items:center;padding:0 14px;height:26px;background:var(--ed-foot-bg);border-top:1px solid var(--ed-brd);font:11px/26px 'Segoe UI',sans-serif;color:var(--ed-foot-txt);flex-shrink:0}
+.ed-mirror{position:absolute;top:0;left:0;visibility:hidden;overflow:hidden;pointer-events:none;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:break-word;font:13px/20px 'Fira Code','JetBrains Mono','Consolas','Courier New',monospace;padding:0 16px;box-sizing:border-box;tab-size:4}
+.line-hl{position:absolute;left:0;right:0;height:20px;background:var(--ed-hl);pointer-events:none;transition:top .05s,height .05s;border-left:1px solid var(--ed-hl-brd)}
+.ed-statusbar{display:flex;justify-content:space-between;align-items:center;padding:0 14px;height:26px;background:rgba(0,0,0,.35);border:1px solid var(--ed-brd);border-top:none;font:11px/26px 'Segoe UI',sans-serif;color:var(--ed-foot-txt);flex-shrink:0}
 .ed-statusbar span{white-space:nowrap}
 .ed-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--txt2);padding:36px 16px;text-align:center}
 .ed-empty svg{margin-bottom:12px;color:var(--txt3);opacity:.5}
@@ -307,14 +327,14 @@ html.light .sb-toggle:hover{background:rgba(0,0,0,.04)}
 .vision-block{background:linear-gradient(135deg,rgba(220,20,60,.06),rgba(220,20,60,.02));border-left:3px solid var(--pri);border-radius:0 var(--radius) var(--radius) 0;padding:20px 24px;margin-top:16px;font-size:.84em;line-height:1.8;color:var(--txt2);font-style:italic}
 
 /* ── OLED Preview ── */
-.oled-panel{animation:fadeSlide .4s var(--ease);width:var(--editor-panel-width);max-width:100%;flex-shrink:0;overflow-y:auto}
-.oled-panel h3{font-size:.9em;color:var(--txt);margin-bottom:14px;display:flex;align-items:center;gap:10px;font-weight:600}
-.oled-panel h3 svg{color:var(--pri);flex-shrink:0}
+.oled-panel{animation:fadeSlide .4s var(--ease);width:var(--editor-panel-width);max-width:100%;flex-shrink:0;min-height:0}
 .oled-wrap{display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap}
 .oled-device{display:flex;flex-direction:column;align-items:center;gap:12px}
 .oled-frame{background:#000;border-radius:6px;padding:8px 10px;border:2px solid #222;box-shadow:0 0 20px rgba(0,0,0,.6),inset 0 0 8px rgba(0,0,0,.5);position:relative}
 .oled-frame::before{content:'SSD1306 128\00d732';position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--txt3);white-space:nowrap;letter-spacing:.5px}
 .oled-screen{width:var(--editor-char-width);height:96px;background:#000;position:relative;overflow:hidden;image-rendering:pixelated;border:1px solid #111}
+.oled-screen.inverted{background:#00e1ff}
+.oled-screen.inverted .oled-row{color:#000;text-shadow:none;font-weight:700}
 .oled-row{height:24px;line-height:24px;white-space:pre;font-family:'Consolas','Courier New',monospace;font-size:16px;letter-spacing:0;color:#00e1ff;padding:0;overflow:hidden}
 html.light .oled-row{color:#00e1ff}
 .oled-btns{display:flex;gap:10px;align-items:center}
@@ -346,6 +366,7 @@ html.light .oled-btn:hover{border-color:var(--pri);background:linear-gradient(14
 /* ── Responsive ── */
 @media(max-width:1100px){
 .ed-split{flex-direction:column;overflow-y:auto}
+.ed-tools-panel{width:var(--editor-panel-width)!important;max-width:100%;margin:0 auto;flex-shrink:0}
 .oled-panel{width:var(--editor-panel-width)!important;max-width:100%;margin:0 auto;flex-shrink:0}
 #tab-editor.active{height:auto;overflow:visible}
 .ed-container{min-height:400px;flex:none!important;height:calc(100vh - 200px);width:var(--editor-panel-width);max-width:100%;margin:0 auto}
@@ -361,6 +382,7 @@ html.light .oled-btn:hover{border-color:var(--pri);background:linear-gradient(14
 .main{margin-left:0!important;padding:68px 14px 20px;height:auto!important;overflow-y:auto;-webkit-overflow-scrolling:touch}
 #tab-editor.active{height:auto;overflow:visible}
 .ed-split{flex-direction:column;overflow-y:visible}
+.ed-tools-panel{width:var(--editor-panel-width)!important;max-width:100%;margin:0 auto}
 .oled-panel{width:var(--editor-panel-width)!important;max-width:100%;margin:0 auto}
 .ed-container{height:calc(100vh - 280px);min-height:300px;flex:none!important;width:var(--editor-panel-width);max-width:100%;margin:0 auto}
 .stat-grid{grid-template-columns:repeat(2,1fr);gap:10px}
@@ -645,15 +667,63 @@ New File
 <section id="tab-editor" class="tab-panel">
 
 <div class="ed-split" id="edSplit">
-<div class="ed-container" id="edContainer">
-<!-- Toolbar -->
+<aside class="ed-tools-panel sim-panel">
+<div class="sim-panel-hd">
+<svg viewBox="0 0 24 24" width="18" height="18"><path d="M22.7 19.3l-6.4-6.4c.5-.9.7-1.9.7-2.9 0-3.3-2.7-6-6-6S5 6.7 5 10s2.7 6 6 6c1 0 2-.3 2.9-.7l6.4 6.4c.2.2.5.3.7.3s.5-.1.7-.3c.4-.4.4-1 0-1.4zM7 10c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4-4-1.8-4-4z" fill="currentColor"/></svg>
+Tools &amp; Settings
+</div>
+<div class="sim-panel-bd">
+<details class="sim-tools-sec" open>
+<summary>Formatting</summary>
+<div class="sim-tools-grid">
+<button class="sim-tool-btn" id="fmtStripBtn"><svg viewBox="0 0 24 24"><path d="M7 7h10v2H7V7zm0 4h10v2H7v-2zm0 4h6v2H7v-2z" fill="currentColor"/></svg>Strip Newlines</button>
+<button class="sim-tool-btn" id="fmtSquashBtn"><svg viewBox="0 0 24 24"><path d="M3 10h8v4H3v-4zm10 0h8v4h-8v-4z" fill="currentColor"/></svg>Squash Spaces</button>
+<button class="sim-tool-btn" id="fmtUpperBtn"><svg viewBox="0 0 24 24"><path d="M4 20h2l2-6h4l2 6h2L11 4H9L4 20zm4.6-8L10 7.7 11.4 12H8.6zM18 20h2V8h-2v12z" fill="currentColor"/></svg>Uppercase</button>
+<button class="sim-tool-btn" id="fmtLowerBtn"><svg viewBox="0 0 24 24"><path d="M7 20h2V4H7v16zm5 0h7v-2h-7v2zm0-4h7v-2h-7v2zm0-4h7v-2h-7v2z" fill="currentColor"/></svg>Lowercase</button>
+<button class="sim-tool-btn" id="fmtBreakBtn"><svg viewBox="0 0 24 24"><path d="M19 13h-6v-2h6V8l5 4-5 4v-3zM4 6h8v2H4V6zm0 10h8v2H4v-2z" fill="currentColor"/></svg>Break after '?'</button>
+</div>
+</details>
+
+<details class="sim-tools-sec" open>
+<summary>Display Behavior</summary>
+<div class="sim-ctrl">
+<label for="oledAlignSel">Text Alignment</label>
+<select id="oledAlignSel">
+<option value="left">Left</option>
+<option value="center">Center</option>
+<option value="right">Right</option>
+</select>
+</div>
+<div class="sim-ctrl">
+<label for="oledVAlignSel">Vertical Pad Sim</label>
+<select id="oledVAlignSel">
+<option value="top">Top</option>
+<option value="middle">Middle</option>
+<option value="bottom">Bottom</option>
+</select>
+</div>
+<div class="sim-check">
+<label for="oledInvertChk">Invert Output</label>
+<input type="checkbox" id="oledInvertChk">
+</div>
+<div class="sim-check">
+<label for="oledAutoFmtChk">Auto-format Paste</label>
+<input type="checkbox" id="oledAutoFmtChk">
+</div>
+</details>
+</div>
+</aside>
+
+<div class="ed-container sim-panel" id="edContainer">
+<div class="sim-panel-hd">
+<svg viewBox="0 0 24 24" width="18" height="18"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0L19.2 12l-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" fill="currentColor"/></svg>
+Data Editor
+</div>
 <div class="ed-toolbar">
 <div class="ed-tabs">
-<div class="ed-tab active" id="edTab">
-<svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="currentColor"/></svg>
-<span id="fnTxt">untitled</span>
+<span id="charTop">0 chars</span>
+<span id="fnTxt" style="display:none">untitled</span>
 <span class="dot" id="edDot"></span>
-</div>
 </div>
 <div class="ed-acts" id="edActs" style="display:none">
 <button class="btn btn-ok" id="saveBtn">
@@ -666,38 +736,33 @@ Close
 </button>
 </div>
 </div>
-<!-- Editor body -->
 <div id="edBody" class="ed-body-wrap" style="display:none">
 <div class="ed-body">
 <div class="ed-gutter" id="edGutter"><div class="line-nums" id="lineNums">1</div></div>
 <div class="ed-content">
 <div class="line-hl" id="lineHl" style="top:8px"></div>
 <div class="ed-mirror" id="edMirror"></div>
-<textarea class="ed-area" id="edArea" spellcheck="false" wrap="soft" placeholder="Open a file to start editing..."></textarea>
+<textarea class="ed-area" id="edArea" spellcheck="false" wrap="soft" placeholder="Type or paste long data..."></textarea>
 </div>
 </div>
 </div>
-<!-- Empty state -->
 <div id="edEmpty" class="ed-empty">
 <svg viewBox="0 0 24 24" width="48" height="48"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="currentColor"/></svg>
 <p style="margin-top:10px;font-size:.86em">Select a file from <strong>Files</strong> to begin editing</p>
 <p style="font-size:.72em;margin-top:4px;opacity:.6">Ctrl+S to save</p>
 </div>
-<!-- Status bar -->
 <div class="ed-statusbar" id="edFoot">
 <span id="charCnt">Ready</span>
 <span id="edStatus"></span>
 </div>
 </div>
 
-<!-- OLED Preview -->
-<div class="oled-panel" id="oledPanel" style="display:none">
-<div class="card">
-<h3>
+<div class="oled-panel sim-panel" id="oledPanel" style="display:none">
+<div class="sim-panel-hd">
 <svg viewBox="0 0 24 24" width="18" height="18"><path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14z" fill="currentColor"/></svg>
-OLED Display Preview
-<span style="font-size:.7em;font-weight:400;color:var(--txt2);margin-left:auto">128×32 &middot; 4×6 font &middot; 32 chars/line</span>
-</h3>
+Hardware Preview
+</div>
+<div class="sim-panel-bd">
 <div class="oled-wrap">
 <div class="oled-device">
 <div class="oled-frame">
@@ -1325,6 +1390,7 @@ document.getElementById('edActs').style.display='none';
 document.getElementById('edDot').classList.remove('show');
 document.getElementById('edStatus').textContent='';
 document.getElementById('charCnt').textContent='Ready';
+document.getElementById('charTop').textContent='0 chars';
 document.getElementById('edArea').value='';
 updLines();oledReset();
 }
@@ -1381,6 +1447,47 @@ if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();saveFile()}
 if(e.key==='Tab'){e.preventDefault();var s=edArea.selectionStart,en=edArea.selectionEnd;edArea.value=edArea.value.substring(0,s)+'    '+edArea.value.substring(en);edArea.selectionStart=edArea.selectionEnd=s+4;edArea.dispatchEvent(new Event('input'))}
 });
 
+function applyEdTransform(fn){
+if(!curFile)return;
+edArea.value=fn(edArea.value);
+edArea.dispatchEvent(new Event('input'));
+}
+
+document.getElementById('fmtStripBtn').addEventListener('click',function(){
+applyEdTransform(function(v){return v.replace(/\n+/g,' ')});
+});
+document.getElementById('fmtSquashBtn').addEventListener('click',function(){
+applyEdTransform(function(v){return v.replace(/\s{2,}/g,' ')});
+});
+document.getElementById('fmtUpperBtn').addEventListener('click',function(){
+applyEdTransform(function(v){return v.toUpperCase()});
+});
+document.getElementById('fmtLowerBtn').addEventListener('click',function(){
+applyEdTransform(function(v){return v.toLowerCase()});
+});
+document.getElementById('fmtBreakBtn').addEventListener('click',function(){
+applyEdTransform(function(v){return v.replace(/\?\s*/g,'?\n')});
+});
+
+edArea.addEventListener('paste',function(e){
+var autoFmt=document.getElementById('oledAutoFmtChk');
+if(!autoFmt||!autoFmt.checked)return;
+
+e.preventDefault();
+var clip=(e.clipboardData||window.clipboardData);
+if(!clip)return;
+
+var txt=clip.getData('text')||'';
+txt=txt.replace(/\r\n/g,'\n').replace(/\t/g,'    ');
+txt=txt.replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n');
+
+var s=edArea.selectionStart;
+var en=edArea.selectionEnd;
+edArea.value=edArea.value.substring(0,s)+txt+edArea.value.substring(en);
+edArea.selectionStart=edArea.selectionEnd=s+txt.length;
+edArea.dispatchEvent(new Event('input'));
+});
+
 bindEdWheelForward(edGutter);
 bindEdWheelForward(document.getElementById('lineNums'));
 bindEdWheelForward(document.querySelector('.ed-content'));
@@ -1401,6 +1508,7 @@ n.innerHTML=h;
 function updCount(){
 var v=edArea.value;
 document.getElementById('charCnt').textContent=v.length.toLocaleString()+' chars \u00b7 '+v.split('\n').length+' lines';
+document.getElementById('charTop').textContent=v.length.toLocaleString()+' chars';
 }
 function updCursorPos(){
 var pos=edArea.selectionStart;
@@ -1514,6 +1622,7 @@ else{document.documentElement.classList.remove('light');knob.style.transform='tr
 
 /* ═══ OLED Preview ═══ */
 var OLED_COLS=32,OLED_ROWS=4,oledWrapped=[],oledTop=0;
+var oledAlign='left',oledVAlign='top';
 
 function oledWrapLine(raw){
 var out=[];
@@ -1546,12 +1655,20 @@ document.getElementById('oledPanel').style.display='block';
 }
 
 function oledRender(){
+var total=oledWrapped.length;
+var pad=0;
+if(total<OLED_ROWS){
+if(oledVAlign==='middle')pad=Math.floor((OLED_ROWS-total)/2);
+else if(oledVAlign==='bottom')pad=OLED_ROWS-total;
+}
+
 for(var i=0;i<OLED_ROWS;i++){
 var el=document.getElementById('oledR'+i);
-var idx=oledTop+i;
-el.textContent=(idx<oledWrapped.length)?oledWrapped[idx]:'';
+var src=i-pad;
+var idx=oledTop+src;
+el.textContent=(src>=0&&idx<total)?oledWrapped[idx]:'';
+el.style.textAlign=oledAlign;
 }
-var total=oledWrapped.length;
 document.getElementById('oledTotal').textContent=total;
 var endLine=Math.min(oledTop+OLED_ROWS,total);
 document.getElementById('oledLine').textContent=(oledTop+1)+' \u2013 '+endLine;
@@ -1586,6 +1703,18 @@ document.getElementById('oledScroll').textContent='Top';
 document.getElementById('oledUp').addEventListener('click',oledScrollUp);
 document.getElementById('oledDown').addEventListener('click',oledScrollDown);
 document.getElementById('oledSel').addEventListener('click',function(){oledTop=0;oledRender()});
+
+function applyOledControlState(){
+oledAlign=document.getElementById('oledAlignSel').value;
+oledVAlign=document.getElementById('oledVAlignSel').value;
+var screen=document.getElementById('oledScreen');
+screen.classList.toggle('inverted',document.getElementById('oledInvertChk').checked);
+oledRender();
+}
+
+document.getElementById('oledAlignSel').addEventListener('change',applyOledControlState);
+document.getElementById('oledVAlignSel').addEventListener('change',applyOledControlState);
+document.getElementById('oledInvertChk').addEventListener('change',applyOledControlState);
 
 document.addEventListener('keydown',function(e){
 if(!curFile||document.activeElement===document.getElementById('edArea'))return;
