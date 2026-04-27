@@ -617,9 +617,14 @@ Upload
 <h3 style="justify-content:space-between">
 <span style="display:flex;align-items:center;gap:10px">
 <svg viewBox="0 0 24 24" width="18" height="18"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="currentColor"/></svg>
-Files on SD Card
+FILES ON SD CARD
 </span>
-<button class="btn" id="delSelBtn" style="padding:7px 14px;font-size:.78em;background:var(--err);display:none;margin-right:10px">
+<div style="display:flex;gap:4px;align-items:center">
+<button class="btn btn-sec" id="selAllBtn" style="padding:7px 14px;font-size:.78em;display:none">
+<svg viewBox="0 0 24 24" width="14" height="14"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"/></svg>
+Select All
+</button>
+<button class="btn" id="delSelBtn" style="padding:7px 14px;font-size:.78em;background:var(--err);display:none">
 <svg viewBox="0 0 24 24" width="14" height="14"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="currentColor"/></svg>
 Del Selected
 </button>
@@ -627,6 +632,7 @@ Del Selected
 <svg viewBox="0 0 24 24" width="14" height="14"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor"/></svg>
 New File
 </button>
+</div>
 </h3>
 <div id="fileList" style="max-height:440px;overflow-y:auto">
 <div class="empty-st"><p>Loading files...</p></div>
@@ -1149,13 +1155,14 @@ document.getElementById('dsFree').textContent='Free: '+fmt(d.free);
 function loadFiles(){
 fetch('/files').then(function(r){return r.json()}).then(function(files){
 var el=document.getElementById('fileList');
-if(!files.length){el.innerHTML='<div class="empty-st"><svg viewBox="0 0 24 24" width="44" height="44"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="currentColor"/></svg><p style="margin-top:10px;font-size:.88em">No .txt files found on SD card</p></div>';return}
+if(!files.length){el.innerHTML='<div class="empty-st"><svg viewBox="0 0 24 24" width="44" height="44"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="currentColor"/></svg><p style="margin-top:10px;font-size:.88em">No .txt files found on SD card</p></div>';document.getElementById('selAllBtn').style.display='none';return}
+document.getElementById('selAllBtn').style.display='inline-flex';
 files.sort(function(a,b){return(b.modified||0)-(a.modified||0)});
-el.innerHTML=files.map(function(f){return '<div class="file-row" data-name="'+esc(f.name)+'">'
+el.innerHTML=files.map(function(f,i){return '<div class="file-row" data-name="'+esc(f.name)+'">'
 +'<label class="cb-wrap"><input type="checkbox" class="cb" value="'+esc(f.name)+'"><span class="cb-box"></span></label>'
 +'<div class="file-info">'
 +'<div class="fi-icon"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="currentColor"/></svg></div>'
-+'<div style="min-width:0"><div class="file-name">'+esc(f.name)+'</div>'
++'<div style="min-width:0"><div class="file-name">'+(i+1)+'. '+esc(f.name)+'</div>'
 +'<div class="file-meta">'+fmt(f.size)+' &middot; '+fmtDate(f.modified)+'</div></div>'
 +'</div>'
 +'<div class="file-actions">'
@@ -1169,10 +1176,25 @@ document.getElementById('fileList').innerHTML='<div class="empty-st"><p style="c
 });
 }
 
+document.getElementById('selAllBtn').addEventListener('click',function(){
+var cbs=document.querySelectorAll('.cb');
+var anyUnchecked=document.querySelectorAll('.cb:not(:checked)').length>0;
+for(var i=0;i<cbs.length;i++){cbs[i].checked=anyUnchecked;}
+document.getElementById('delSelBtn').style.display=anyUnchecked?'inline-flex':'none';
+this.innerHTML=anyUnchecked?'<svg viewBox="0 0 24 24" width="14" height="14"><path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z" fill="currentColor"/></svg> Deselect All':'<svg viewBox="0 0 24 24" width="14" height="14"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"/></svg> Select All';
+});
+
 document.getElementById('fileList').addEventListener('change',function(e){
 if(e.target.classList.contains('cb')){
 var cbs=document.querySelectorAll('.cb:checked');
 document.getElementById('delSelBtn').style.display=cbs.length>0?'inline-flex':'none';
+var allLen=document.querySelectorAll('.cb').length;
+var btn=document.getElementById('selAllBtn');
+if(cbs.length===allLen){
+btn.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14"><path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z" fill="currentColor"/></svg> Deselect All';
+}else{
+btn.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"/></svg> Select All';
+}
 }
 });
 document.getElementById('delSelBtn').addEventListener('click',function(){
