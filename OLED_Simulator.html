@@ -3,577 +3,481 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>D.E.V_Darshan — OLED Text Simulator</title>
+<title>D.E.V_Darshan — Advanced OLED Simulator</title>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-/* ── Premium Noir / Cyberpunk Aesthetics ── */
 :root {
-  --bg: #0C0C10; 
-  --bg2: #121218;
-  --card: rgba(255, 255, 255, 0.035); 
-  --card-h: rgba(255, 255, 255, 0.055);
-  --glass-brd: rgba(255, 255, 255, 0.07);
-  --pri: #DC143C; 
-  --pri-lt: #FF2D55; 
-  --pri-dk: #A01030; 
-  --pri-glow: rgba(220, 20, 60, 0.22);
-  --txt: #E8E6E3; 
-  --txt2: #8A8A95; 
-  --txt3: #555560;
-  --brd: rgba(255, 255, 255, 0.07);
-  --radius: 0px;
-  --ease: cubic-bezier(.4, 0, .2, 1);
-  --oled-cyan: #00e1ff;
-  --oled-cols: 32;
-  --ed-bg: #1E1E2E; 
-  --ed-brd: #313244; 
-  --ed-txt: #CDD6F4;
+  --bg: #0C0C10;
+  --panel-bg: rgba(255, 255, 255, 0.035);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  --primary: #DC143C;
+  --primary-glow: rgba(220, 20, 60, 0.22);
+  --secondary: #ff003c;
+  --text-main: #e0e6ed;
+  --text-muted: #8b949e;
+  --border-focus: #00f0ff;
+  --radius: 12px;
+  --font-ui: 'Inter', sans-serif;
+  --font-mono: 'Fira Code', monospace;
 }
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
+* { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
-  background: var(--bg);
-  color: var(--txt);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 40px 20px;
+  font-family: var(--font-ui); background: var(--bg); color: var(--text-main);
+  height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+  background-image:
+                    radial-gradient(circle at 85% 30%, rgba(255, 0, 60, 0.04), transparent 30%);
 }
-
 .header {
-  position: fixed;
-  top: 12px;
-  left: 14px;
-  z-index: 20;
+  padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 1px solid var(--glass-border);
+  background: rgba(11, 12, 16, 0.8); backdrop-filter: blur(10px); z-index: 10;
 }
+.brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: white; }
+.brand i { color: var(--primary); font-size: 1.5rem; filter: drop-shadow(0 0 8px var(--primary-glow)); }
+.brand div h1 { font-size: 1.2rem; font-weight: 700; letter-spacing: 1px; margin: 0;}
+.brand div span { font-size: 0.75rem; color: var(--text-muted); }
+.header-actions { display: flex; gap: 16px; }
 
-.header-link {
-  text-decoration: none;
-  display: inline-flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 6px 8px;
-  border: 1px solid var(--glass-brd);
-  background: rgba(255, 255, 255, 0.02);
+.main-grid {
+  display: grid; grid-template-columns: 280px 1fr 380px; gap: 24px; padding: 24px;
+  flex: 1; height: calc(100vh - 72px); overflow: hidden;
 }
+@media (max-width: 1200px) { .main-grid { grid-template-columns: 240px 1fr 340px; gap: 16px;} }
+@media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; height: auto; overflow: auto; } body {overflow: auto;} }
 
-.header-title {
-  font-size: 0.84rem;
-  font-weight: 700;
-  line-height: 1.2;
-  background: linear-gradient(135deg, var(--pri), var(--pri-lt));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.header-title svg {
-  width: 14px;
-  height: 14px;
-  flex-shrink: 0;
-}
-
-.header-subtitle {
-  color: var(--txt2);
-  font-size: 0.64rem;
-  letter-spacing: 0.2px;
-  line-height: 1.25;
-}
-
-.header-link:hover .header-subtitle {
-  color: var(--txt);
-}
-
-.container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 30px;
-  max-width: 1100px;
-  width: fit-content;
-  justify-content: center;
-  align-items: flex-start;
-}
-
-/* ── Cards ── */
-.card {
-  background: var(--card);
-  border: 1px solid var(--glass-brd);
-  border-radius: var(--radius);
-  padding: 24px;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-}
-
-.card h2 {
-  font-size: 1.1em;
-  color: var(--txt);
-  margin-bottom: 18px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 600;
-}
-
-.card h2 svg {
-  color: var(--pri);
-  flex-shrink: 0;
-}
-
-/* ── Editor Area ── */
-.editor-card {
-  flex: 0 0 auto;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.ed-container {
-  border: 1px solid var(--ed-brd);
-  border-radius: 0;
-  background: var(--ed-bg);
+.panel {
+  background: var(--panel-bg); border: 1px solid var(--glass-border);
+  border-radius: var(--radius); backdrop-filter: blur(12px);
+  display: flex; flex-direction: column; box-shadow: var(--glass-shadow);
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  width: min(100%, calc(var(--oled-cols) * 1ch + 34px));
 }
-
-.ed-toolbar {
-  height: 36px;
-  background: #181825;
-  border-bottom: 1px solid var(--ed-brd);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 0 14px;
-  font-size: 0.8em;
-  color: var(--txt2);
+.panel-header {
+  padding: 16px; border-bottom: 1px solid var(--glass-border);
+  font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 0.95rem;
 }
+.panel-header i { color: var(--primary); }
+.panel-content { padding: 16px; overflow-y: auto; flex: 1; }
+.panel-content::-webkit-scrollbar { width: 6px; }
+.panel-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
 
-.ed-stats {
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
+.tool-section { margin-bottom: 20px; }
+.tool-section summary {
+  font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase;
+  letter-spacing: 1px; cursor: pointer; user-select: none; padding: 4px 0;
+  display: flex; align-items: center; justify-content: space-between;
 }
+.tool-section summary::after { content: '\f107'; font-family: 'Font Awesome 6 Free'; font-weight: 900; }
+.tool-section details[open] summary::after { content: '\f106'; }
+.tool-grid { display: grid; gap: 8px; margin-top: 12px; }
 
+.btn {
+  background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border);
+  color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-family: var(--font-ui);
+  font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 8px;
+  transition: all 0.2s ease; text-decoration: none;
+}
+.btn:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255,255,255,0.2); }
+.btn:active { transform: scale(0.98); }
+.btn.primary { background: rgba(0, 240, 255, 0.1); border-color: var(--primary); color: var(--primary); }
+.btn.primary:hover { background: rgba(0, 240, 255, 0.2); box-shadow: 0 0 12px var(--primary-glow); }
+
+.control-group { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+.control-group label { font-size: 0.85rem; color: var(--text-muted); }
+.input-select {
+  background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: white;
+  padding: 8px; border-radius: 6px; font-family: var(--font-ui); width: 100%; outline: none;
+}
+.input-select:focus { border-color: var(--primary); }
+.chk-wrap { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; font-size: 0.85rem; color: var(--text-muted);}
+
+.editor-wrapper {
+  flex: 1; display: flex; flex-direction: column; border-radius: 6px;
+  border: 1px solid var(--glass-border); overflow: hidden; background: #0d0f15;
+  position: relative; min-height: 200px;
+}
+.editor-toolbar {
+  display: flex; justify-content: space-between; padding: 8px 12px;
+  background: rgba(0,0,0,0.4); border-bottom: 1px solid var(--glass-border);
+  font-size: 0.8rem; color: var(--text-muted);
+}
+.editor-toolbar-actions { display: flex; gap: 12px; }
+.editor-toolbar-actions button { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.9rem;}
+.editor-toolbar-actions button:hover { color: var(--primary); }
+.editor-main { position: relative; flex: 1; display: flex; overflow: hidden; }
+.line-numbers {
+  padding: 16px 8px; background: rgba(0,0,0,0.2); border-right: 1px solid var(--glass-border);
+  color: var(--text-muted); font-family: var(--font-mono); font-size: 14px; text-align: right;
+  user-select: none; min-width: 40px; line-height: 1.6; overflow: hidden;
+}
+.code-area { flex: 1; position: relative; overflow: auto; cursor: text;}
+.lines-backdrop {
+  position: absolute; top: 0; left: 0; min-width: 100%; padding: 16px;
+  font-family: var(--font-mono); font-size: 14px; line-height: 1.6; color: transparent;
+  pointer-events: none; white-space: pre; z-index: 1; margin: 0;
+}
+.lines-backdrop span.overflow { background: rgba(255, 0, 60, 0.2); border-bottom: 1px dashed var(--secondary); }
 textarea {
-  width: calc(var(--oled-cols) * 1ch + 32px);
-  max-width: 100%;
-  height: 700px;
-  background: transparent;
-  color: var(--ed-txt);
-  border: none;
-  padding: 16px;
-  font: 14px/1.6 'JetBrains Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
-  resize: vertical;
-  outline: none;
-  tab-size: 4;
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
+  position: absolute; top: 0; left: 0; min-width: 100%; min-height: 100%;
+  background: transparent; color: var(--text-main); border: none; padding: 16px;
+  font-family: var(--font-mono); font-size: 14px; line-height: 1.6; resize: none;
+  outline: none; white-space: pre; z-index: 2; caret-color: var(--primary); margin: 0; overflow: hidden;
 }
 
-textarea::placeholder {
-  color: #585B70;
-  font-style: italic;
-}
+.code-area::-webkit-scrollbar { width: 10px; height: 10px; }
+.code-area::-webkit-scrollbar-corner { background: transparent; }
+.code-area::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 5px; }
 
-.ed-hint {
-  margin-top: 10px;
-  color: var(--txt2);
-  font-size: 0.8em;
-}
-
-/* ── OLED Preview Area ── */
-.preview-card {
-  width: 480px;
-  max-width: 100%;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.oled-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 24px;
-  margin-top: 10px;
-}
-
-.oled-device {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-}
-
-.oled-frame {
-  background: #000;
-  border-radius: 0;
-  padding: 16px;
-  border: 2px solid #222;
-  box-shadow: 0 0 24px rgba(0,0,0,0.7), inset 0 0 10px rgba(0,0,0,0.5);
+.oled-preview-container { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.oled-hardware {
+  border: 2px solid #222; border-radius: 8px; padding: 20px 24px 30px;
+  background: linear-gradient(to bottom, #111, #050505);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.8), inset 0 2px 0 rgba(255,255,255,0.1);
   position: relative;
 }
-
-.oled-frame::before {
-  content: 'SSD1306 128×32';
-  position: absolute;
-  top: -22px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 11px;
-  color: var(--txt3);
-  letter-spacing: 1px;
-  white-space: nowrap;
+.oled-hardware::before {
+  content: 'SSD1306 128x32'; position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+  font-size: 0.6rem; color: #444; letter-spacing: 1px;
 }
-
 .oled-screen {
-  width: 384px;
-  height: 96px;
-  background: #000;
-  position: relative;
-  overflow: hidden;
-  image-rendering: pixelated;
-  border: 1px solid #111;
-  display: flex;
-  flex-direction: column;
+  background: #000; border: 1px solid #111; width: calc(32 * 9.6px); height: calc(4 * 20px);
+  position: relative; overflow: hidden; box-shadow: inset 0 0 20px rgba(220, 20, 60, 0.05);
+  display: flex; flex-direction: column;
 }
-
+.oled-screen.inverted { background: var(--primary); }
+.oled-screen.inverted .oled-row { color: #000; text-shadow: none; font-weight: 600; }
 .oled-row {
-  height: 24px;
-  line-height: 24px;
-  white-space: pre;
-  font-family: 'Courier New', monospace;
-  font-size: 16px;
-  letter-spacing: 1.6px;
-  color: var(--oled-cyan);
-  padding: 0 2px;
-  overflow: hidden;
-  text-shadow: 0 0 4px rgba(0, 225, 255, 0.5);
+  height: 20px; line-height: 20px; font-family: var(--font-mono); font-size: 16px;
+  color: var(--primary); text-shadow: 0 0 5px var(--primary-glow); white-space: pre;
+  letter-spacing: 0; transform-origin: left center; width: 110%; transform: scaleX(0.60); padding-left: 2px;
 }
 
-.oled-btns {
-  display: flex;
-  gap: 16px;
+.hardware-controls { display: flex; gap: 12px; margin-top: 10px; }
+.hw-btn {
+  width: 48px; height: 48px; border-radius: 50%; border: 2px solid #333;
+  background: linear-gradient(145deg, #1f222e, #13151c); color: var(--text-muted);
+  display: flex; justify-content: center; align-items: center; font-size: 1.2rem;
+  box-shadow: 4px 4px 8px rgba(0,0,0,0.5), -2px -2px 6px rgba(255,255,255,0.02);
+  cursor: pointer; transition: all 0.1s;
 }
+.hw-btn:active { box-shadow: inset 2px 2px 5px rgba(0,0,0,0.5); transform: translateY(2px); color: var(--primary); border-color: var(--primary); }
 
-.oled-btn {
-  width: 52px;
-  height: 52px;
-  border-radius: 0;
-  border: 2px solid #333;
-  background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
-  color: var(--txt2);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 700;
-  transition: all 0.15s var(--ease);
-  user-select: none;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.6);
-  outline: none;
-}
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; margin-top: 20px; }
+.stat-box { background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); padding: 12px; border-radius: 8px; text-align: center; }
+.stat-val { font-size: 1.5rem; color: var(--primary); font-family: var(--font-mono); margin-bottom: 4px; }
+.stat-lbl { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
 
-.oled-btn:hover {
-  border-color: var(--pri);
-  color: var(--pri);
-  box-shadow: 0 0 16px var(--pri-glow);
-}
-
-.oled-btn:active {
-  transform: scale(0.92);
-  background: linear-gradient(145deg, #0a0a0a, #1a1a1a);
-}
-
-.oled-btn.sel {
-  background: linear-gradient(145deg, var(--pri-dk), #0a0a0a);
-  border-color: var(--pri);
-  color: #fff;
-}
-
-/* ── Info Panel ── */
-.info-panel {
-  width: 100%;
-  border-top: 1px solid var(--glass-brd);
-  padding-top: 20px;
-  margin-top: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.info-row {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.88em;
-}
-
-.info-lbl {
-  color: var(--txt2);
-}
-
-.info-val {
-  font-weight: 600;
-  color: var(--txt);
-  font-variant-numeric: tabular-nums;
-}
-
-@media(max-width: 768px) {
-  .header {
-    top: 8px;
-    left: 8px;
-  }
-
-  .header-title {
-    font-size: 0.76rem;
-  }
-
-  .header-subtitle {
-    font-size: 0.58rem;
-  }
-
-  textarea { height: 500px; }
-  .oled-screen { width: 288px; height: 72px; }
-  .oled-row { height: 18px; line-height: 18px; font-size: 12px; letter-spacing: 1.2px; }
-  .oled-frame { padding: 12px; }
-  .oled-btn { width: 46px; height: 46px; }
-}
-
-@media(max-width: 400px) {
-  .oled-screen { width: 256px; height: 64px; }
-  .oled-row { height: 16px; line-height: 16px; font-size: 11px; letter-spacing: 1.1px; }
+[data-tooltip] { position: relative; }
+[data-tooltip]:hover::after {
+  content: attr(data-tooltip); position: absolute; bottom: 120%; left: 50%;
+  transform: translateX(-50%); background: #fff; color: #000; padding: 4px 8px;
+  border-radius: 4px; font-size: 0.75rem; white-space: nowrap; pointer-events: none; z-index: 100;
+  font-family: var(--font-ui); font-weight: normal; letter-spacing: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <a class="header-link" href="https://github.com/sakxam-xeetri/D.E.V_Darshan" target="_blank" rel="noopener noreferrer">
-    <span class="header-title">
-      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14z"/>
-      </svg>
-      D.E.V_Darshan Simulator
-    </span>
-    <span class="header-subtitle">Live preview as it appears on hardware</span>
-  </a>
-</div>
-
-<div class="container card">
-  
-  <div class="editor-card">
-    <h2>
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
-      </svg>
-      Text Input
-    </h2>
-    <div class="ed-container">
-      <div class="ed-toolbar">
-        <span>32-char input width</span>
-        <span class="ed-stats" id="edStats">0 chars · 1 line</span>
-      </div>
-      <textarea id="editor" cols="32" wrap="soft" placeholder="Type or paste your text here to see how the word-wrapping engine processes it for the OLED screen..."></textarea>
+<header class="header">
+  <a href="#" class="brand">
+    <i class="fa-solid fa-microchip"></i>
+    <div>
+      <h1>D.E.V_Darshan</h1>
+      <span>Advanced OLED Display Simulator</span>
     </div>
-    <div class="ed-hint">Paste as much text as you want. The editor width matches 32 characters.</div>
+  </a>
+  <div class="header-actions">
+    <a href="https://github.com/sakxam-xeetri/D.E.V_Darshan" target="_blank" class="btn primary"><i class="fa-brands fa-github"></i> GitHub</a>
   </div>
+</header>
 
-  <div class="preview-card">
-    <h2>
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
-      </svg>
-      Device Display
-    </h2>
-    
-    <div class="oled-wrap">
-      <div class="oled-device">
-        <div class="oled-frame">
-          <div class="oled-screen" id="oledScreen">
-            <div class="oled-row" id="oledR0"></div>
-            <div class="oled-row" id="oledR1"></div>
-            <div class="oled-row" id="oledR2"></div>
-            <div class="oled-row" id="oledR3"></div>
+<main class="main-grid">
+  <!-- Panel 1 -->
+  <aside class="panel">
+    <div class="panel-header"><i class="fa-solid fa-toolbox"></i> Tools & Settings</div>
+    <div class="panel-content">
+      <details class="tool-section" open>
+        <summary>Formatting</summary>
+        <div class="tool-grid">
+          <button class="btn" id="btnRemoveNewlines" data-tooltip="Remove All Newlines"><i class="fa-solid fa-compress"></i> Strip Newlines</button>
+          <button class="btn" id="btnRemoveSpaces" data-tooltip="Replace double spaces with single"><i class="fa-solid fa-text-width"></i> Squash Spaces</button>
+          <button class="btn" id="btnUpper" data-tooltip="Convert to UPPERCASE"><i class="fa-solid fa-arrow-up-a-z"></i> Uppercase</button>
+          <button class="btn" id="btnLower" data-tooltip="Convert to lowercase"><i class="fa-solid fa-arrow-down-a-z"></i> Lowercase</button>
+          <button class="btn" id="btnNewQuestion" data-tooltip="Insert newline after '?'"><i class="fa-solid fa-level-down-alt"></i> Break after '?'</button>
+        </div>
+      </details>
+      <details class="tool-section" open>
+        <summary>Display Behavior</summary>
+        <div class="control-group">
+          <label>Text Alignment</label>
+          <select id="selAlign" class="input-select">
+            <option value="left">Left</option>
+            <option value="center">Center</option>
+            <option value="right">Right</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label>Vertical Pad Sim</label>
+          <select id="selVAlign" class="input-select">
+            <option value="top">Top</option>
+            <option value="middle">Middle</option>
+            <option value="bottom">Bottom</option>
+          </select>
+        </div>
+        <div class="chk-wrap">
+          <label for="chkInvert">Invert Output</label>
+          <input type="checkbox" id="chkInvert" style="accent-color: var(--primary); transform: scale(1.2);">
+        </div>
+        <div class="chk-wrap">
+          <label for="chkAutoFormat">Auto-format Paste</label>
+          <input type="checkbox" id="chkAutoFormat" style="accent-color: var(--primary); transform: scale(1.2);">
+        </div>
+      </details>
+    </div>
+  </aside>
+
+  <!-- Panel 2 -->
+  <section class="panel">
+    <div class="panel-header"><i class="fa-solid fa-code"></i> Data Editor</div>
+    <div class="panel-content" style="display: flex; flex-direction: column; padding: 0;">
+      <div class="editor-wrapper" style="border: none; border-radius: 0;">
+        <div class="editor-toolbar">
+          <span id="charCount">0 chars</span>
+          <div class="editor-toolbar-actions">
+            <button id="btnUndo" data-tooltip="Undo (Ctrl+Z)"><i class="fa-solid fa-rotate-left"></i></button>
+            <button id="btnRedo" data-tooltip="Redo (Ctrl+Y)"><i class="fa-solid fa-rotate-right"></i></button>
+            <button id="btnClear" data-tooltip="Clear All"><i class="fa-solid fa-trash"></i></button>
+            <button id="btnSave" data-tooltip="Save as TXT"><i class="fa-solid fa-save"></i></button>
+            <button id="btnShortcuts" data-tooltip="Ctrl+Z Undo, Ctrl+Y Redo, Up/Down Nav"><i class="fa-solid fa-keyboard"></i></button>
           </div>
         </div>
-        
-        <div class="oled-btns">
-          <button class="oled-btn" id="oledUp" title="UP Button (Scroll Up)">&#9650;</button>
-          <button class="oled-btn" id="oledDown" title="DOWN Button (Scroll Down)">&#9660;</button>
-          <button class="oled-btn sel" id="oledSel" title="SELECT Button (Return to Top)">SEL</button>
+        <div class="editor-main">
+          <div class="line-numbers" id="lineNumbers">1</div>
+          <div class="code-area" id="codeArea">
+            <div class="lines-backdrop" id="backdrop"></div>
+            <textarea id="editor" spellcheck="false" maxlength="128" placeholder="Type data... max 32 chars per line (128 chars total)"></textarea>
+          </div>
         </div>
-        <div style="font-size: 0.7em; color: var(--txt3);">Use buttons or Arrow Keys to navigate</div>
-      </div>
-      
-      <div class="info-panel">
-        <div class="info-row"><span class="info-lbl">Scroll Position</span><span class="info-val" id="stScroll">Top</span></div>
-        <div class="info-row"><span class="info-lbl">Display Line</span><span class="info-val" id="stLine">1 – 4</span></div>
-        <div class="info-row"><span class="info-lbl">Total Wrapped Lines</span><span class="info-val" id="stTotal">0</span></div>
-        <div class="info-row"><span class="info-lbl">Hardware Rules</span><span class="info-val">32 chars/line &middot; 4 lines</span></div>
       </div>
     </div>
+  </section>
 
-  </div>
-</div>
+  <!-- Panel 3 -->
+  <aside class="panel">
+    <div class="panel-header"><i class="fa-solid fa-display"></i> Hardware Preview</div>
+    <div class="panel-content oled-preview-container">
+      <div class="oled-hardware">
+        <div class="oled-screen" id="oledScreen">
+          <div class="oled-row" id="r0"></div>
+          <div class="oled-row" id="r1"></div>
+          <div class="oled-row" id="r2"></div>
+          <div class="oled-row" id="r3"></div>
+        </div>
+      </div>
+      <div class="hardware-controls">
+        <button class="hw-btn" id="hwUp" data-tooltip="Up"><i class="fa-solid fa-caret-up"></i></button>
+        <button class="hw-btn" id="hwSel" data-tooltip="Reset"><i class="fa-solid fa-circle-dot"></i></button>
+        <button class="hw-btn" id="hwDown" data-tooltip="Down"><i class="fa-solid fa-caret-down"></i></button>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-box"><div class="stat-val" id="stLines">0</div><div class="stat-lbl">Lines</div></div>
+        <div class="stat-box"><div class="stat-val" id="stScroll">T</div><div class="stat-lbl">Pos</div></div>
+      </div>
+    </div>
+  </aside>
+</main>
 
 <script>
-/**
- * D.E.V_Darshan Word-wrapping Logic Simulation
- * Matches the logic from sd_reader.cpp in the ESP32 firmware.
- */
-const OLED_COLS = 32;
-const OLED_ROWS = 4;
-let oledWrapped = [];
-let oledTop = 0;
+const OLED_COLS = 32; const OLED_ROWS = 4;
+let oledLines = []; let scrollOffset = 0;
+let hist = []; let hIdx = -1;
 
-// Algorithm replicates C++ wrapLine()
-function oledWrapLine(raw) {
-  let out = [];
-  if (raw.length === 0) { 
-    out.push(''); 
-    return out; 
-  }
-  
-  let pos = 0;
-  let len = raw.length;
-  
-  while (pos < len) {
-    if (len - pos <= OLED_COLS) { 
-      out.push(raw.substring(pos)); 
-      break; 
-    }
-    
-    let brk = OLED_COLS;
-    let sp = brk;
-    
-    // Look backwards for a space to break at word boundary
-    while (sp > 0 && raw.charAt(pos + sp) !== ' ') {
-      sp--;
-    }
-    
-    if (sp > 0) {
-      brk = sp;
-    } 
-    // If no space is found, hard break at OLED_COLS
-    
-    out.push(raw.substring(pos, pos + brk));
-    pos += brk;
-    
-    // Skip the space at break point
-    if (pos < len && raw.charAt(pos) === ' ') {
-      pos++;
-    }
-  }
-  
-  return out;
+const elEd = document.getElementById('editor');
+const elBack = document.getElementById('backdrop');
+const elLines = document.getElementById('lineNumbers');
+const ca = document.getElementById('codeArea');
+
+function saveH() {
+  const v = elEd.value;
+  if (hIdx >= 0 && hist[hIdx] === v) return;
+  hist = hist.slice(0, hIdx + 1);
+  hist.push(v);
+  if (hist.length > 50) hist.shift(); else hIdx++;
+  localStorage.setItem('oled_v2', v);
 }
 
-function processText() {
-  const txt = document.getElementById('editor').value;
-  const rawLines = txt.split('\n');
-  const editorStats = document.getElementById('edStats');
+function restH(s) {
+  hIdx += s;
+  if (hIdx < 0) hIdx = 0;
+  if (hIdx >= hist.length) hIdx = hist.length - 1;
+  elEd.value = hist[hIdx] || '';
+  updEd();
+}
 
-  editorStats.textContent = txt.length + ' chars · ' + Math.max(rawLines.length, 1) + ' line' + (rawLines.length === 1 ? '' : 's');
+function escapeHtml(unsafe) {
+    return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function updEd() {
+  const v = elEd.value;
+  document.getElementById('charCount').textContent = v.length + ' chars';
+  const lns = v.split('\n');
+  let bH = '', lh = '';
+  lns.forEach((l, i) => {
+    lh += (i + 1) + '<br>';
+    let esc = escapeHtml(l);
+    if(l.length > OLED_COLS) {
+      bH += escapeHtml(l.substring(0, OLED_COLS)) + '<span class="overflow">' + escapeHtml(l.substring(OLED_COLS)) + '</span>\n';
+    } else {
+      bH += esc + '\n';
+    }
+  });
+  elBack.innerHTML = bH; elLines.innerHTML = lh;
   
-  oledWrapped = [];
+  elEd.style.height = 'auto';
+  elEd.style.height = elBack.scrollHeight + 'px';
+
+  procOled(v);
+}
+
+ca.addEventListener('scroll', () => { elLines.scrollTop = ca.scrollTop; });
+elEd.addEventListener('input', () => { updEd(); });
+elEd.addEventListener('change',()=> saveH());
+
+function wTxt(t) {
+  const l = t.split('\n'); let o = [];
+  l.forEach(x => {
+    if(x.length === 0) { o.push(''); return; }
+    let p = 0;
+    while(p < x.length) {
+      if(x.length - p <= OLED_COLS) { o.push(x.substring(p)); break; }
+      let b = OLED_COLS; let s = b;
+      while(s > 0 && x.charAt(p + s) !== ' ') s--;
+      if(s > 0) b = s;
+      o.push(x.substring(p, p + b)); p += b;
+      if(p < x.length && x.charAt(p) === ' ') p++;
+    }
+  });
+  if(o.length===0) o.push(''); return o;
+}
+
+function procOled(v) {
+  oledLines = wTxt(v);
+  scrollOffset = Math.min(scrollOffset, Math.max(0, oledLines.length - OLED_ROWS));
+  rend();
+}
+
+function rend() {
+  const al = document.getElementById('selAlign').value;
+  const va = document.getElementById('selVAlign').value;
   
-  for (let i = 0; i < rawLines.length; i++) {
-    const w = oledWrapLine(rawLines[i]);
-    for (let j = 0; j < w.length; j++) {
-      oledWrapped.push(w[j]);
+  document.getElementById('stLines').textContent = oledLines.length;
+  const maxO = Math.max(0, oledLines.length - OLED_ROWS);
+  document.getElementById('stScroll').textContent = oledLines.length <= OLED_ROWS ? '-' : (scrollOffset === 0 ? 'TOP' : (scrollOffset >= maxO ? 'BTM' : Math.round((scrollOffset/maxO)*100)+'%'));
+
+  let pad = 0;
+  if (oledLines.length < OLED_ROWS) {
+    if (va === 'middle') pad = Math.floor((OLED_ROWS - oledLines.length)/2);
+    if (va === 'bottom') pad = OLED_ROWS - oledLines.length;
+  }
+  
+  for(let i=0; i<OLED_ROWS; i++) {
+    const el = document.getElementById('r'+i);
+    el.style.textAlign = al;
+    let sI = i - pad;
+    if (sI >= 0 && sI < oledLines.length) {
+        el.textContent = oledLines[scrollOffset + sI];
+    } else {
+        el.textContent = '';
+    }
+    
+    // Manual pseudo-centering for scaling
+    if (al === 'center') {
+      let t = el.textContent;
+      let diff = OLED_COLS - t.length;
+      if (diff > 0) { el.textContent = ' '.repeat(Math.floor(diff/2)) + t; el.style.textAlign = 'left'; }
+    } else if (al === 'right') {
+      let t = el.textContent;
+      let diff = OLED_COLS - t.length;
+      if (diff > 0) { el.textContent = ' '.repeat(diff) + t; el.style.textAlign = 'left'; }
     }
   }
-  
-  if (oledWrapped.length === 0) {
-    oledWrapped.push('');
-  }
-  
-  // Constrain scroll position to valid bounds
-  oledTop = Math.min(oledTop, Math.max(0, oledWrapped.length - OLED_ROWS));
-  
-  renderOled();
 }
 
-function renderOled() {
-  // Update 4 lines of OLED
-  for (let i = 0; i < OLED_ROWS; i++) {
-    const el = document.getElementById('oledR' + i);
-    const idx = oledTop + i;
-    el.textContent = (idx < oledWrapped.length) ? oledWrapped[idx] : '';
-  }
-  
-  // Update Info Panel Metrics
-  const total = oledWrapped.length;
-  document.getElementById('stTotal').textContent = total;
-  
-  const endLine = Math.min(oledTop + OLED_ROWS, total);
-  document.getElementById('stLine').textContent = (oledTop + 1) + ' – ' + Math.max(endLine, 1);
-  
-  let pct = total <= OLED_ROWS ? 100 : Math.round((endLine / total) * 100);
-  let posText = oledTop === 0 ? 'Top' : (endLine >= total ? 'Bottom' : pct + '%');
-  document.getElementById('stScroll').textContent = posText;
-}
+document.getElementById('hwUp').onclick = () => { if(scrollOffset>0) { scrollOffset--; rend(); } };
+document.getElementById('hwDown').onclick = () => { if(scrollOffset<oledLines.length-OLED_ROWS) { scrollOffset++; rend(); } };
+document.getElementById('hwSel').onclick = () => { scrollOffset = 0; rend(); };
 
-// ─── Event Listeners ───
+['selAlign','selVAlign'].forEach(id=>document.getElementById(id).onchange=rend);
+document.getElementById('chkInvert').onchange = (e) => document.getElementById('oledScreen').classList.toggle('inverted', e.target.checked);
 
-// Text input
-document.getElementById('editor').addEventListener('input', processText);
+const mut = (f) => { elEd.value = f(elEd.value); updEd(); saveH(); };
+document.getElementById('btnRemoveNewlines').onclick = () => mut(v=>v.replace(/\n+/g,' '));
+document.getElementById('btnRemoveSpaces').onclick = () => mut(v=>v.replace(/\s{2,}/g,' '));
+document.getElementById('btnUpper').onclick = () => mut(v=>v.toUpperCase());
+document.getElementById('btnLower').onclick = () => mut(v=>v.toLowerCase());
+document.getElementById('btnNewQuestion').onclick = () => mut(v=>v.replace(/\?\s*/g,'?\n'));
 
-// Buttons
-document.getElementById('oledUp').addEventListener('click', () => {
-  if (oledTop > 0) { 
-    oledTop--; 
-    renderOled(); 
+document.getElementById('btnClear').onclick = () => mut(()=>'');
+document.getElementById('btnUndo').onclick = () => restH(-1);
+document.getElementById('btnRedo').onclick = () => restH(1);
+
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey && e.key==='z') { e.preventDefault(); restH(-1); }
+  if (e.ctrlKey && e.key==='y') { e.preventDefault(); restH(1); }
+  if (document.activeElement !== elEd && document.activeElement !== ca) {
+    if(e.key==='ArrowUp') { e.preventDefault(); document.getElementById('hwUp').click(); }
+    if(e.key==='ArrowDown') { e.preventDefault(); document.getElementById('hwDown').click(); }
   }
 });
 
-document.getElementById('oledDown').addEventListener('click', () => {
-  if (oledTop < oledWrapped.length - OLED_ROWS) { 
-    oledTop++; 
-    renderOled(); 
+let sv = localStorage.getItem('oled_v2');
+if (sv) elEd.value = sv; else elEd.value = "Load successful.\nSystem ready.\nChecking components... OK\nWaiting for input.";
+saveH(); updEd();
+
+// Drag
+let idn=false, sy, sTop;
+ca.addEventListener('mousedown', e => { idn=true; sy=e.pageY-ca.offsetTop; sTop=ca.scrollTop; });
+ca.addEventListener('mouseleave', () => idn=false); ca.addEventListener('mouseup', () => idn=false);
+ca.addEventListener('mousemove', e => { if(!idn) return; e.preventDefault(); ca.scrollTop = sTop - (e.pageY-ca.offsetTop - sy)*1.5; });
+
+elEd.addEventListener('paste', e => {
+  if(document.getElementById('chkAutoFormat').checked) {
+    setTimeout(()=>mut(v=>v.replace(/\s{2,}/g,' ')), 10);
   }
 });
 
-document.getElementById('oledSel').addEventListener('click', () => {
-  oledTop = 0; 
-  renderOled();
+document.getElementById('btnSave').addEventListener('click', () => {
+  const text = elEd.value;
+  const blob = new Blob([text], { type: "text/plain" });
+  const anchor = document.createElement("a");
+  anchor.download = "dev_darshan_data.txt";
+  anchor.href = window.URL.createObjectURL(blob);
+  anchor.click();
+  window.URL.revokeObjectURL(anchor.href);
 });
 
-// Keyboard Navigation Support
-document.addEventListener('keydown', (e) => {
-  // Ignore if user is currently typing in the editor
-  if (document.activeElement === document.getElementById('editor')) return;
-  
-  if (e.key === 'ArrowUp') { 
-    e.preventDefault(); 
-    document.getElementById('oledUp').click(); 
-  }
-  else if (e.key === 'ArrowDown') { 
-    e.preventDefault(); 
-    document.getElementById('oledDown').click(); 
-  }
-  else if (e.key === 'Home') {
-    e.preventDefault();
-    oledTop = 0;
-    renderOled();
-  }
-  else if (e.key === 'End') {
-    e.preventDefault();
-    oledTop = Math.max(0, oledWrapped.length - OLED_ROWS);
-    renderOled();
-  }
+// Limit to exactly 32 chars per line logic if needed (enforced by hardware anyway)
+elEd.addEventListener("input", function() {
+    let lines = this.value.split("\n");
+    let changed = false;
+    for (let i = 0; i < lines.length; i++) {
+        if (lines[i].length > 32) {
+            lines[i] = lines[i].substring(0, 32);
+            changed = true;
+        }
+    }
+    // Limit to 4 lines
+    if (lines.length > 4) {
+        lines = lines.slice(0, 4);
+        changed = true;
+    }
+    if (changed) {
+        this.value = lines.join("\n");
+        updEd();
+    }
 });
-
-// Initial run
-processText();
 
 </script>
 </body>
