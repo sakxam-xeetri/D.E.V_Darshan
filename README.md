@@ -450,6 +450,17 @@ D.E.V_Darshan_Sketch/
 ### Activation
 Select **WiFi Portal** from the HOME menu → ESP32 enables WiFi AP mode.
 
+### Storage & File Specifications
+
+* **Maximum Files:** The device displays and manages up to **200 files** (`MAX_FILES = 200`) in its internal file menu, ordered by newest first.
+* **Maximum Upload Size:** Up to **2 MB** per file via the web portal.
+* **Web Editor Size Limit:** The in-browser text editor is restricted to files **64 KB or smaller**. Larger files can be read on the device, but the portal editor restricts them to prevent memory exhaustion on the ESP32.
+* **Empty Files:** The system rejects empty files (0 bytes).
+* **Allowed Types:** Only **`.txt`** files are supported.
+* **Naming Limits:** File names are sanitized during upload to prevent directory traversal bugs.
+* **Total Storage:** The total storage capacity is dictated by the **MicroSD Card** (FAT16/FAT32 formatted, typically up to 32 GB). Even a small SD card can theoretically hold thousands of `.txt` files.
+* **Concurrent connections:** 1 (RAM safety)
+
 ### Portal Specifications
 
 | Parameter | Value |
@@ -457,9 +468,6 @@ Select **WiFi Portal** from the HOME menu → ESP32 enables WiFi AP mode.
 | SSID | `D.E.V_Darshan` |
 | Password | `readmore` (configurable in config.h) |
 | IP Address | `192.168.4.1` |
-| Max file size | 2MB |
-| Allowed types | `.txt` only |
-| Concurrent connections | 1 (RAM safety) |
 
 ### Upload Flow
 
