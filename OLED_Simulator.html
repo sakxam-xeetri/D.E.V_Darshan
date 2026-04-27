@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>D.E.V_Darshan — OLED Text Simulator</title>
+<style>
+/* ── Premium Noir / Cyberpunk Aesthetics ── */
+:root {
+  --bg: #0C0C10; 
+  --bg2: #121218;
+  --card: rgba(255, 255, 255, 0.035); 
+  --card-h: rgba(255, 255, 255, 0.055);
+  --glass-brd: rgba(255, 255, 255, 0.07);
+  --pri: #DC143C; 
+  --pri-lt: #FF2D55; 
+  --pri-dk: #A01030; 
+  --pri-glow: rgba(220, 20, 60, 0.22);
+  --txt: #E8E6E3; 
+  --txt2: #8A8A95; 
+  --txt3: #555560;
+  --brd: rgba(255, 255, 255, 0.07);
+  --radius: 14px;
+  --ease: cubic-bezier(.4, 0, .2, 1);
+  --oled-cyan: #00e1ff;
+  --ed-bg: #1E1E2E; 
+  --ed-brd: #313244; 
+  --ed-txt: #CDD6F4;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--txt);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.header h1 {
+  font-size: 2.2em;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--pri), var(--pri-lt));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.header p {
+  color: var(--txt2);
+  margin-top: 8px;
+  font-size: 0.95em;
+  letter-spacing: 0.5px;
+}
+
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  max-width: 1100px;
+  width: 100%;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* ── Cards ── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--glass-brd);
+  border-radius: var(--radius);
+  padding: 24px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.card h2 {
+  font-size: 1.1em;
+  color: var(--txt);
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.card h2 svg {
+  color: var(--pri);
+  flex-shrink: 0;
+}
+
+/* ── Editor Area ── */
+.editor-card {
+  flex: 1;
+  min-width: 320px;
+}
+
+.ed-container {
+  border: 1px solid var(--ed-brd);
+  border-radius: 8px;
+  background: var(--ed-bg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.ed-toolbar {
+  height: 36px;
+  background: #181825;
+  border-bottom: 1px solid var(--ed-brd);
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  font-size: 0.8em;
+  color: var(--txt2);
+}
+
+textarea {
+  width: 100%;
+  height: 380px;
+  background: transparent;
+  color: var(--ed-txt);
+  border: none;
+  padding: 16px;
+  font: 14px/1.6 'JetBrains Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+  resize: vertical;
+  outline: none;
+  tab-size: 4;
+}
+
+textarea::placeholder {
+  color: #585B70;
+  font-style: italic;
+}
+
+/* ── OLED Preview Area ── */
+.preview-card {
+  width: 480px;
+  max-width: 100%;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.oled-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  margin-top: 10px;
+}
+
+.oled-device {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.oled-frame {
+  background: #000;
+  border-radius: 8px;
+  padding: 16px;
+  border: 2px solid #222;
+  box-shadow: 0 0 24px rgba(0,0,0,0.7), inset 0 0 10px rgba(0,0,0,0.5);
+  position: relative;
+}
+
+.oled-frame::before {
+  content: 'SSD1306 128×32';
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: var(--txt3);
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.oled-screen {
+  width: 384px;
+  height: 96px;
+  background: #000;
+  position: relative;
+  overflow: hidden;
+  image-rendering: pixelated;
+  border: 1px solid #111;
+  display: flex;
+  flex-direction: column;
+}
+
+.oled-row {
+  height: 24px;
+  line-height: 24px;
+  white-space: pre;
+  font-family: 'Courier New', monospace;
+  font-size: 16px;
+  letter-spacing: 1.6px;
+  color: var(--oled-cyan);
+  padding: 0 2px;
+  overflow: hidden;
+  text-shadow: 0 0 4px rgba(0, 225, 255, 0.5);
+}
+
+.oled-btns {
+  display: flex;
+  gap: 16px;
+}
+
+.oled-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid #333;
+  background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
+  color: var(--txt2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  transition: all 0.15s var(--ease);
+  user-select: none;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+  outline: none;
+}
+
+.oled-btn:hover {
+  border-color: var(--pri);
+  color: var(--pri);
+  box-shadow: 0 0 16px var(--pri-glow);
+}
+
+.oled-btn:active {
+  transform: scale(0.92);
+  background: linear-gradient(145deg, #0a0a0a, #1a1a1a);
+}
+
+.oled-btn.sel {
+  background: linear-gradient(145deg, var(--pri-dk), #0a0a0a);
+  border-color: var(--pri);
+  color: #fff;
+}
+
+/* ── Info Panel ── */
+.info-panel {
+  width: 100%;
+  border-top: 1px solid var(--glass-brd);
+  padding-top: 20px;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.88em;
+}
+
+.info-lbl {
+  color: var(--txt2);
+}
+
+.info-val {
+  font-weight: 600;
+  color: var(--txt);
+  font-variant-numeric: tabular-nums;
+}
+
+@media(max-width: 768px) {
+  .preview-card { width: 100%; }
+  .oled-screen { width: 288px; height: 72px; }
+  .oled-row { height: 18px; line-height: 18px; font-size: 12px; letter-spacing: 1.2px; }
+  .oled-frame { padding: 12px; }
+  .oled-btn { width: 46px; height: 46px; }
+}
+
+@media(max-width: 400px) {
+  .oled-screen { width: 256px; height: 64px; }
+  .oled-row { height: 16px; line-height: 16px; font-size: 11px; letter-spacing: 1.1px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>
+    <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+      <path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14z"/>
+    </svg>
+    D.E.V_Darshan Simulator
+  </h1>
+  <p>Live preview of text exactly as it will appear on the hardware display</p>
+</div>
+
+<div class="container">
+  
+  <div class="card editor-card">
+    <h2>
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+      </svg>
+      Text Input
+    </h2>
+    <div class="ed-container">
+      <div class="ed-toolbar">Draft text file</div>
+      <textarea id="editor" placeholder="Type or paste your text here to see how the word-wrapping engine processes it for the OLED screen..."></textarea>
+    </div>
+  </div>
+
+  <div class="card preview-card">
+    <h2>
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+      </svg>
+      Device Display
+    </h2>
+    
+    <div class="oled-wrap">
+      <div class="oled-device">
+        <div class="oled-frame">
+          <div class="oled-screen" id="oledScreen">
+            <div class="oled-row" id="oledR0"></div>
+            <div class="oled-row" id="oledR1"></div>
+            <div class="oled-row" id="oledR2"></div>
+            <div class="oled-row" id="oledR3"></div>
+          </div>
+        </div>
+        
+        <div class="oled-btns">
+          <button class="oled-btn" id="oledUp" title="UP Button (Scroll Up)">&#9650;</button>
+          <button class="oled-btn" id="oledDown" title="DOWN Button (Scroll Down)">&#9660;</button>
+          <button class="oled-btn sel" id="oledSel" title="SELECT Button (Return to Top)">SEL</button>
+        </div>
+        <div style="font-size: 0.7em; color: var(--txt3);">Use buttons or Arrow Keys to navigate</div>
+      </div>
+      
+      <div class="info-panel">
+        <div class="info-row"><span class="info-lbl">Scroll Position</span><span class="info-val" id="stScroll">Top</span></div>
+        <div class="info-row"><span class="info-lbl">Display Line</span><span class="info-val" id="stLine">1 – 4</span></div>
+        <div class="info-row"><span class="info-lbl">Total Wrapped Lines</span><span class="info-val" id="stTotal">0</span></div>
+        <div class="info-row"><span class="info-lbl">Hardware Rules</span><span class="info-val">32 chars/line &middot; 4 lines</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/**
+ * D.E.V_Darshan Word-wrapping Logic Simulation
+ * Matches the logic from sd_reader.cpp in the ESP32 firmware.
+ */
+const OLED_COLS = 32;
+const OLED_ROWS = 4;
+let oledWrapped = [];
+let oledTop = 0;
+
+// Algorithm replicates C++ wrapLine()
+function oledWrapLine(raw) {
+  let out = [];
+  if (raw.length === 0) { 
+    out.push(''); 
+    return out; 
+  }
+  
+  let pos = 0;
+  let len = raw.length;
+  
+  while (pos < len) {
+    if (len - pos <= OLED_COLS) { 
+      out.push(raw.substring(pos)); 
+      break; 
+    }
+    
+    let brk = OLED_COLS;
+    let sp = brk;
+    
+    // Look backwards for a space to break at word boundary
+    while (sp > 0 && raw.charAt(pos + sp) !== ' ') {
+      sp--;
+    }
+    
+    if (sp > 0) {
+      brk = sp;
+    } 
+    // If no space is found, hard break at OLED_COLS
+    
+    out.push(raw.substring(pos, pos + brk));
+    pos += brk;
+    
+    // Skip the space at break point
+    if (pos < len && raw.charAt(pos) === ' ') {
+      pos++;
+    }
+  }
+  
+  return out;
+}
+
+function processText() {
+  const txt = document.getElementById('editor').value;
+  const rawLines = txt.split('\n');
+  
+  oledWrapped = [];
+  
+  for (let i = 0; i < rawLines.length; i++) {
+    const w = oledWrapLine(rawLines[i]);
+    for (let j = 0; j < w.length; j++) {
+      oledWrapped.push(w[j]);
+    }
+  }
+  
+  if (oledWrapped.length === 0) {
+    oledWrapped.push('');
+  }
+  
+  // Constrain scroll position to valid bounds
+  oledTop = Math.min(oledTop, Math.max(0, oledWrapped.length - OLED_ROWS));
+  
+  renderOled();
+}
+
+function renderOled() {
+  // Update 4 lines of OLED
+  for (let i = 0; i < OLED_ROWS; i++) {
+    const el = document.getElementById('oledR' + i);
+    const idx = oledTop + i;
+    el.textContent = (idx < oledWrapped.length) ? oledWrapped[idx] : '';
+  }
+  
+  // Update Info Panel Metrics
+  const total = oledWrapped.length;
+  document.getElementById('stTotal').textContent = total;
+  
+  const endLine = Math.min(oledTop + OLED_ROWS, total);
+  document.getElementById('stLine').textContent = (oledTop + 1) + ' – ' + Math.max(endLine, 1);
+  
+  let pct = total <= OLED_ROWS ? 100 : Math.round((endLine / total) * 100);
+  let posText = oledTop === 0 ? 'Top' : (endLine >= total ? 'Bottom' : pct + '%');
+  document.getElementById('stScroll').textContent = posText;
+}
+
+// ─── Event Listeners ───
+
+// Text input
+document.getElementById('editor').addEventListener('input', processText);
+
+// Buttons
+document.getElementById('oledUp').addEventListener('click', () => {
+  if (oledTop > 0) { 
+    oledTop--; 
+    renderOled(); 
+  }
+});
+
+document.getElementById('oledDown').addEventListener('click', () => {
+  if (oledTop < oledWrapped.length - OLED_ROWS) { 
+    oledTop++; 
+    renderOled(); 
+  }
+});
+
+document.getElementById('oledSel').addEventListener('click', () => {
+  oledTop = 0; 
+  renderOled();
+});
+
+// Keyboard Navigation Support
+document.addEventListener('keydown', (e) => {
+  // Ignore if user is currently typing in the editor
+  if (document.activeElement === document.getElementById('editor')) return;
+  
+  if (e.key === 'ArrowUp') { 
+    e.preventDefault(); 
+    document.getElementById('oledUp').click(); 
+  }
+  else if (e.key === 'ArrowDown') { 
+    e.preventDefault(); 
+    document.getElementById('oledDown').click(); 
+  }
+  else if (e.key === 'Home') {
+    e.preventDefault();
+    oledTop = 0;
+    renderOled();
+  }
+  else if (e.key === 'End') {
+    e.preventDefault();
+    oledTop = Math.max(0, oledWrapped.length - OLED_ROWS);
+    renderOled();
+  }
+});
+
+// Initial run
+processText();
+
+</script>
+</body>
+</html>
