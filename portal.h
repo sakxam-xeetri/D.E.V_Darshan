@@ -48,7 +48,7 @@ static const char PORTAL_HTML[] PROGMEM = R"rawliteral(
 --ok:#00E676;--ok-bg:rgba(0,230,118,0.1);
 --err:#FF1744;--err-bg:rgba(255,23,68,0.1);
 --warn:#FFD740;--warn-bg:rgba(255,215,64,0.1);
---sb-w:250px;--sb-w-col:60px;--radius:14px;
+--sb-w:250px;--sb-w-col:60px;--radius:0px;
 --ease:cubic-bezier(.4,0,.2,1);
 --ed-bg:#1E1E2E;--ed-gutter:#181825;--ed-gutter-txt:#585B70;--ed-gutter-brd:#313244;--ed-txt:#CDD6F4;--ed-cursor:#F38BA8;--ed-sel:rgba(220,20,60,.28);--ed-hl:rgba(220,20,60,.06);--ed-hl-brd:#DC143C;--ed-tab-bg:#181825;--ed-tab-active:#1E1E2E;--ed-tab-txt:#BAC2DE;--ed-tab-active-txt:#CDD6F4;--ed-foot-bg:#181825;--ed-foot-txt:#6C7086;--ed-brd:#313244
 }
@@ -160,7 +160,7 @@ html.light .sb-toggle:hover{background:rgba(0,0,0,.04)}
 .stat-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--pri),var(--pri-lt));opacity:0;transition:opacity .3s}
 .stat-card:hover{background:var(--card-h);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
 .stat-card:hover::after{opacity:1}
-.st-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+.st-icon{width:38px;height:38px;border-radius:0px;display:flex;align-items:center;justify-content:center;margin-bottom:12px}
 .st-icon.red{background:rgba(220,20,60,.12);color:var(--pri)}
 .st-icon.grn{background:var(--ok-bg);color:var(--ok)}
 .st-icon.amb{background:var(--warn-bg);color:var(--warn)}
@@ -174,7 +174,7 @@ html.light .sb-toggle:hover{background:rgba(0,0,0,.04)}
 .storage-text{display:flex;justify-content:space-between;font-size:.73em;color:var(--txt2)}
 
 /* ── Buttons ── */
-.btn{padding:10px 20px;border:none;border-radius:10px;font-size:.84em;font-weight:600;cursor:pointer;transition:all .25s var(--ease);display:inline-flex;align-items:center;gap:8px;outline:none}
+.btn{padding:10px 20px;border:none;border-radius:0px;font-size:.84em;font-weight:600;cursor:pointer;transition:all .25s var(--ease);display:inline-flex;align-items:center;gap:8px;outline:none}
 .btn:active{transform:scale(.96)}
 .btn-pri{background:linear-gradient(135deg,var(--pri),var(--pri-dk));color:#fff;box-shadow:0 4px 16px var(--pri-glow)}
 .btn-pri:hover{background:linear-gradient(135deg,var(--pri-lt),var(--pri));box-shadow:0 6px 24px rgba(220,20,60,.35);transform:translateY(-1px)}
@@ -198,15 +198,20 @@ html.light .sb-toggle:hover{background:rgba(0,0,0,.04)}
 .progress-text{font-size:.72em;color:var(--txt2);margin-top:5px;text-align:center}
 
 /* ── File List ── */
-.file-row{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.04);transition:all .25s var(--ease);border-radius:10px;margin:2px 0}
+.file-row{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.04);transition:all .25s var(--ease);border-radius:0px;margin:2px 0}
 .file-row:last-child{border-bottom:none}
 .file-row:hover{background:rgba(220,20,60,.04);transform:translateX(4px)}
 .file-info{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
-.fi-icon{width:38px;height:38px;border-radius:10px;background:rgba(220,20,60,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--pri)}
+.cb-wrap{display:inline-flex;align-items:center;cursor:pointer;position:relative;margin-right:12px}
+.cb-wrap input{position:absolute;opacity:0;cursor:pointer}
+.cb-box{height:18px;width:18px;background:rgba(255,255,255,.05);border:1px solid var(--brd);border-radius:4px;display:flex;align-items:center;justify-content:center;transition:all .2s;border-radius:0px}
+.cb-wrap input:checked ~ .cb-box{background:var(--pri);border-color:var(--pri-dk)}
+.cb-wrap input:checked ~ .cb-box:after{content:"";display:block;width:4px;height:9px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);margin-top:-2px}
+.fi-icon{width:38px;height:38px;border-radius:0px;background:rgba(220,20,60,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--pri)}
 .file-name{font-size:.86em;font-weight:500;word-break:break-all;color:var(--txt)}
 .file-meta{font-size:.7em;color:var(--txt2);margin-top:2px}
 .file-actions{display:flex;gap:4px;flex-shrink:0}
-.file-actions button{width:34px;height:34px;border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;background:transparent;color:var(--txt2);transition:all .2s var(--ease)}
+.file-actions button{width:34px;height:34px;border:none;border-radius:0px;cursor:pointer;display:flex;align-items:center;justify-content:center;background:transparent;color:var(--txt2);transition:all .2s var(--ease)}
 .file-actions button:hover{background:rgba(220,20,60,.12);color:var(--pri);transform:scale(1.1)}
 .file-actions button.del:hover{background:var(--err-bg);color:var(--err)}
 
@@ -260,7 +265,7 @@ html.light .sb-toggle:hover{background:rgba(0,0,0,.04)}
 
 /* ── Toast ── */
 .toast-box{position:fixed;top:16px;right:16px;z-index:500;display:flex;flex-direction:column;gap:8px;pointer-events:none}
-.toast{padding:14px 20px;border-radius:12px;font-size:.82em;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,.4);animation:toastIn .4s var(--ease);display:flex;align-items:center;gap:10px;max-width:340px;pointer-events:auto;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.toast{padding:14px 20px;border-radius:0px;font-size:.82em;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,.4);animation:toastIn .4s var(--ease);display:flex;align-items:center;gap:10px;max-width:340px;pointer-events:auto;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
 .toast.ok{background:rgba(0,230,118,.12);color:var(--ok);border:1px solid rgba(0,230,118,.2)}
 .toast.err{background:rgba(255,23,68,.12);color:var(--err);border:1px solid rgba(255,23,68,.2)}
 .toast.info{background:rgba(220,20,60,.12);color:var(--pri-lt);border:1px solid rgba(220,20,60,.2)}
@@ -269,11 +274,11 @@ html.light .sb-toggle:hover{background:rgba(0,0,0,.04)}
 /* ── Modal ── */
 .modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:400;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
 .modal-ov.show{display:flex}
-.modal{background:var(--bg2);border:1px solid var(--glass-brd);border-radius:18px;padding:28px;max-width:420px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,.5);animation:modalIn .3s var(--ease)}
+.modal{background:var(--bg2);border:1px solid var(--glass-brd);border-radius:0px;padding:28px;max-width:420px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,.5);animation:modalIn .3s var(--ease)}
 @keyframes modalIn{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
 .modal h3{margin-bottom:8px;color:var(--txt);font-size:1.05em}
 .modal p{color:var(--txt2);margin-bottom:18px;font-size:.86em;line-height:1.5}
-.modal input{width:100%;padding:12px 14px;border:1px solid var(--brd);border-radius:10px;font-size:.88em;margin-bottom:18px;outline:none;background:rgba(255,255,255,.04);color:var(--txt);transition:border-color .2s}
+.modal input{width:100%;padding:12px 14px;border:1px solid var(--brd);border-radius:0px;font-size:.88em;margin-bottom:18px;outline:none;background:rgba(255,255,255,.04);color:var(--txt);transition:border-color .2s}
 .modal input:focus{border-color:var(--pri);box-shadow:0 0 0 3px var(--pri-glow)}
 .modal-btns{display:flex;gap:10px;justify-content:flex-end}
 
@@ -614,6 +619,10 @@ Upload
 <svg viewBox="0 0 24 24" width="18" height="18"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="currentColor"/></svg>
 Files on SD Card
 </span>
+<button class="btn" id="delSelBtn" style="padding:7px 14px;font-size:.78em;background:var(--err);display:none;margin-right:10px">
+<svg viewBox="0 0 24 24" width="14" height="14"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="currentColor"/></svg>
+Del Selected
+</button>
 <button class="btn btn-sec" id="newFileBtn" style="padding:7px 14px;font-size:.78em">
 <svg viewBox="0 0 24 24" width="14" height="14"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor"/></svg>
 New File
@@ -1143,6 +1152,7 @@ var el=document.getElementById('fileList');
 if(!files.length){el.innerHTML='<div class="empty-st"><svg viewBox="0 0 24 24" width="44" height="44"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="currentColor"/></svg><p style="margin-top:10px;font-size:.88em">No .txt files found on SD card</p></div>';return}
 files.sort(function(a,b){return(b.modified||0)-(a.modified||0)});
 el.innerHTML=files.map(function(f){return '<div class="file-row" data-name="'+esc(f.name)+'">'
++'<label class="cb-wrap"><input type="checkbox" class="cb" value="'+esc(f.name)+'"><span class="cb-box"></span></label>'
 +'<div class="file-info">'
 +'<div class="fi-icon"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="currentColor"/></svg></div>'
 +'<div style="min-width:0"><div class="file-name">'+esc(f.name)+'</div>'
@@ -1158,6 +1168,24 @@ el.innerHTML=files.map(function(f){return '<div class="file-row" data-name="'+es
 document.getElementById('fileList').innerHTML='<div class="empty-st"><p style="color:var(--err)">Error loading files</p></div>';
 });
 }
+
+document.getElementById('fileList').addEventListener('change',function(e){
+if(e.target.classList.contains('cb')){
+var cbs=document.querySelectorAll('.cb:checked');
+document.getElementById('delSelBtn').style.display=cbs.length>0?'inline-flex':'none';
+}
+});
+document.getElementById('delSelBtn').addEventListener('click',function(){
+var cbs=document.querySelectorAll('.cb:checked');
+if(cbs.length===0)return;
+if(!confirm('Delete '+cbs.length+' files?'))return;
+var count=0;
+this.disabled=true;
+for(var i=0;i<cbs.length;i++){
+fetch('/delete',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'name='+encodeURIComponent(cbs[i].value)})
+.then(function(){count++;if(count===cbs.length){toast('Deleted '+count+' files','ok');loadFiles();document.getElementById('delSelBtn').style.display='none';document.getElementById('delSelBtn').disabled=false;}});
+}
+});
 
 /* ═══ File Actions (event delegation) ═══ */
 document.getElementById('fileList').addEventListener('click',function(e){
