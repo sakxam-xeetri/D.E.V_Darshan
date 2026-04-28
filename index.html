@@ -648,7 +648,14 @@ Settings
 <svg viewBox="0 0 24 24" width="18" height="18"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.24 4.24 0 00-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z" fill="currentColor"/></svg>
 WiFi Configuration
 </h3>
-<div id="wifiInfo"><div class="empty-st"><p>Loading...</p></div></div>
+<div id="wifiInfo">
+<div class="info-row"><span class="info-label">Network SSID</span><span class="info-value">D.E.V_Darshan</span></div>
+<div class="info-row"><span class="info-label">Password</span><span class="info-value">readmore</span></div>
+<div class="info-row"><span class="info-label">Portal IP</span><span class="info-value">192.168.4.1</span></div>
+<div class="info-row"><span class="info-label">WiFi Channel</span><span class="info-value">6</span></div>
+<div class="info-row"><span class="info-label">Portal Mode</span><span class="info-value">AP mode, single-client focus</span></div>
+<div class="info-row"><span class="info-label">Auto Shutdown</span><span class="info-value">5 min inactivity</span></div>
+</div>
 </div>
 
 <div class="card">
@@ -671,7 +678,14 @@ Reading Behaviour
 <svg viewBox="0 0 24 24" width="18" height="18"><path d="M18 2h-8L4.02 8 4 20c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 18H6v-8h12v8z" fill="currentColor"/></svg>
 Storage Details
 </h3>
-<div id="storageInfo"><div class="empty-st"><p>Loading...</p></div></div>
+<div id="storageInfo">
+<div class="info-row"><span class="info-label">Storage Type</span><span class="info-value">MicroSD FAT16/FAT32 (typically up to 32GB)</span></div>
+<div class="info-row"><span class="info-label">Managed Files</span><span class="info-value">Up to 200 files (newest-first)</span></div>
+<div class="info-row"><span class="info-label">Allowed File Type</span><span class="info-value">.txt only</span></div>
+<div class="info-row"><span class="info-label">Upload Limit</span><span class="info-value">2 MB per file</span></div>
+<div class="info-row"><span class="info-label">Web Editor Limit</span><span class="info-value">64 KB per file</span></div>
+<div class="info-row"><span class="info-label">Runtime Capacity</span><span class="info-value">Shown when /info API is available</span></div>
+</div>
 </div>
 
 <div class="card">
@@ -679,7 +693,29 @@ Storage Details
 <svg viewBox="0 0 24 24" width="18" height="18"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.34C7 21.4 7.6 22 8.33 22h7.34c.73 0 1.33-.6 1.33-1.33V5.33C17 4.6 16.4 4 15.67 4z" fill="currentColor"/></svg>
 System Resources
 </h3>
-<div id="sysInfo"><div class="empty-st"><p>Loading...</p></div></div>
+<div id="sysInfo">
+<div class="info-row"><span class="info-label">Platform</span><span class="info-value">AI Thinker ESP32-CAM (ESP32-S)</span></div>
+<div class="info-row"><span class="info-label">Flash / RAM</span><span class="info-value">4MB Flash + PSRAM</span></div>
+<div class="info-row"><span class="info-label">CPU Profile</span><span class="info-value">80 MHz reading / 240 MHz WiFi portal</span></div>
+<div class="info-row"><span class="info-label">Power Policy</span><span class="info-value">WiFi + BT OFF during reading</span></div>
+<div class="info-row"><span class="info-label">Reading Current</span><span class="info-value">~35mA (estimated)</span></div>
+<div class="info-row"><span class="info-label">WiFi Portal Current</span><span class="info-value">~120mA (estimated)</span></div>
+<div class="info-row"><span class="info-label">Deep Sleep</span><span class="info-value">~6uA (theoretical)</span></div>
+</div>
+</div>
+
+<div class="card">
+<h3>
+<svg viewBox="0 0 24 24" width="18" height="18"><path d="M4 4h16v2H4zm0 4h16v2H4zm0 4h10v2H4zm0 4h10v2H4z" fill="currentColor"/></svg>
+Framework &amp; Build Baseline
+</h3>
+<div class="info-row"><span class="info-label">Framework</span><span class="info-value">Arduino (ESP32 core 2.0.x+)</span></div>
+<div class="info-row"><span class="info-label">Libraries</span><span class="info-value">U8g2, WebServer, WiFi, SD_MMC, Preferences, FS</span></div>
+<div class="info-row"><span class="info-label">Board Target</span><span class="info-value">AI Thinker ESP32-CAM</span></div>
+<div class="info-row"><span class="info-label">Flash Mode</span><span class="info-value">QIO @ 80MHz</span></div>
+<div class="info-row"><span class="info-label">Partition Scheme</span><span class="info-value">Default 4MB with SPIFFS</span></div>
+<div class="info-row"><span class="info-label">SD Mode</span><span class="info-value">SD_MMC 1-bit (GPIO2/14/15)</span></div>
+<div class="info-row"><span class="info-label">Boot Safety</span><span class="info-value">GPIO mapping optimized for resistor-free stable boot</span></div>
 </div>
 
 <div class="card">
@@ -754,10 +790,10 @@ Documentation
 <div class="acc-illust">
 <svg viewBox="0 0 120 60" width="120" height="60"><rect x="20" y="10" width="80" height="45" rx="4" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="6,3"/><path d="M60 38V20m-8 8l8-8 8 8" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><text x="60" y="50" text-anchor="middle" fill="currentColor" font-size="7" opacity=".6">.txt</text></svg>
 </div>
-<p>In the <strong>Files</strong> tab, use the Upload section. You can tap to select a file or <strong>drag &amp; drop</strong> a .txt file onto the upload area.</p>
-<p>Press <strong>Upload</strong> and watch the progress bar. A toast notification confirms success.</p>
-<p>Use the action buttons on each file row to <strong>Edit</strong> (pencil icon), <strong>Rename</strong> (text icon), <strong>Download</strong> (arrow icon), or <strong>Delete</strong> (trash icon).</p>
-<p style="padding-bottom:0"><strong>Note:</strong> Only <strong>.txt</strong> files up to <strong>2 MB</strong> are accepted. Filenames are validated server-side to prevent invalid characters.</p>
+<p>Use the WiFi portal upload flow at <strong>192.168.4.1</strong>. The device validates each upload and streams data to SD storage safely.</p>
+<p>Files are sorted newest-first in firmware and the list is capped at <strong>200 files</strong> for RAM safety.</p>
+<p>The system accepts only <strong>.txt</strong> files and rejects empty or oversized uploads.</p>
+<p style="padding-bottom:0"><strong>Limits:</strong> <strong>2 MB</strong> max upload size and <strong>64 KB</strong> max web editor file size.</p>
 </div>
 </div>
 
@@ -770,8 +806,8 @@ Documentation
 <div class="acc-illust">
 <svg viewBox="0 0 120 60" width="120" height="60"><rect x="15" y="5" width="90" height="50" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><line x1="30" y1="5" x2="30" y2="55" stroke="currentColor" stroke-width="1" opacity=".3"/><text x="23" y="18" text-anchor="middle" fill="currentColor" font-size="6" opacity=".5">1</text><text x="23" y="28" text-anchor="middle" fill="currentColor" font-size="6" opacity=".5">2</text><text x="23" y="38" text-anchor="middle" fill="currentColor" font-size="6" opacity=".5">3</text><rect x="30" y="21" width="75" height="10" fill="rgba(220,20,60,0.08)"/><line x1="35" y1="16" x2="85" y2="16" stroke="currentColor" stroke-width="1" opacity=".3"/><line x1="35" y1="26" x2="95" y2="26" stroke="currentColor" stroke-width="1" opacity=".5"/><line x1="35" y1="36" x2="75" y2="36" stroke="currentColor" stroke-width="1" opacity=".3"/></svg>
 </div>
-<p>Click the <strong>pencil icon</strong> next to any file in the Files list. The content loads in the <strong>Editor</strong> tab with a monospace font, line numbers, and active-line highlighting.</p>
-<p>The editor shows a live <strong>character and line counter</strong> at the bottom. Click <strong>Save</strong> to write changes to the SD card, or <strong>Cancel</strong> to discard.</p>
+<p>The <strong>Editor</strong> tab is your main workspace: type or paste text, use formatting tools, and preview wrapped output live on the OLED simulator.</p>
+<p>The editor shows a live <strong>character and line counter</strong>. Click <strong>Save</strong> to push content to the device backend endpoint, or <strong>Close</strong> to reset the editor session.</p>
 <p>Use <strong>Ctrl+S</strong> (or Cmd+S) as a keyboard shortcut to save.</p>
 <p style="padding-bottom:0"><strong>Limit:</strong> Web editing supports files up to <strong>64 KB</strong>. For larger files, download, edit locally, and re-upload.</p>
 </div>
@@ -807,6 +843,32 @@ Documentation
 <p><strong>Wake Up:</strong> Press any button (UP, DOWN, or SELECT) to instantly resume from where you left off.</p>
 <p><strong>WiFi Power:</strong> WiFi and Bluetooth radios are fully disabled during reading. They activate only when entering WiFi Portal from the Home menu.</p>
 <p style="padding-bottom:0"><strong>Magnetic Switch:</strong> The magnetic reed switch provides hardware power cutoff &mdash; zero standby drain, ideal for long-term storage.</p>
+</div>
+</div>
+
+<div class="acc-item">
+<button class="acc-btn" onclick="toggleAcc(this)">
+<span>Firmware Architecture (README)</span>
+<svg viewBox="0 0 24 24"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z" fill="currentColor"/></svg>
+</button>
+<div class="acc-body">
+<p><strong>Main Entry:</strong> <code>D.E.V_Darshan_Sketch.ino</code> controls setup and loop flow.</p>
+<p><strong>Core Modules:</strong> <code>config</code> (pins/settings), <code>display</code> (OLED rendering), <code>sd_reader</code> (line reader + bookmarks), <code>buttons</code> (debounce/press types), <code>wifi_portal</code> (AP + web server), and <code>portal.h</code> (embedded UI).</p>
+<p><strong>Design Decisions:</strong> line-by-line buffering keeps memory usage stable, bookmarks persist using ESP32 Preferences (NVS), and SD_MMC 1-bit mode frees critical GPIOs for safer boot.</p>
+<p style="padding-bottom:0"><strong>State Flow:</strong> BOOT_INIT &rarr; HOME &rarr; FILE/SETTINGS/WIFI_PORTAL &rarr; READING.</p>
+</div>
+</div>
+
+<div class="acc-item">
+<button class="acc-btn" onclick="toggleAcc(this)">
+<span>Build Framework &amp; Flash Settings</span>
+<svg viewBox="0 0 24 24"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z" fill="currentColor"/></svg>
+</button>
+<div class="acc-body">
+<p><strong>Toolchain:</strong> Arduino IDE 2.x or PlatformIO with ESP32 board package (2.0.x+).</p>
+<p><strong>Board:</strong> AI Thinker ESP32-CAM, upload speed 115200, QIO flash mode, 80MHz flash frequency, default 4MB with SPIFFS partition.</p>
+<p><strong>Libraries:</strong> U8g2 plus built-in ESP32 libraries (WebServer, WiFi, SD_MMC, Preferences, FS).</p>
+<p style="padding-bottom:0"><strong>Important:</strong> after final assembly, GPIO1/GPIO3 are reused for OLED I2C, so serial debugging is limited and OLED status output is preferred.</p>
 </div>
 </div>
 
@@ -1417,31 +1479,72 @@ else return r.text().then(function(t){toast('Create failed: '+t,'err')})})
 });
 
 /* ═══ Settings ═══ */
-function loadSettings(){
-fetch('/info').then(function(r){return r.json()}).then(function(d){
+function renderSettingsData(d){
+var totalKnown=typeof d.totalBytes==='number'&&d.totalBytes>0;
+var usedKnown=typeof d.usedBytes==='number'&&d.usedBytes>=0;
+var freeKnown=typeof d.freeBytes==='number'&&d.freeBytes>=0;
+var pct=(totalKnown&&usedKnown)?Math.round(d.usedBytes/d.totalBytes*100):0;
+
+var totalVal=totalKnown?fmt(d.totalBytes):'MicroSD dependent (2GB-32GB typical)';
+var usedVal=(totalKnown&&usedKnown)?(fmt(d.usedBytes)+' ('+pct+'%)'):'Available when /info API is reachable';
+var freeVal=freeKnown?fmt(d.freeBytes):((totalKnown&&usedKnown)?fmt(Math.max(0,d.totalBytes-d.usedBytes)):'Available when /info API is reachable');
+var heapVal=(typeof d.freeHeap==='number'&&d.freeHeap>0)?fmt(d.freeHeap):'Runtime value from device';
+var uptimeVal=(typeof d.uptime==='number'&&d.uptime>=0)?fmtUp(d.uptime):'Runtime value from device';
+var sdVal=(typeof d.sdMounted==='boolean')?(d.sdMounted?'<span style="color:var(--ok)">Mounted</span>':'<span style="color:var(--err)">Not Found</span>'):'Expected: Mounted when SD inserted';
+
 document.getElementById('wifiInfo').innerHTML=
 '<div class="info-row"><span class="info-label">Network SSID</span><span class="info-value">'+esc(d.ssid)+'</span></div>'
-+'<div class="info-row"><span class="info-label">Portal IP</span><span class="info-value">192.168.4.1</span></div>'
-+'<div class="info-row"><span class="info-label">WiFi Channel</span><span class="info-value">6</span></div>'
-+'<div class="info-row"><span class="info-label">Max Upload Size</span><span class="info-value">'+fmt(d.maxUpload)+'</span></div>'
-+'<div class="info-row"><span class="info-label">Auto Shutdown</span><span class="info-value">'+Math.round(d.wifiTimeout/60000)+' min inactivity</span></div>';
++'<div class="info-row"><span class="info-label">Password</span><span class="info-value">'+esc(d.password)+'</span></div>'
++'<div class="info-row"><span class="info-label">Portal IP</span><span class="info-value">'+esc(d.portalIp)+'</span></div>'
++'<div class="info-row"><span class="info-label">WiFi Channel</span><span class="info-value">'+esc(String(d.channel))+'</span></div>'
++'<div class="info-row"><span class="info-label">Max Upload Size</span><span class="info-value">'+esc(d.maxUploadLabel)+'</span></div>'
++'<div class="info-row"><span class="info-label">Auto Shutdown</span><span class="info-value">'+esc(d.wifiTimeoutLabel)+'</span></div>';
 
-var totalB=d.totalBytes,usedB=d.usedBytes,freeB=totalB-usedB;
-var pct=totalB>0?Math.round(usedB/totalB*100):0;
 document.getElementById('storageInfo').innerHTML=
-'<div class="info-row"><span class="info-label">Total Capacity</span><span class="info-value">'+fmt(totalB)+'</span></div>'
-+'<div class="info-row"><span class="info-label">Used Space</span><span class="info-value">'+fmt(usedB)+' ('+pct+'%)</span></div>'
-+'<div class="info-row"><span class="info-label">Available</span><span class="info-value">'+fmt(freeB)+'</span></div>'
-+'<div class="storage-bar" style="margin-top:8px"><div class="storage-fill" style="width:'+pct+'%"></div></div>';
+'<div class="info-row"><span class="info-label">Total Capacity</span><span class="info-value">'+totalVal+'</span></div>'
++'<div class="info-row"><span class="info-label">Used Space</span><span class="info-value">'+usedVal+'</span></div>'
++'<div class="info-row"><span class="info-label">Available</span><span class="info-value">'+freeVal+'</span></div>'
++'<div class="info-row"><span class="info-label">Allowed File Type</span><span class="info-value">.txt only</span></div>'
++'<div class="info-row"><span class="info-label">Managed Files</span><span class="info-value">Up to 200 files (newest first)</span></div>'
++'<div class="storage-bar" style="margin-top:8px"><div class="storage-fill" style="width:'+(totalKnown?pct:0)+'%"></div></div>';
 
 document.getElementById('sysInfo').innerHTML=
-'<div class="info-row"><span class="info-label">Free Heap RAM</span><span class="info-value">'+fmt(d.freeHeap)+'</span></div>'
-+'<div class="info-row"><span class="info-label">CPU Frequency</span><span class="info-value">'+d.cpuFreq+' MHz</span></div>'
-+'<div class="info-row"><span class="info-label">SD Card</span><span class="info-value">'+(d.sdMounted?'<span style="color:var(--ok)">Mounted</span>':'<span style="color:var(--err)">Not Found</span>')+'</span></div>'
-+'<div class="info-row"><span class="info-label">Uptime</span><span class="info-value">'+fmtUp(d.uptime||0)+'</span></div>';
-}).catch(function(){
-document.getElementById('wifiInfo').innerHTML='<p style="color:var(--err);text-align:center;padding:12px">Failed to load settings</p>';
-});
+'<div class="info-row"><span class="info-label">Framework</span><span class="info-value">Arduino (ESP32 Core 2.0.x+)</span></div>'
++'<div class="info-row"><span class="info-label">Core Libraries</span><span class="info-value">U8g2, WebServer, WiFi, SD_MMC, Preferences, FS</span></div>'
++'<div class="info-row"><span class="info-label">CPU Profile</span><span class="info-value">80 MHz reading / 240 MHz WiFi portal</span></div>'
++'<div class="info-row"><span class="info-label">Free Heap RAM</span><span class="info-value">'+heapVal+'</span></div>'
++'<div class="info-row"><span class="info-label">SD Card</span><span class="info-value">'+sdVal+'</span></div>'
++'<div class="info-row"><span class="info-label">Uptime</span><span class="info-value">'+uptimeVal+'</span></div>';
+}
+
+function loadSettings(){
+var defaults={
+ssid:'D.E.V_Darshan',
+password:'readmore',
+portalIp:'192.168.4.1',
+channel:6,
+maxUploadLabel:'2 MB',
+wifiTimeoutLabel:'5 min inactivity'
+};
+renderSettingsData(defaults);
+
+fetch('/info').then(function(r){return r.json()}).then(function(info){
+var merged={
+ssid:info.ssid||defaults.ssid,
+password:defaults.password,
+portalIp:defaults.portalIp,
+channel:6,
+maxUploadLabel:typeof info.maxUpload==='number'?fmt(info.maxUpload):defaults.maxUploadLabel,
+wifiTimeoutLabel:typeof info.wifiTimeout==='number'?(Math.round(info.wifiTimeout/60000)+' min inactivity'):defaults.wifiTimeoutLabel,
+totalBytes:info.totalBytes,
+usedBytes:info.usedBytes,
+freeBytes:info.totalBytes-info.usedBytes,
+freeHeap:info.freeHeap,
+uptime:info.uptime,
+sdMounted:info.sdMounted
+};
+renderSettingsData(merged);
+}).catch(function(){});
 }
 
 /* ═══ Accordion ═══ */
