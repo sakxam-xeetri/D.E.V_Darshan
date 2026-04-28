@@ -138,7 +138,7 @@ void display_fileMenu(int selectedIndex, int topIndex,
 
 void display_reading(const char* lines[], int lineCount) {
     u8g2.clearBuffer();
-    u8g2.setFont(u8g2_font_4x6_mr);
+    u8g2.setFont(u8g2_font_tom_thumb_4x6_mr);
     for (int i = 0; i < READING_LINES && i < lineCount; i++) {
         if (lines[i]) {
             u8g2.drawStr(0, 7 + (i * 8), lines[i]);  // y=7, 15, 23, 31
