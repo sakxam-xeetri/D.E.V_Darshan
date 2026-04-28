@@ -1,474 +1,1725 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>D.E.V_Darshan — Advanced OLED Simulator</title>
-<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>D.E.V_Darshan — Portal</title>
 <style>
-:root {
-  --bg: #0C0C10;
-  --panel-bg: rgba(255, 255, 255, 0.035);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  --primary: #DC143C;
-  --primary-glow: rgba(220, 20, 60, 0.22);
-  --secondary: #ff003c;
-  --text-main: #e0e6ed;
-  --text-muted: #8b949e;
-  --border-focus: #00f0ff;
-  --radius: 0px;
-  --font-ui: 'Inter', sans-serif;
-  --font-mono: 'Fira Code', monospace;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: var(--font-ui); background: var(--bg); color: var(--text-main);
-  height: 100vh; display: flex; flex-direction: column; overflow: hidden;
-  background-image:
-                    radial-gradient(circle at 85% 30%, rgba(255, 0, 60, 0.04), transparent 30%);
-}
-.header {
-  padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;
-  border-bottom: 1px solid var(--glass-border);
-  background: rgba(11, 12, 16, 0.8); backdrop-filter: blur(10px); z-index: 10;
-}
-.brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: white; }
-.brand i { color: var(--primary); font-size: 1.5rem; filter: drop-shadow(0 0 8px var(--primary-glow)); }
-.brand div h1 { font-size: 1.2rem; font-weight: 700; letter-spacing: 1px; margin: 0;}
-.brand div span { font-size: 0.75rem; color: var(--text-muted); }
-.header-actions { display: flex; gap: 16px; }
-
-.main-grid {
-  display: grid; grid-template-columns: 280px 380px 380px; gap: 24px; padding: 24px; justify-content: center;
-  flex: 1; height: calc(100vh - 72px); overflow: hidden;
-}
-@media (max-width: 1200px) { .main-grid { grid-template-columns: 240px 360px 340px; gap: 16px; justify-content: center;} }
-@media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; height: auto; overflow: auto; } body {overflow: auto;} }
-
-.panel {
-  background: var(--panel-bg); border: 1px solid var(--glass-border);
-  border-radius: var(--radius); backdrop-filter: blur(12px);
-  display: flex; flex-direction: column; box-shadow: var(--glass-shadow);
-  overflow: hidden;
-}
-.panel-header {
-  padding: 16px; border-bottom: 1px solid var(--glass-border);
-  font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 0.95rem;
-}
-.panel-header i { color: var(--primary); }
-.panel-content { padding: 16px; overflow-y: auto; flex: 1; }
-.panel-content::-webkit-scrollbar { width: 6px; }
-.panel-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
-
-.tool-section { margin-bottom: 20px; }
-.tool-section summary {
-  font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase;
-  letter-spacing: 1px; cursor: pointer; user-select: none; padding: 4px 0;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.tool-section summary::after { content: '\f107'; font-family: 'Font Awesome 6 Free'; font-weight: 900; }
-.tool-section details[open] summary::after { content: '\f106'; }
-.tool-grid { display: grid; gap: 8px; margin-top: 12px; }
-
-.btn {
-  background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border);
-  color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-family: var(--font-ui);
-  font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 8px;
-  transition: all 0.2s ease; text-decoration: none;
-}
-.btn:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255,255,255,0.2); }
-.btn:active { transform: scale(0.98); }
-.btn.primary { background: rgba(0, 240, 255, 0.1); border-color: var(--primary); color: var(--primary); }
-.btn.primary:hover { background: rgba(0, 240, 255, 0.2); box-shadow: 0 0 12px var(--primary-glow); }
-
-.control-group { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
-.control-group label { font-size: 0.85rem; color: var(--text-muted); }
-.input-select {
-  background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: white;
-  padding: 8px; border-radius: 6px; font-family: var(--font-ui); width: 100%; outline: none;
-}
-.input-select:focus { border-color: var(--primary); }
-.chk-wrap { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; font-size: 0.85rem; color: var(--text-muted);}
-
-.editor-wrapper {
-  flex: 1; display: flex; flex-direction: column; border-radius: 6px;
-  border: 1px solid var(--glass-border); overflow: hidden; background: #0d0f15;
-  position: relative; min-height: 200px;
-}
-.editor-toolbar {
-  display: flex; justify-content: space-between; padding: 8px 12px;
-  background: rgba(0,0,0,0.4); border-bottom: 1px solid var(--glass-border);
-  font-size: 0.8rem; color: var(--text-muted);
-}
-.editor-toolbar-actions { display: flex; gap: 12px; }
-.editor-toolbar-actions button { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.9rem;}
-.editor-toolbar-actions button:hover { color: var(--primary); }
-.editor-main { position: relative; flex: 1; display: flex; overflow: hidden; }
-.line-numbers {
-  padding: 16px 8px; background: rgba(0,0,0,0.2); border-right: 1px solid var(--glass-border);
-  color: var(--text-muted); font-family: var(--font-mono); font-size: 14px; text-align: right;
-  user-select: none; min-width: 40px; line-height: 1.6; overflow: hidden;
-}
-.code-area { flex: 1; position: relative; overflow: auto; cursor: text;}
-.lines-backdrop {
-  position: absolute; top: 0; left: 0; min-width: 100%; padding: 16px; min-width: 100%; white-space: pre-wrap; word-break: break-all;
-  font-family: var(--font-mono); font-size: 14px; line-height: 1.6; color: transparent;
-  pointer-events: none; white-space: pre-wrap; word-break: break-all; z-index: 1; margin: 0;
-}
-.lines-backdrop span.overflow { background: rgba(255, 0, 60, 0.2); border-bottom: 1px dashed var(--secondary); }
-textarea {
-  position: absolute; top: 0; left: 0; width: 100%; min-height: 100%;
-  background: transparent; color: var(--text-main); border: none; padding: 16px;
-  font-family: var(--font-mono); font-size: 14px; line-height: 1.6; resize: none;
-  outline: none; white-space: pre-wrap; word-break: break-all; z-index: 2; caret-color: var(--primary); margin: 0; overflow: hidden;
+:root{
+--bg:#0C0C10;--bg2:#121218;--sidebar:#0F0F14;
+--card:rgba(255,255,255,0.035);--card-h:rgba(255,255,255,0.055);
+--glass-brd:rgba(255,255,255,0.07);
+--pri:#DC143C;--pri-lt:#FF2D55;--pri-dk:#A01030;--pri-glow:rgba(220,20,60,0.22);
+--txt:#E8E6E3;--txt2:#8A8A95;--txt3:#555560;
+--brd:rgba(255,255,255,0.07);
+--ok:#00E676;--ok-bg:rgba(0,230,118,0.1);
+--err:#FF1744;--err-bg:rgba(255,23,68,0.1);
+--warn:#FFD740;--warn-bg:rgba(255,215,64,0.1);
+--sb-w:250px;--sb-w-col:60px;--radius:0px;
+--ease:cubic-bezier(.4,0,.2,1);
+--ed-bg:#1E1E2E;--ed-gutter:#181825;--ed-gutter-txt:#585B70;--ed-gutter-brd:#313244;--ed-txt:#CDD6F4;--ed-cursor:#F38BA8;--ed-sel:rgba(220,20,60,.28);--ed-hl:rgba(220,20,60,.06);--ed-hl-brd:#DC143C;--ed-tab-bg:#181825;--ed-tab-active:#1E1E2E;--ed-tab-txt:#BAC2DE;--ed-tab-active-txt:#CDD6F4;--ed-foot-bg:#181825;--ed-foot-txt:#6C7086;--ed-brd:#313244;
+--oled-cols:32;--editor-char-width:calc(var(--oled-cols) * 1ch);--editor-content-width:calc(var(--editor-char-width) + 32px);--editor-panel-width:calc(var(--editor-content-width) + 51px)
 }
 
-.code-area::-webkit-scrollbar { width: 10px; height: 10px; }
-.code-area::-webkit-scrollbar-corner { background: transparent; }
-.code-area::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 5px; }
+/* Light theme */
+html.light{
+--bg:#F5F5F5;--bg2:#FFFFFF;--sidebar:#FAFAFA;
+--card:rgba(0,0,0,0.03);--card-h:rgba(0,0,0,0.055);
+--glass-brd:rgba(0,0,0,0.08);
+--pri:#DC143C;--pri-lt:#FF2D55;--pri-dk:#A01030;--pri-glow:rgba(220,20,60,0.15);
+--txt:#1E1E2E;--txt2:#555;--txt3:#999;
+--brd:rgba(0,0,0,0.1);
+--ok:#2E7D32;--ok-bg:rgba(46,125,50,0.1);
+--err:#C62828;--err-bg:rgba(198,40,40,0.1);
+--warn:#F57F17;--warn-bg:rgba(245,127,23,0.1);
+--ed-bg:#FFFFFF;--ed-gutter:#F0F0F0;--ed-gutter-txt:#999;--ed-gutter-brd:#DDD;--ed-txt:#1E1E1E;--ed-cursor:#DC143C;--ed-sel:rgba(220,20,60,.18);--ed-hl:rgba(220,20,60,.06);--ed-hl-brd:#DC143C;--ed-tab-bg:#F0F0F0;--ed-tab-active:#FFFFFF;--ed-tab-txt:#666;--ed-tab-active-txt:#1E1E1E;--ed-foot-bg:#F0F0F0;--ed-foot-txt:#666;--ed-brd:#DDD
+}
+html.light .sidebar{background:var(--sidebar);border-right:1px solid var(--brd)}
+html.light .mob-hdr{background:var(--sidebar);border-bottom:1px solid var(--brd)}
+html.light .sb-nav button:hover{background:rgba(0,0,0,.04)}
+html.light .sb-nav button.active{background:rgba(220,20,60,.06)}
+html.light .sb-bk{background:rgba(0,0,0,.3)}
+html.light .card{background:var(--card);border-color:var(--glass-brd);box-shadow:0 1px 3px rgba(0,0,0,.06)}
+html.light .card:hover{background:var(--card-h);box-shadow:0 4px 16px rgba(0,0,0,.08)}
+html.light .stat-card{background:var(--card);border-color:var(--glass-brd)}
+html.light .stat-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.08)}
+html.light .btn-sec{background:rgba(0,0,0,.05);color:var(--txt);border:1px solid var(--brd)}
+html.light .btn-sec:hover{background:rgba(0,0,0,.08)}
+html.light .file-row:hover{background:rgba(220,20,60,.04)}
+html.light .file-actions button:hover{background:rgba(220,20,60,.08)}
+html.light .toast.ok{background:rgba(46,125,50,.1);color:var(--ok);border-color:rgba(46,125,50,.2)}
+html.light .toast.err{background:rgba(198,40,40,.1);color:var(--err);border-color:rgba(198,40,40,.2)}
+html.light .toast.info{background:rgba(220,20,60,.08);color:var(--pri);border-color:rgba(220,20,60,.15)}
+html.light .modal{background:var(--bg2);border-color:var(--glass-brd)}
+html.light .modal input{background:rgba(0,0,0,.03);border-color:var(--brd);color:var(--txt)}
+html.light .drop-zone{border-color:rgba(0,0,0,.15)}
+html.light .drop-zone:hover,.drop-zone.over{border-color:var(--pri);background:rgba(220,20,60,.03)}
+html.light .storage-bar{background:rgba(0,0,0,.08)}
+html.light .info-row{border-bottom-color:rgba(0,0,0,.06)}
+html.light ::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15)}
+html.light ::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,.25)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,'Inter',sans-serif;background:var(--bg);color:var(--txt);height:100vh;overflow:hidden;font-size:18px}
 
-.oled-preview-container { display: flex; flex-direction: column; align-items: center; gap: 20px; }
-.oled-hardware {
-  border: 2px solid #222; border-radius: 8px; padding: 20px 24px 30px;
-  background: linear-gradient(to bottom, #111, #050505);
-  box-shadow: 0 10px 40px rgba(0,0,0,0.8), inset 0 2px 0 rgba(255,255,255,0.1);
-  position: relative;
-}
-.oled-hardware::before {
-  content: 'SSD1306 128x32'; position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
-  font-size: 0.6rem; color: #444; letter-spacing: 1px;
-}
-.oled-screen {
-  background: #000; border: 1px solid #111; width: 384px; height: 96px;
-  position: relative; overflow: hidden; box-shadow: inset 0 0 20px rgba(0, 225, 255, 0.1);
-  display: flex; flex-direction: column; image-rendering: pixelated;
-}
-.oled-screen.inverted { background: #00e1ff; }
-.oled-screen.inverted .oled-row { color: #000; text-shadow: none; font-weight: 700; }
-.oled-row {
-  height: 24px; line-height: 24px; font-family: "Courier New", Courier, monospace; font-size: 16px;
-  color: #00e1ff; text-shadow: 0 0 4px rgba(0, 225, 255, 0.5); white-space: pre-wrap; word-break: break-all;
-  letter-spacing: 2px; transform: none; width: 100%; padding-left: 4px;
-}
+/* ── Sidebar ── */
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sb-w);background:var(--sidebar);border-right:1px solid var(--brd);display:flex;flex-direction:column;z-index:200;transition:transform .35s var(--ease),width .35s var(--ease);overflow:hidden}
+.sb-logo{padding:28px 20px 22px;border-bottom:1px solid var(--brd);text-align:center}
+.sb-logo h1{font-size:1.1em;color:var(--txt);display:flex;align-items:center;justify-content:center;gap:8px}
+.sb-logo h1 svg{color:var(--pri);filter:drop-shadow(0 0 8px var(--pri-glow))}
+.sb-logo p{font-size:.68em;color:var(--txt2);margin-top:5px;letter-spacing:1.5px;text-transform:uppercase}
+.sb-nav{flex:1;padding:14px 0;overflow-y:auto}
+.sb-nav button{width:100%;padding:13px 22px;border:none;background:transparent;color:var(--txt2);font-size:.86em;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:13px;transition:all .25s var(--ease);border-left:3px solid transparent;position:relative}
+.sb-nav button:hover{background:rgba(255,255,255,.03);color:var(--txt)}
+.sb-nav button.active{background:rgba(220,20,60,.08);color:var(--pri);border-left-color:var(--pri);font-weight:600}
+.sb-nav button.active svg{filter:drop-shadow(0 0 6px var(--pri-glow))}
+.sb-nav button svg{width:20px;height:20px;flex-shrink:0}
+.sb-footer{padding:16px 20px;border-top:1px solid var(--brd);font-size:.66em;color:var(--txt3);text-align:center;line-height:1.7}
+.sb-footer span{color:var(--pri)}
 
-.hardware-controls { display: flex; gap: 12px; margin-top: 10px; }
-.hw-btn {
-  width: 48px; height: 48px; border-radius: 50%; border: 2px solid #333;
-  background: linear-gradient(145deg, #1f222e, #13151c); color: var(--text-muted);
-  display: flex; justify-content: center; align-items: center; font-size: 1.2rem;
-  box-shadow: 4px 4px 8px rgba(0,0,0,0.5), -2px -2px 6px rgba(255,255,255,0.02);
-  cursor: pointer; transition: all 0.1s;
+/* ── Sidebar Toggle ── */
+.sb-toggle{width:100%;padding:12px 22px;border:none;background:transparent;color:var(--txt2);cursor:pointer;display:flex;align-items:center;gap:13px;font-size:.78em;font-weight:500;transition:all .25s var(--ease);border-top:1px solid var(--brd)}
+.sb-toggle:hover{color:var(--pri);background:rgba(220,20,60,.05)}
+.sb-toggle svg{width:20px;height:20px;flex-shrink:0;transition:transform .35s var(--ease)}
+.sidebar.collapsed .sb-toggle svg{transform:rotate(180deg)}
+.sidebar.collapsed .sb-text{display:none}
+.sidebar.collapsed .sb-logo p{display:none}
+.sidebar.collapsed .sb-footer{display:none}
+.sidebar.collapsed .sb-nav button{justify-content:center;padding:13px 0;border-left-width:0}
+.sidebar.collapsed .sb-logo{padding:20px 6px 16px}
+.sidebar.collapsed .sb-logo h1{justify-content:center}
+.sidebar.collapsed .sb-toggle{justify-content:center;padding:12px 0}
+.sidebar.collapsed .theme-area{display:none}
+html.light .sb-toggle:hover{background:rgba(0,0,0,.04)}
+
+/* ── Mobile Header ── */
+.mob-hdr{display:none;position:fixed;top:0;left:0;right:0;height:56px;background:var(--sidebar);border-bottom:1px solid var(--brd);z-index:150;align-items:center;padding:0 14px;gap:12px}
+.ham{width:38px;height:38px;border:none;background:transparent;color:var(--txt);cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:8px;transition:background .2s}
+.ham:hover{background:rgba(255,255,255,.05)}
+.mob-title{font-size:.95em;font-weight:600;color:var(--txt);display:flex;align-items:center;gap:8px}
+.mob-title svg{color:var(--pri)}
+.sb-bk{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:199;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+
+/* ── Main ── */
+.main{margin-left:var(--sb-w);height:100vh;overflow-y:auto;padding:28px;box-sizing:border-box;transition:margin-left .35s var(--ease)}
+
+/* ── Tabs ── */
+.tab-panel{display:none;animation:fadeSlide .4s var(--ease)}
+.tab-panel.active{display:block}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+#tab-editor.active{display:flex;flex-direction:column;overflow:hidden;height:calc(100vh - 56px)}
+.ed-split{display:flex;gap:16px;flex:1;min-height:0;overflow:auto;align-items:stretch;padding-bottom:8px}
+
+/* ── Editor Simulator Panels (index-like) ── */
+.sim-panel{background:var(--card);border:1px solid var(--glass-brd);border-radius:0px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;flex-direction:column;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.35)}
+.sim-panel-hd{padding:14px 16px;border-bottom:1px solid var(--brd);font-size:.92em;font-weight:600;display:flex;align-items:center;gap:8px;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,0))}
+.sim-panel-hd svg{color:var(--pri);flex-shrink:0}
+.sim-panel-bd{padding:14px;overflow:auto;flex:1;min-height:0}
+
+.ed-tools-panel{width:260px;flex:0 0 260px;min-height:0}
+.sim-tools-sec{margin-bottom:18px}
+.sim-tools-sec summary{list-style:none;cursor:pointer;font-size:.78em;color:var(--txt2);text-transform:uppercase;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;padding:2px 0}
+.sim-tools-sec summary::-webkit-details-marker{display:none}
+.sim-tools-sec summary::after{content:'\25BE';font-size:.8em;color:var(--txt2)}
+.sim-tools-sec[open] summary::after{content:'\25B4'}
+.sim-tools-grid{display:grid;gap:8px;margin-top:10px}
+.sim-tool-btn{width:100%;padding:9px 11px;border:1px solid var(--brd);background:rgba(255,255,255,.03);color:var(--txt);font-size:.82em;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .2s var(--ease)}
+.sim-tool-btn:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18)}
+.sim-tool-btn svg{width:14px;height:14px;color:var(--txt2);flex-shrink:0}
+.sim-ctrl{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.sim-ctrl label{font-size:.8em;color:var(--txt2)}
+.sim-ctrl select{background:rgba(0,0,0,.35);color:var(--txt);border:1px solid var(--brd);padding:8px 10px;border-radius:6px;outline:none}
+.sim-ctrl select:focus{border-color:var(--pri)}
+.sim-check{display:flex;align-items:center;justify-content:space-between;margin-top:10px;font-size:.8em;color:var(--txt2)}
+.sim-check input{accent-color:var(--pri);transform:scale(1.1)}
+
+/* ── Page Header ── */
+.pg-hd{margin-bottom:24px}
+.pg-hd h2{font-size:1.45em;font-weight:700;display:flex;align-items:center;gap:10px}
+.pg-hd h2 svg{color:var(--pri);flex-shrink:0}
+.pg-hd p{font-size:.8em;color:var(--txt2);margin-top:4px}
+
+/* ── Cards ── */
+.card{background:var(--card);border:1px solid var(--glass-brd);border-radius:var(--radius);padding:20px;margin-bottom:20px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:all .3s var(--ease)}
+.card:hover{background:var(--card-h);border-color:rgba(255,255,255,.1);box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.card h3{font-size:.9em;color:var(--txt);margin-bottom:16px;display:flex;align-items:center;gap:10px;font-weight:600}
+.card h3 svg{color:var(--pri);flex-shrink:0}
+
+/* ── Stat Grid ── */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:20px}
+.stat-card{background:var(--card);border:1px solid var(--glass-brd);border-radius:var(--radius);padding:18px;backdrop-filter:blur(12px);transition:all .3s var(--ease);position:relative;overflow:hidden}
+.stat-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--pri),var(--pri-lt));opacity:0;transition:opacity .3s}
+.stat-card:hover{background:var(--card-h);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.stat-card:hover::after{opacity:1}
+.st-icon{width:38px;height:38px;border-radius:0px;display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+.st-icon.red{background:rgba(220,20,60,.12);color:var(--pri)}
+.st-icon.grn{background:var(--ok-bg);color:var(--ok)}
+.st-icon.amb{background:var(--warn-bg);color:var(--warn)}
+.st-icon.blu{background:rgba(66,165,245,.12);color:#42a5f5}
+.st-lbl{font-size:.7em;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.st-val{font-size:1.25em;font-weight:700;color:var(--txt)}
+
+/* ── Storage Bar ── */
+.storage-bar{height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;margin:10px 0}
+.storage-fill{height:100%;background:linear-gradient(90deg,var(--pri),var(--pri-lt));border-radius:4px;transition:width .8s var(--ease);box-shadow:0 0 12px var(--pri-glow)}
+.storage-text{display:flex;justify-content:space-between;font-size:.73em;color:var(--txt2)}
+
+/* ── Buttons ── */
+.btn{padding:10px 20px;border:none;border-radius:0px;font-size:.84em;font-weight:600;cursor:pointer;transition:all .25s var(--ease);display:inline-flex;align-items:center;gap:8px;outline:none}
+.btn:active{transform:scale(.96)}
+.btn-pri{background:linear-gradient(135deg,var(--pri),var(--pri-dk));color:#fff;box-shadow:0 4px 16px var(--pri-glow)}
+.btn-pri:hover{background:linear-gradient(135deg,var(--pri-lt),var(--pri));box-shadow:0 6px 24px rgba(220,20,60,.35);transform:translateY(-1px)}
+.btn-sec{background:rgba(255,255,255,.06);color:var(--txt);border:1px solid var(--brd)}
+.btn-sec:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.15)}
+.btn-ok{background:linear-gradient(135deg,#00C853,#00E676);color:#111}
+.btn-ok:hover{box-shadow:0 4px 16px rgba(0,200,83,.3);transform:translateY(-1px)}
+.btn-err{background:linear-gradient(135deg,var(--err),#D50000);color:#fff}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+
+/* ── Drop Zone ── */
+.drop-zone{border:2px dashed rgba(255,255,255,.1);border-radius:var(--radius);padding:36px 20px;text-align:center;cursor:pointer;transition:all .3s var(--ease)}
+.drop-zone:hover,.drop-zone.over{border-color:var(--pri);background:rgba(220,20,60,.04);box-shadow:inset 0 0 40px rgba(220,20,60,.04)}
+.drop-zone svg{color:var(--pri);margin-bottom:10px}
+.drop-zone p{font-size:.84em;color:var(--txt2)}
+
+/* ── Progress ── */
+.progress{display:none;margin-top:12px}
+.progress-bar{height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--pri),var(--pri-lt));transition:width .3s;border-radius:3px;box-shadow:0 0 8px var(--pri-glow)}
+.progress-text{font-size:.72em;color:var(--txt2);margin-top:5px;text-align:center}
+
+/* ── File List ── */
+.file-row{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.04);transition:all .25s var(--ease);border-radius:0px;margin:2px 0}
+.file-row:last-child{border-bottom:none}
+.file-row:hover{background:rgba(220,20,60,.04);transform:translateX(4px)}
+.file-info{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
+.cb-wrap{display:inline-flex;align-items:center;cursor:pointer;position:relative;margin-right:12px}
+.cb-wrap input{position:absolute;opacity:0;cursor:pointer}
+.cb-box{height:18px;width:18px;background:rgba(255,255,255,.05);border:1px solid var(--brd);border-radius:4px;display:flex;align-items:center;justify-content:center;transition:all .2s;border-radius:0px}
+.cb-wrap input:checked ~ .cb-box{background:var(--pri);border-color:var(--pri-dk)}
+.cb-wrap input:checked ~ .cb-box:after{content:"";display:block;width:4px;height:9px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);margin-top:-2px}
+.fi-icon{width:38px;height:38px;border-radius:0px;background:rgba(220,20,60,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--pri)}
+.file-name{font-size:.86em;font-weight:500;word-break:break-all;color:var(--txt)}
+.file-meta{font-size:.7em;color:var(--txt2);margin-top:2px}
+.file-actions{display:flex;gap:4px;flex-shrink:0}
+.file-actions button{width:34px;height:34px;border:none;border-radius:0px;cursor:pointer;display:flex;align-items:center;justify-content:center;background:transparent;color:var(--txt2);transition:all .2s var(--ease)}
+.file-actions button:hover{background:rgba(220,20,60,.12);color:var(--pri);transform:scale(1.1)}
+.file-actions button.del:hover{background:var(--err-bg);color:var(--err)}
+
+/* ── Editor (index-like data editor) ── */
+.ed-container{display:flex;flex-direction:column;flex:0 0 auto;width:var(--editor-panel-width);max-width:100%;min-height:0}
+.ed-toolbar{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(0,0,0,.35);border-bottom:1px solid var(--ed-brd);flex-shrink:0;font-size:.78em;color:var(--txt2)}
+.ed-tabs{display:flex;align-items:center;height:100%;gap:8px;min-width:0}
+.ed-tab{display:flex;align-items:center;gap:6px;font:12px/1 'Segoe UI',sans-serif;color:var(--ed-tab-active-txt);white-space:nowrap;min-width:0}
+.ed-tab svg{width:14px;height:14px;flex-shrink:0;opacity:.75}
+.ed-tab .dot{width:7px;height:7px;border-radius:50%;background:var(--pri);display:none}
+.ed-tab .dot.show{display:inline-block}
+.ed-acts{display:flex;gap:6px;align-items:center}
+.ed-acts .btn{padding:5px 12px;font-size:.74em;border-radius:6px}
+.ed-body-wrap{flex:1;min-height:0;display:flex;flex-direction:column}
+.ed-body{display:flex;flex:1;min-height:0;overflow:hidden;background:#0d0f15;border-left:1px solid var(--ed-brd);border-right:1px solid var(--ed-brd)}
+.ed-gutter{width:50px;flex-shrink:0;overflow:hidden;background:rgba(0,0,0,.22);border-right:1px solid var(--ed-gutter-brd)}
+.line-nums{padding:8px 0;font:13px/20px 'JetBrains Mono','Fira Code','Consolas','Courier New',monospace;color:var(--ed-gutter-txt);user-select:none}
+.ln{text-align:right;padding-right:8px;line-height:20px;box-sizing:border-box}
+.ed-content{flex:0 0 auto;width:var(--editor-content-width);max-width:var(--editor-content-width);min-width:0;position:relative;overflow:hidden}
+.ed-area{display:block;width:100%;height:100%;resize:none;border:none;padding:8px 16px;box-sizing:border-box;font:13px/20px 'Fira Code','JetBrains Mono','Consolas','Courier New',monospace;outline:none;background:transparent;color:var(--ed-txt);tab-size:4;caret-color:var(--ed-cursor);white-space:pre-wrap;overflow-y:auto;overflow-x:hidden;word-wrap:break-word;overflow-wrap:break-word;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.ed-area::selection{background:var(--ed-sel)}
+.ed-area::placeholder{color:var(--ed-gutter-txt);font-style:italic}
+.ed-mirror{position:absolute;top:0;left:0;visibility:hidden;overflow:hidden;pointer-events:none;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:break-word;font:13px/20px 'Fira Code','JetBrains Mono','Consolas','Courier New',monospace;padding:0 16px;box-sizing:border-box;tab-size:4}
+.line-hl{position:absolute;left:0;right:0;height:20px;background:var(--ed-hl);pointer-events:none;transition:top .05s,height .05s;border-left:1px solid var(--ed-hl-brd)}
+.ed-statusbar{display:flex;justify-content:space-between;align-items:center;padding:0 14px;height:26px;background:rgba(0,0,0,.35);border:1px solid var(--ed-brd);border-top:none;font:11px/26px 'Segoe UI',sans-serif;color:var(--ed-foot-txt);flex-shrink:0}
+.ed-statusbar span{white-space:nowrap}
+.ed-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--txt2);padding:36px 16px;text-align:center}
+.ed-empty svg{margin-bottom:12px;color:var(--txt3);opacity:.5}
+
+/* ── Info Rows ── */
+.info-row{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.86em}
+.info-row:last-child{border-bottom:none}
+.info-label{color:var(--txt2)}
+.info-value{font-weight:600;color:var(--txt)}
+
+/* ── Accordion ── */
+.acc-item{border-bottom:1px solid var(--brd)}
+.acc-item:last-child{border-bottom:none}
+.acc-btn{width:100%;padding:16px 4px;border:none;background:none;text-align:left;font-size:.88em;font-weight:600;color:var(--txt);cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:color .2s;gap:12px}
+.acc-btn:hover{color:var(--pri)}
+.acc-btn svg{transition:transform .3s;flex-shrink:0;color:var(--txt2);width:18px;height:18px}
+.acc-btn.open svg{transform:rotate(180deg);color:var(--pri)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .45s ease;font-size:.82em;line-height:1.8;color:var(--txt2)}
+.acc-body.open{max-height:900px}
+.acc-body p{padding:0 4px 12px}
+.acc-body strong{color:var(--txt)}
+.acc-illust{text-align:center;padding:16px 0 8px}
+.acc-illust svg{color:var(--pri);opacity:.7}
+
+/* ── Toast ── */
+.toast-box{position:fixed;top:16px;right:16px;z-index:500;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{padding:14px 20px;border-radius:0px;font-size:.82em;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,.4);animation:toastIn .4s var(--ease);display:flex;align-items:center;gap:10px;max-width:340px;pointer-events:auto;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.toast.ok{background:rgba(0,230,118,.12);color:var(--ok);border:1px solid rgba(0,230,118,.2)}
+.toast.err{background:rgba(255,23,68,.12);color:var(--err);border:1px solid rgba(255,23,68,.2)}
+.toast.info{background:rgba(220,20,60,.12);color:var(--pri-lt);border:1px solid rgba(220,20,60,.2)}
+@keyframes toastIn{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* ── Modal ── */
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:400;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.modal-ov.show{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--glass-brd);border-radius:0px;padding:28px;max-width:420px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,.5);animation:modalIn .3s var(--ease)}
+@keyframes modalIn{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+.modal h3{margin-bottom:8px;color:var(--txt);font-size:1.05em}
+.modal p{color:var(--txt2);margin-bottom:18px;font-size:.86em;line-height:1.5}
+.modal input{width:100%;padding:12px 14px;border:1px solid var(--brd);border-radius:0px;font-size:.88em;margin-bottom:18px;outline:none;background:rgba(255,255,255,.04);color:var(--txt);transition:border-color .2s}
+.modal input:focus{border-color:var(--pri);box-shadow:0 0 0 3px var(--pri-glow)}
+.modal-btns{display:flex;gap:10px;justify-content:flex-end}
+
+/* ── Empty State ── */
+.empty-st{text-align:center;color:var(--txt2);padding:36px 16px}
+.empty-st svg{margin-bottom:12px;color:var(--txt3)}
+
+/* ── About ── */
+.about-hero{text-align:center;padding:44px 20px;background:linear-gradient(135deg,rgba(220,20,60,.08),rgba(220,20,60,.02));border-radius:var(--radius);margin-bottom:20px;border:1px solid var(--glass-brd)}
+.about-hero h2{font-size:1.75em;font-weight:800;background:linear-gradient(135deg,var(--pri),var(--pri-lt));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.about-hero p{color:var(--txt2);margin-top:8px;font-size:.88em}
+.author-card{text-align:center;padding:32px 20px}
+.author-av{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--pri),var(--pri-dk));display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.7em;font-weight:700;color:#fff;box-shadow:0 8px 32px var(--pri-glow)}
+.author-name{font-size:1.12em;font-weight:700;color:var(--txt)}
+.author-role{font-size:.76em;color:var(--pri);text-transform:uppercase;letter-spacing:1.2px;margin-top:4px}
+.author-bio{font-size:.83em;color:var(--txt2);line-height:1.8;margin-top:16px;max-width:520px;margin-left:auto;margin-right:auto}
+.spec-tbl{width:100%;border-collapse:collapse}
+.spec-tbl td{padding:10px 4px;border-bottom:1px solid rgba(255,255,255,.04);font-size:.84em}
+.spec-tbl td:first-child{color:var(--txt2);width:42%}
+.spec-tbl td:last-child{font-weight:600;color:var(--txt)}
+.spec-tbl tr:last-child td{border-bottom:none}
+.feat-list{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.feat-list li{font-size:.83em;color:var(--txt2);display:flex;align-items:center;gap:8px}
+.feat-list li svg{color:var(--pri);flex-shrink:0;width:16px;height:16px}
+.vision-block{background:linear-gradient(135deg,rgba(220,20,60,.06),rgba(220,20,60,.02));border-left:3px solid var(--pri);border-radius:0 var(--radius) var(--radius) 0;padding:20px 24px;margin-top:16px;font-size:.84em;line-height:1.8;color:var(--txt2);font-style:italic}
+
+/* ── OLED Preview ── */
+.oled-panel{animation:fadeSlide .4s var(--ease);width:var(--editor-panel-width);max-width:100%;flex-shrink:0;min-height:0}
+.oled-wrap{display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap}
+.oled-device{display:flex;flex-direction:column;align-items:center;gap:12px}
+.oled-frame{background:#000;border-radius:6px;padding:8px 10px;border:2px solid #222;box-shadow:0 0 20px rgba(0,0,0,.6),inset 0 0 8px rgba(0,0,0,.5);position:relative}
+.oled-frame::before{content:'SSD1306 128\00d732';position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--txt3);white-space:nowrap;letter-spacing:.5px}
+.oled-screen{width:var(--editor-char-width);height:96px;background:#000;position:relative;overflow:hidden;image-rendering:pixelated;border:1px solid #111}
+.oled-screen.inverted{background:#00e1ff}
+.oled-screen.inverted .oled-row{color:#000;text-shadow:none;font-weight:700}
+.oled-row{height:24px;line-height:24px;white-space:pre;font-family:'Consolas','Courier New',monospace;font-size:16px;letter-spacing:0;color:#00e1ff;padding:0;overflow:hidden}
+html.light .oled-row{color:#00e1ff}
+.oled-btns{display:flex;gap:10px;align-items:center}
+.oled-btn{width:44px;height:44px;border-radius:50%;border:2px solid #333;background:linear-gradient(145deg,#1a1a1a,#0a0a0a);color:var(--txt2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;transition:all .15s var(--ease);user-select:none;box-shadow:0 3px 8px rgba(0,0,0,.5)}
+.oled-btn:hover{border-color:var(--pri);color:var(--pri);box-shadow:0 0 12px var(--pri-glow)}
+.oled-btn:active{transform:scale(.92);background:linear-gradient(145deg,#0a0a0a,#1a1a1a)}
+.oled-btn.sel{background:linear-gradient(145deg,var(--pri-dk),#0a0a0a);border-color:var(--pri)}
+html.light .oled-btn{background:linear-gradient(145deg,#e0e0e0,#c0c0c0);border-color:#aaa;box-shadow:0 3px 8px rgba(0,0,0,.15)}
+html.light .oled-btn:hover{border-color:var(--pri);background:linear-gradient(145deg,#d0d0d0,#b0b0b0)}
+.oled-info{flex:1;min-width:200px}
+.oled-info-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.78em}
+.oled-info-row:last-child{border-bottom:none}
+.oled-info-lbl{color:var(--txt2)}
+.oled-info-val{font-weight:600;color:var(--txt);font-variant-numeric:tabular-nums}
+.oled-nav-hint{font-size:.68em;color:var(--txt3);text-align:center;margin-top:4px}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.2)}
+
+/* ── Badge ── */
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.7em;font-weight:600}
+.badge-ok{background:var(--ok-bg);color:var(--ok)}
+.badge-err{background:var(--err-bg);color:var(--err)}
+.badge-pri{background:rgba(220,20,60,.12);color:var(--pri-lt)}
+
+/* ── Responsive ── */
+@media(max-width:1100px){
+.ed-split{flex-direction:column;overflow-y:auto}
+.ed-tools-panel{width:var(--editor-panel-width)!important;max-width:100%;margin:0 auto;flex-shrink:0}
+.oled-panel{width:var(--editor-panel-width)!important;max-width:100%;margin:0 auto;flex-shrink:0}
+#tab-editor.active{height:auto;overflow:visible}
+.ed-container{min-height:400px;flex:none!important;height:calc(100vh - 200px);width:var(--editor-panel-width);max-width:100%;margin:0 auto}
 }
-.hw-btn:active { box-shadow: inset 2px 2px 5px rgba(0,0,0,0.5); transform: translateY(2px); color: var(--primary); border-color: var(--primary); }
-
-.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; margin-top: 20px; }
-.stat-box { background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); padding: 12px; border-radius: 8px; text-align: center; }
-.stat-val { font-size: 1.5rem; color: var(--primary); font-family: var(--font-mono); margin-bottom: 4px; }
-.stat-lbl { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-
-[data-tooltip] { position: relative; }
-[data-tooltip]:hover::after {
-  content: attr(data-tooltip); position: absolute; bottom: 120%; left: 50%;
-  transform: translateX(-50%); background: #fff; color: #000; padding: 4px 8px;
-  border-radius: 4px; font-size: 0.75rem; white-space: nowrap; pointer-events: none; z-index: 100;
-  font-family: var(--font-ui); font-weight: normal; letter-spacing: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+@media(max-width:768px){
+.sidebar{transform:translateX(-100%);width:280px!important}
+.sidebar.open{transform:translateX(0)}
+.sidebar.collapsed{width:280px!important}
+.sb-toggle{display:none}
+.sb-text{display:inline!important}
+.sb-bk.show{display:block}
+.mob-hdr{display:flex}
+.main{margin-left:0!important;padding:68px 14px 20px;height:auto!important;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#tab-editor.active{height:auto;overflow:visible}
+.ed-split{flex-direction:column;overflow-y:visible}
+.ed-tools-panel{width:var(--editor-panel-width)!important;max-width:100%;margin:0 auto}
+.oled-panel{width:var(--editor-panel-width)!important;max-width:100%;margin:0 auto}
+.ed-container{height:calc(100vh - 280px);min-height:300px;flex:none!important;width:var(--editor-panel-width);max-width:100%;margin:0 auto}
+.stat-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+.file-row{flex-wrap:wrap;gap:10px;padding:14px 12px}
+.file-actions{width:100%;justify-content:flex-end;gap:8px}
+.file-actions button{width:42px;height:42px;border-radius:10px}
+.sb-nav button{padding:16px 22px;font-size:.92em}
+.card{padding:16px;margin-bottom:16px}
+.card h3{font-size:.88em;margin-bottom:12px}
+.drop-zone{padding:44px 20px}
+.drop-zone svg{width:52px;height:52px}
+.drop-zone p{font-size:.9em}
+.btn{padding:12px 20px;font-size:.9em}
+.btn-pri{width:100%!important;justify-content:center}
+.ed-area{font-size:13px;padding:8px 12px}
+.ed-mirror{font-size:13px;padding:0 12px}
+.ed-gutter{width:40px}
+.line-nums{font-size:11px;padding:6px 0}
+.ln{line-height:18px}
+.toast-box{top:auto;bottom:16px;right:8px;left:8px}
+.toast{max-width:100%;font-size:.85em}
+.modal-ov{padding:12px;align-items:flex-end}
+.modal{padding:22px;border-radius:16px 16px 8px 8px;max-width:100%}
+.modal h3{font-size:1em}
+.modal input{padding:14px;font-size:1em}
+.modal-btns{gap:8px}
+.modal-btns .btn{flex:1;justify-content:center;padding:13px 16px}
+.pg-hd{margin-bottom:18px}
+.pg-hd h2{font-size:1.25em}
+.pg-hd p{font-size:.78em}
+.feat-list{grid-template-columns:1fr}
+.about-hero h2{font-size:1.35em}
+.about-hero{padding:28px 16px}
+.fi-icon{width:42px;height:42px}
+.file-name{font-size:.9em}
+.file-meta{font-size:.74em}
+.info-row{font-size:.88em;padding:12px 0}
+.acc-btn{padding:18px 4px;font-size:.9em}
+.author-bio{font-size:.85em}
+.oled-screen{width:var(--editor-char-width);height:80px}
+.oled-row{height:20px;line-height:20px;font-size:13px}
+.oled-btn{width:48px;height:48px}
+.oled-wrap{justify-content:center}
+.ed-toolbar{height:44px}
+.ed-tab{padding:0 12px;font-size:13px}
+.ed-acts .btn{padding:7px 12px;font-size:.78em}
+.ed-statusbar{height:30px;font-size:12px}
+.spec-tbl td{padding:12px 4px;font-size:.86em}
+.storage-bar{height:10px}
+}
+@media(max-width:420px){
+.stat-grid{grid-template-columns:1fr;gap:8px}
+.stat-card{padding:16px}
+.st-val{font-size:1.1em}
+.pg-hd h2{font-size:1.15em}
+.main{padding:64px 10px 16px}
+.card{padding:14px}
+.oled-screen{width:var(--editor-char-width);height:64px}
+.oled-row{height:16px;line-height:16px;font-size:11px}
+.oled-info{min-width:100%}
 }
 </style>
 </head>
 <body>
 
-<header class="header">
-  <a href="#" class="brand">
-    <i class="fa-solid fa-microchip"></i>
-    <div>
-      <h1>D.E.V_Darshan</h1>
-      <span>Advanced OLED Display Simulator</span>
-    </div>
-  </a>
-  <div class="header-actions">
-    <a href="https://github.com/sakxam-xeetri/D.E.V_Darshan" target="_blank" class="btn primary"><i class="fa-brands fa-github"></i> GitHub</a>
-  </div>
+<!-- ════ Toast Container ════ -->
+<div class="toast-box" id="toastBox"></div>
+
+<!-- ════ Modal ════ -->
+<div class="modal-ov" id="modalOv" onclick="if(event.target===this)hideModal()">
+<div class="modal" id="modal">
+<h3 id="mTitle"></h3>
+<p id="mMsg"></p>
+<input id="mInput" style="display:none" placeholder="Enter filename">
+<div class="modal-btns">
+<button class="btn btn-sec" onclick="hideModal()">Cancel</button>
+<button class="btn btn-pri" id="mOk">Confirm</button>
+</div>
+</div>
+</div>
+
+<!-- ════ Sidebar Backdrop (mobile) ════ -->
+<div class="sb-bk" id="sbBk" onclick="closeSb()"></div>
+
+<!-- ════ Sidebar ════ -->
+<aside class="sidebar" id="sidebar">
+<div class="sb-logo">
+<h1>
+<svg viewBox="0 0 24 24" width="24" height="24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z" fill="currentColor"/></svg>
+<span class="sb-text">D.E.V_Darshan</span>
+</h1>
+<p>TXT Reader Portal</p>
+</div>
+<nav class="sb-nav" id="sbNav">
+<button class="active" data-tab="dashboard">
+<svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" fill="currentColor"/></svg>
+<span class="sb-text">Dashboard</span>
+</button>
+<button data-tab="files">
+<svg viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" fill="currentColor"/></svg>
+<span class="sb-text">Files</span>
+</button>
+<button data-tab="editor">
+<svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/></svg>
+<span class="sb-text">Editor</span>
+</button>
+<button data-tab="settings">
+<svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.48.48 0 00-.48-.41h-3.84a.48.48 0 00-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 00-.59.22L2.74 8.87a.48.48 0 00.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1112 8.4a3.6 3.6 0 010 7.2z" fill="currentColor"/></svg>
+<span class="sb-text">Settings</span>
+</button>
+<button data-tab="guide">
+<svg viewBox="0 0 24 24"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z" fill="currentColor"/></svg>
+<span class="sb-text">Guide</span>
+</button>
+<button data-tab="about">
+<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="currentColor"/></svg>
+<span class="sb-text">About</span>
+</button>
+</nav>
+<button class="sb-toggle" id="sbToggleBtn" onclick="toggleSbCollapse()" title="Collapse sidebar">
+<svg viewBox="0 0 24 24" width="20" height="20"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor"/></svg>
+<span class="sb-text">Collapse</span>
+</button>
+<div class="theme-area" style="padding:12px 20px;border-top:1px solid var(--brd)">
+<label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:.76em;color:var(--txt2)">
+<span>Dark</span>
+<div style="position:relative;width:36px;height:20px" id="themeWrap">
+<input type="checkbox" id="themeToggle" style="opacity:0;width:0;height:0;position:absolute">
+<div id="themeTrack" style="position:absolute;inset:0;background:var(--pri);border-radius:10px;transition:background .3s"></div>
+<div id="themeKnob" style="position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform .3s;box-shadow:0 1px 3px rgba(0,0,0,.3)"></div>
+</div>
+<span>Light</span>
+</label>
+</div>
+<div class="sb-footer">
+D.E.V_Darshan <span>v1.0</span><br>
+&copy; Sakshyam Bastakoti<br>
+<a href="http://sakshyambastakoti.com.np" style="color:var(--pri);text-decoration:none;font-size:.9em">sakshyambastakoti.com.np</a>
+</div>
+</aside>
+
+<!-- ════ Mobile Header ════ -->
+<header class="mob-hdr" id="mobHdr">
+<button class="ham" id="hamBtn" onclick="toggleSb()">
+<svg viewBox="0 0 24 24" width="22" height="22"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" fill="currentColor"/></svg>
+</button>
+<span class="mob-title">
+<svg viewBox="0 0 24 24" width="20" height="20"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z" fill="currentColor"/></svg>
+D.E.V_Darshan
+</span>
 </header>
 
-<main class="main-grid">
-  <!-- Panel 1 -->
-  <aside class="panel">
-    <div class="panel-header"><i class="fa-solid fa-toolbox"></i> Tools & Settings</div>
-    <div class="panel-content">
-      <details class="tool-section" open>
-        <summary>Formatting</summary>
-        <div class="tool-grid">
-          <button class="btn" id="btnRemoveNewlines" data-tooltip="Remove All Newlines"><i class="fa-solid fa-compress"></i> Strip Newlines</button>
-          <button class="btn" id="btnRemoveSpaces" data-tooltip="Replace double spaces with single"><i class="fa-solid fa-text-width"></i> Squash Spaces</button>
-          <button class="btn" id="btnUpper" data-tooltip="Convert to UPPERCASE"><i class="fa-solid fa-arrow-up-a-z"></i> Uppercase</button>
-          <button class="btn" id="btnLower" data-tooltip="Convert to lowercase"><i class="fa-solid fa-arrow-down-a-z"></i> Lowercase</button>
-          <button class="btn" id="btnNewQuestion" data-tooltip="Insert newline after '?'"><i class="fa-solid fa-level-down-alt"></i> Break after '?'</button>
-        </div>
-      </details>
-      <details class="tool-section" open>
-        <summary>Display Behavior</summary>
-        <div class="control-group">
-          <label>Text Alignment</label>
-          <select id="selAlign" class="input-select">
-            <option value="left">Left</option>
-            <option value="center">Center</option>
-            <option value="right">Right</option>
-          </select>
-        </div>
-        <div class="control-group">
-          <label>Vertical Pad Sim</label>
-          <select id="selVAlign" class="input-select">
-            <option value="top">Top</option>
-            <option value="middle">Middle</option>
-            <option value="bottom">Bottom</option>
-          </select>
-        </div>
-        <div class="chk-wrap">
-          <label for="chkInvert">Invert Output</label>
-          <input type="checkbox" id="chkInvert" style="accent-color: var(--primary); transform: scale(1.2);">
-        </div>
-        <div class="chk-wrap">
-          <label for="chkAutoFormat">Auto-format Paste</label>
-          <input type="checkbox" id="chkAutoFormat" style="accent-color: var(--primary); transform: scale(1.2);">
-        </div>
-      </details>
-    </div>
-  </aside>
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!--  MAIN CONTENT                                                          -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<div class="main" id="mainArea">
 
-  <!-- Panel 2 -->
-  <section class="panel">
-    <div class="panel-header"><i class="fa-solid fa-code"></i> Data Editor</div>
-    <div class="panel-content" style="display: flex; flex-direction: column; padding: 0;">
-      <div class="editor-wrapper" style="border: none; border-radius: 0;">
-        <div class="editor-toolbar">
-          <span id="charCount">0 chars</span>
-          <div class="editor-toolbar-actions">
-            <button id="btnUndo" data-tooltip="Undo (Ctrl+Z)"><i class="fa-solid fa-rotate-left"></i></button>
-            <button id="btnRedo" data-tooltip="Redo (Ctrl+Y)"><i class="fa-solid fa-rotate-right"></i></button>
-            <button id="btnClear" data-tooltip="Clear All"><i class="fa-solid fa-trash"></i></button>
-            <button id="btnSave" data-tooltip="Save as TXT"><i class="fa-solid fa-save"></i></button>
-            <button id="btnShortcuts" data-tooltip="Ctrl+Z Undo, Ctrl+Y Redo, Up/Down Nav"><i class="fa-solid fa-keyboard"></i></button>
-          </div>
-        </div>
-        <div class="editor-main">
-          <div class="line-numbers" id="lineNumbers">1</div>
-          <div class="code-area" id="codeArea">
-            <div class="lines-backdrop" id="backdrop"></div>
-            <textarea id="editor" spellcheck="false" placeholder="Type or paste long data..."></textarea>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+<!-- ══════════ DASHBOARD ══════════ -->
+<section id="tab-dashboard" class="tab-panel active">
+<div class="pg-hd">
+<h2>
+<svg viewBox="0 0 24 24" width="26" height="26"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" fill="currentColor"/></svg>
+Dashboard
+</h2>
+<p>Device status and system overview</p>
+</div>
 
-  <!-- Panel 3 -->
-  <aside class="panel">
-    <div class="panel-header"><i class="fa-solid fa-display"></i> Hardware Preview</div>
-    <div class="panel-content oled-preview-container">
-      <div class="oled-hardware">
-        <div class="oled-screen" id="oledScreen">
-          <div class="oled-row" id="r0"></div>
-          <div class="oled-row" id="r1"></div>
-          <div class="oled-row" id="r2"></div>
-          <div class="oled-row" id="r3"></div>
-        </div>
-      </div>
-      <div class="hardware-controls">
-        <button class="hw-btn" id="hwUp" data-tooltip="Up"><i class="fa-solid fa-caret-up"></i></button>
-        <button class="hw-btn" id="hwSel" data-tooltip="Reset"><i class="fa-solid fa-circle-dot"></i></button>
-        <button class="hw-btn" id="hwDown" data-tooltip="Down"><i class="fa-solid fa-caret-down"></i></button>
-      </div>
-      <div class="stats-grid">
-        <div class="stat-box"><div class="stat-val" id="stLines">0</div><div class="stat-lbl">Lines</div></div>
-        <div class="stat-box"><div class="stat-val" id="stScroll">T</div><div class="stat-lbl">Pos</div></div>
-      </div>
-    </div>
-  </aside>
-</main>
+<div class="stat-grid" id="dashGrid">
+<div class="stat-card">
+<div class="st-icon red"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" fill="currentColor"/></svg></div>
+<div class="st-lbl">Firmware</div>
+<div class="st-val" id="dFw">—</div>
+</div>
+<div class="stat-card">
+<div class="st-icon red"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="currentColor"/></svg></div>
+<div class="st-lbl">Total Files</div>
+<div class="st-val" id="dFiles">—</div>
+</div>
+<div class="stat-card">
+<div class="st-icon amb"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z" fill="currentColor"/></svg></div>
+<div class="st-lbl">Storage</div>
+<div class="st-val" id="dStorage">—</div>
+</div>
+<div class="stat-card">
+<div class="st-icon grn"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z" fill="currentColor"/></svg></div>
+<div class="st-lbl">SD Health</div>
+<div class="st-val" id="dSd">—</div>
+</div>
+<div class="stat-card">
+<div class="st-icon blu"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.24 4.24 0 00-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z" fill="currentColor"/></svg></div>
+<div class="st-lbl">WiFi Status</div>
+<div class="st-val" id="dWifi">—</div>
+</div>
+<div class="stat-card">
+<div class="st-icon red"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" fill="currentColor"/></svg></div>
+<div class="st-lbl">Uptime</div>
+<div class="st-val" id="dUp">—</div>
+</div>
+</div>
 
+<div class="card">
+<h3>
+<svg viewBox="0 0 24 24" width="18" height="18"><path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z" fill="currentColor"/></svg>
+Storage Overview
+</h3>
+<div class="storage-bar"><div class="storage-fill" id="dsFill" style="width:0"></div></div>
+<div class="storage-text">
+<span id="dsUsed">Calculating...</span>
+<span id="dsFree">&nbsp;</span>
+</div>
+</div>
+
+<div class="card">
+<h3>
+<svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="currentColor"/></svg>
+System Information
+</h3>
+<div id="dashInfo"><div class="empty-st"><p>Loading device data...</p></div></div>
+</div>
+</section>
+
+<!-- ══════════ FILES ══════════ -->
+<section id="tab-files" class="tab-panel">
+<div class="pg-hd">
+<h2>
+<svg viewBox="0 0 24 24" width="26" height="26"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" fill="currentColor"/></svg>
+File Manager
+</h2>
+<p>Upload, manage and organise your text files</p>
+</div>
+
+<div class="card">
+<h3>
+<svg viewBox="0 0 24 24" width="18" height="18"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z" fill="currentColor"/></svg>
+Upload File
+</h3>
+<div class="drop-zone" id="dropZone">
+<svg viewBox="0 0 24 24" width="44" height="44"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM8 15.01l1.41 1.41L11 14.84V19h2v-4.16l1.59 1.59L16 15.01 12.01 11 8 15.01z" fill="currentColor"/></svg>
+<p>Tap to select or drag &amp; drop a .txt file</p>
+<p style="font-size:.68em;color:var(--txt3);margin-top:6px">Max 2 MB &middot; .txt files only</p>
+</div>
+<input type="file" id="fileInput" accept=".txt,text/plain" multiple hidden>
+<div id="selFile" style="font-size:.78em;color:var(--txt2);margin-top:10px;word-break:break-all"></div>
+<button class="btn btn-pri" id="uploadBtn" disabled style="width:100%;margin-top:12px;justify-content:center">
+<svg viewBox="0 0 24 24" width="16" height="16"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z" fill="currentColor"/></svg>
+Upload
+</button>
+<div class="progress" id="progress">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="progress-text" id="progressText">0%</div>
+</div>
+</div>
+
+<div class="card">
+<h3 style="justify-content:space-between">
+<span style="display:flex;align-items:center;gap:10px">
+<svg viewBox="0 0 24 24" width="18" height="18"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="currentColor"/></svg>
+FILES ON SD CARD
+</span>
+<div style="display:flex;gap:4px;align-items:center">
+<button class="btn btn-sec" id="selAllBtn" style="padding:7px 14px;font-size:.78em;display:none">
+<svg viewBox="0 0 24 24" width="14" height="14"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"/></svg>
+Select All
+</button>
+<button class="btn" id="delSelBtn" style="padding:7px 14px;font-size:.78em;background:var(--err);display:none">
+<svg viewBox="0 0 24 24" width="14" height="14"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="currentColor"/></svg>
+Del Selected
+</button>
+<button class="btn btn-sec" id="newFileBtn" style="padding:7px 14px;font-size:.78em">
+<svg viewBox="0 0 24 24" width="14" height="14"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor"/></svg>
+New File
+</button>
+</div>
+</h3>
+<div id="fileList" style="max-height:440px;overflow-y:auto">
+<div class="empty-st"><p>Loading files...</p></div>
+</div>
+</div>
+</section>
+
+<!-- ══════════ EDITOR ══════════ -->
+<section id="tab-editor" class="tab-panel">
+
+<div class="ed-split" id="edSplit">
+<aside class="ed-tools-panel sim-panel">
+<div class="sim-panel-hd">
+<svg viewBox="0 0 24 24" width="18" height="18"><path d="M22.7 19.3l-6.4-6.4c.5-.9.7-1.9.7-2.9 0-3.3-2.7-6-6-6S5 6.7 5 10s2.7 6 6 6c1 0 2-.3 2.9-.7l6.4 6.4c.2.2.5.3.7.3s.5-.1.7-.3c.4-.4.4-1 0-1.4zM7 10c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4-4-1.8-4-4z" fill="currentColor"/></svg>
+Tools &amp; Settings
+</div>
+<div class="sim-panel-bd">
+<details class="sim-tools-sec" open>
+<summary>Formatting</summary>
+<div class="sim-tools-grid">
+<button class="sim-tool-btn" id="fmtStripBtn"><svg viewBox="0 0 24 24"><path d="M7 7h10v2H7V7zm0 4h10v2H7v-2zm0 4h6v2H7v-2z" fill="currentColor"/></svg>Strip Newlines</button>
+<button class="sim-tool-btn" id="fmtSquashBtn"><svg viewBox="0 0 24 24"><path d="M3 10h8v4H3v-4zm10 0h8v4h-8v-4z" fill="currentColor"/></svg>Squash Spaces</button>
+<button class="sim-tool-btn" id="fmtUpperBtn"><svg viewBox="0 0 24 24"><path d="M4 20h2l2-6h4l2 6h2L11 4H9L4 20zm4.6-8L10 7.7 11.4 12H8.6zM18 20h2V8h-2v12z" fill="currentColor"/></svg>Uppercase</button>
+<button class="sim-tool-btn" id="fmtLowerBtn"><svg viewBox="0 0 24 24"><path d="M7 20h2V4H7v16zm5 0h7v-2h-7v2zm0-4h7v-2h-7v2zm0-4h7v-2h-7v2z" fill="currentColor"/></svg>Lowercase</button>
+<button class="sim-tool-btn" id="fmtBreakBtn"><svg viewBox="0 0 24 24"><path d="M19 13h-6v-2h6V8l5 4-5 4v-3zM4 6h8v2H4V6zm0 10h8v2H4v-2z" fill="currentColor"/></svg>Break after '?'</button>
+</div>
+</details>
+
+<details class="sim-tools-sec" open>
+<summary>Display Behavior</summary>
+<div class="sim-ctrl">
+<label for="oledAlignSel">Text Alignment</label>
+<select id="oledAlignSel">
+<option value="left">Left</option>
+<option value="center">Center</option>
+<option value="right">Right</option>
+</select>
+</div>
+<div class="sim-ctrl">
+<label for="oledVAlignSel">Vertical Pad Sim</label>
+<select id="oledVAlignSel">
+<option value="top">Top</option>
+<option value="middle">Middle</option>
+<option value="bottom">Bottom</option>
+</select>
+</div>
+<div class="sim-check">
+<label for="oledInvertChk">Invert Output</label>
+<input type="checkbox" id="oledInvertChk">
+</div>
+<div class="sim-check">
+<label for="oledAutoFmtChk">Auto-format Paste</label>
+<input type="checkbox" id="oledAutoFmtChk">
+</div>
+</details>
+</div>
+</aside>
+
+<div class="ed-container sim-panel" id="edContainer">
+<div class="sim-panel-hd">
+<svg viewBox="0 0 24 24" width="18" height="18"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0L19.2 12l-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" fill="currentColor"/></svg>
+Data Editor
+</div>
+<div class="ed-toolbar">
+<div class="ed-tabs">
+<span id="charTop">0 chars</span>
+<span id="fnTxt" style="display:none">untitled</span>
+<span class="dot" id="edDot"></span>
+</div>
+<div class="ed-acts" id="edActs" style="display:none">
+<button class="btn btn-ok" id="saveBtn">
+<svg viewBox="0 0 24 24" width="14" height="14"><path d="M17 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V7l-4-4zm-5 16a3 3 0 110-6 3 3 0 010 6zm3-10H5V5h10v4z" fill="currentColor"/></svg>
+Save
+</button>
+<button class="btn btn-sec" id="cancelBtn">
+<svg viewBox="0 0 24 24" width="14" height="14"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/></svg>
+Close
+</button>
+</div>
+</div>
+<div id="edBody" class="ed-body-wrap" style="display:none">
+<div class="ed-body">
+<div class="ed-gutter" id="edGutter"><div class="line-nums" id="lineNums">1</div></div>
+<div class="ed-content">
+<div class="line-hl" id="lineHl" style="top:8px"></div>
+<div class="ed-mirror" id="edMirror"></div>
+<textarea class="ed-area" id="edArea" spellcheck="false" wrap="soft" placeholder="Type or paste long data..."></textarea>
+</div>
+</div>
+</div>
+<div id="edEmpty" class="ed-empty">
+<svg viewBox="0 0 24 24" width="48" height="48"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="currentColor"/></svg>
+<p style="margin-top:10px;font-size:.86em">Select a file from <strong>Files</strong> to begin editing</p>
+<p style="font-size:.72em;margin-top:4px;opacity:.6">Ctrl+S to save</p>
+</div>
+<div class="ed-statusbar" id="edFoot">
+<span id="charCnt">Ready</span>
+<span id="edStatus"></span>
+</div>
+</div>
+
+<div class="oled-panel sim-panel" id="oledPanel" style="display:none">
+<div class="sim-panel-hd">
+<svg viewBox="0 0 24 24" width="18" height="18"><path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14z" fill="currentColor"/></svg>
+Hardware Preview
+</div>
+<div class="sim-panel-bd">
+<div class="oled-wrap">
+<div class="oled-device">
+<div class="oled-frame">
+<div class="oled-screen" id="oledScreen">
+<div class="oled-row" id="oledR0"></div>
+<div class="oled-row" id="oledR1"></div>
+<div class="oled-row" id="oledR2"></div>
+<div class="oled-row" id="oledR3"></div>
+</div>
+</div>
+<div class="oled-btns">
+<button class="oled-btn" id="oledUp" title="UP (GPIO13)">&#9650;</button>
+<button class="oled-btn" id="oledDown" title="DOWN (GPIO0)">&#9660;</button>
+<button class="oled-btn sel" id="oledSel" title="SELECT (GPIO12)">SEL</button>
+</div>
+<div class="oled-nav-hint">Use buttons or Arrow keys to navigate</div>
+</div>
+<div class="oled-info">
+<div class="oled-info-row"><span class="oled-info-lbl">Display Line</span><span class="oled-info-val" id="oledLine">1 – 4</span></div>
+<div class="oled-info-row"><span class="oled-info-lbl">Total Wrapped Lines</span><span class="oled-info-val" id="oledTotal">0</span></div>
+<div class="oled-info-row"><span class="oled-info-lbl">Scroll Position</span><span class="oled-info-val" id="oledScroll">Top</span></div>
+<div class="oled-info-row"><span class="oled-info-lbl">Chars / Line</span><span class="oled-info-val">32</span></div>
+<div class="oled-info-row"><span class="oled-info-lbl">Visible Lines</span><span class="oled-info-val">4</span></div>
+<div class="oled-info-row"><span class="oled-info-lbl">Font</span><span class="oled-info-val">4×6 mono (u8g2)</span></div>
+<div class="oled-info-row"><span class="oled-info-lbl">Resolution</span><span class="oled-info-val">128×32 px</span></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</section>
+
+<!-- ══════════ SETTINGS ══════════ -->
+<section id="tab-settings" class="tab-panel">
+<div class="pg-hd">
+<h2>
+<svg viewBox="0 0 24 24" width="26" height="26"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.48.48 0 00-.48-.41h-3.84a.48.48 0 00-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 00-.59.22L2.74 8.87a.48.48 0 00.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1112 8.4a3.6 3.6 0 010 7.2z" fill="currentColor"/></svg>
+Settings
+</h2>
+<p>Device configuration and preferences</p>
+</div>
+
+<div class="card">
+<h3>
+<svg viewBox="0 0 24 24" width="18" height="18"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.24 4.24 0 00-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z" fill="currentColor"/></svg>
+WiFi Configuration
+</h3>
+<div id="wifiInfo"><div class="empty-st"><p>Loading...</p></div></div>
+</div>
+
+<div class="card">
+<h3>
+<svg viewBox="0 0 24 24" width="18" height="18"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.48.48 0 00-.48-.41h-3.84a.48.48 0 00-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 00-.59.22L2.74 8.87a.48.48 0 00.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1112 8.4a3.6 3.6 0 010 7.2z" fill="currentColor"/></svg>
+Reading Behaviour
+</h3>
+<div id="readInfo">
+<div class="info-row"><span class="info-label">Characters per Line</span><span class="info-value">32</span></div>
+<div class="info-row"><span class="info-label">Display Lines</span><span class="info-value">4</span></div>
+<div class="info-row"><span class="info-label">Bookmark Auto-save</span><span class="info-value">Every 10 lines</span></div>
+<div class="info-row"><span class="info-label">Sleep Timeout</span><span class="info-value">5 minutes</span></div>
+<div class="info-row"><span class="info-label">Max File Size (Editor)</span><span class="info-value">64 KB</span></div>
+<div class="info-row"><span class="info-label">Max Upload Size</span><span class="info-value">2 MB</span></div>
+</div>
+</div>
+
+<div class="card">
+<h3>
+<svg viewBox="0 0 24 24" width="18" height="18"><path d="M18 2h-8L4.02 8 4 20c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 18H6v-8h12v8z" fill="currentColor"/></svg>
+Storage Details
+</h3>
+<div id="storageInfo"><div class="empty-st"><p>Loading...</p></div></div>
+</div>
+
+<div class="card">
+<h3>
+<svg viewBox="0 0 24 24" width="18" height="18"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.34C7 21.4 7.6 22 8.33 22h7.34c.73 0 1.33-.6 1.33-1.33V5.33C17 4.6 16.4 4 15.67 4z" fill="currentColor"/></svg>
+System Resources
+</h3>
+<div id="sysInfo"><div class="empty-st"><p>Loading...</p></div></div>
+</div>
+
+<div class="card">
+<h3>
+<svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" fill="currentColor"/></svg>
+Firmware Update
+</h3>
+<div id="fwUpdate" style="padding: 10px 0;">
+<p style="margin-bottom:12px;font-size:0.9em;color:var(--text-light)">Upload a compiled .bin file via OTA to update the device firmware.</p>
+<form method="POST" action="/update" enctype="multipart/form-data" id="otaForm">
+<input type="file" name="update" id="otaInput" accept=".bin" style="margin-bottom:12px;display:block;width:100%;padding:8px;border:1px dashed var(--border);border-radius:4px;">
+<button type="submit" class="btn" id="otaBtn" style="padding:8px 16px;width:auto">Flash Firmware</button>
+</form>
+<div id="otaStatus" style="margin-top:12px;font-size:0.9em;display:none;font-weight:600;color:var(--ok)">Updating, please wait...</div>
+</div>
 <script>
-const OLED_COLS = 32; const OLED_ROWS = 4;
-let oledLines = []; let scrollOffset = 0;
-let hist = []; let hIdx = -1;
+setTimeout(function(){
+var form=document.getElementById('otaForm');
+if(form)form.onsubmit=function(e){
+e.preventDefault();
+if(!document.getElementById('otaInput').value)return alert('Select a .bin file first!');
+document.getElementById('otaBtn').disabled=true;
+var s=document.getElementById('otaStatus');
+s.style.display='block';s.style.color='var(--ok)';s.textContent='Updating, please wait...';
+fetch('/update',{method:'POST',body:new FormData(this)})
+.then(function(r){return r.text()})
+.then(function(t){s.textContent=t;})
+.catch(function(){s.textContent='Update failed';s.style.color='var(--err)';});
+}}, 500);
+</script>
+</div>
+</section>
 
-const elEd = document.getElementById('editor');
-const elBack = document.getElementById('backdrop');
-const elLines = document.getElementById('lineNumbers');
-const ca = document.getElementById('codeArea');
+<!-- ══════════ GUIDE ══════════ -->
+<section id="tab-guide" class="tab-panel">
+<div class="pg-hd">
+<h2>
+<svg viewBox="0 0 24 24" width="26" height="26"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z" fill="currentColor"/></svg>
+User Guide
+</h2>
+<p>Complete documentation for your D.E.V_Darshan reader</p>
+</div>
 
-function saveH() {
-  const v = elEd.value;
-  if (hIdx >= 0 && hist[hIdx] === v) return;
-  hist = hist.slice(0, hIdx + 1);
-  hist.push(v);
-  if (hist.length > 50) hist.shift(); else hIdx++;
-  localStorage.setItem('oled_v2', v);
+<div class="card">
+<h3>
+<svg viewBox="0 0 24 24" width="18" height="18"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z" fill="currentColor"/></svg>
+Documentation
+</h3>
+
+<div class="acc-item">
+<button class="acc-btn" onclick="toggleAcc(this)">
+<span>Getting Started — WiFi Connection</span>
+<svg viewBox="0 0 24 24"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z" fill="currentColor"/></svg>
+</button>
+<div class="acc-body">
+<div class="acc-illust">
+<svg viewBox="0 0 120 60" width="120" height="60"><rect x="35" y="8" width="50" height="44" rx="6" fill="none" stroke="currentColor" stroke-width="2"/><rect x="40" y="14" width="40" height="28" rx="2" fill="rgba(220,20,60,0.1)" stroke="currentColor" stroke-width="1"/><circle cx="60" cy="50" r="2" fill="currentColor"/><path d="M60 4c-6 0-11 2-15 5l3 3c3-2 7-4 12-4s9 2 12 4l3-3c-4-3-9-5-15-5z" fill="currentColor" opacity=".4"/><path d="M60 10c-4 0-8 1.5-11 4l3 3c2-2 5-3 8-3s6 1 8 3l3-3c-3-2.5-7-4-11-4z" fill="currentColor" opacity=".7"/><path d="M60 17c-2.5 0-5 1-7 3l3 3c1-1 2.5-2 4-2s3 1 4 2l3-3c-2-2-4.5-3-7-3z" fill="currentColor"/></svg>
+</div>
+<p><strong>Step 1:</strong> On the device Home screen, navigate to <strong>WiFi Portal</strong> and press SELECT to confirm.</p>
+<p><strong>Step 2:</strong> The OLED display will show the WiFi network name and IP address. Connect your phone or computer to the displayed WiFi network.</p>
+<p><strong>Step 3:</strong> Open any web browser and go to <strong>192.168.4.1</strong></p>
+<p style="padding-bottom:0"><strong>Tip:</strong> The portal will auto-shutdown after 5 minutes of inactivity to conserve battery.</p>
+</div>
+</div>
+
+<div class="acc-item">
+<button class="acc-btn" onclick="toggleAcc(this)">
+<span>Uploading &amp; Managing Files</span>
+<svg viewBox="0 0 24 24"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z" fill="currentColor"/></svg>
+</button>
+<div class="acc-body">
+<div class="acc-illust">
+<svg viewBox="0 0 120 60" width="120" height="60"><rect x="20" y="10" width="80" height="45" rx="4" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="6,3"/><path d="M60 38V20m-8 8l8-8 8 8" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><text x="60" y="50" text-anchor="middle" fill="currentColor" font-size="7" opacity=".6">.txt</text></svg>
+</div>
+<p>In the <strong>Files</strong> tab, use the Upload section. You can tap to select a file or <strong>drag &amp; drop</strong> a .txt file onto the upload area.</p>
+<p>Press <strong>Upload</strong> and watch the progress bar. A toast notification confirms success.</p>
+<p>Use the action buttons on each file row to <strong>Edit</strong> (pencil icon), <strong>Rename</strong> (text icon), <strong>Download</strong> (arrow icon), or <strong>Delete</strong> (trash icon).</p>
+<p style="padding-bottom:0"><strong>Note:</strong> Only <strong>.txt</strong> files up to <strong>2 MB</strong> are accepted. Filenames are validated server-side to prevent invalid characters.</p>
+</div>
+</div>
+
+<div class="acc-item">
+<button class="acc-btn" onclick="toggleAcc(this)">
+<span>Using the Text Editor</span>
+<svg viewBox="0 0 24 24"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z" fill="currentColor"/></svg>
+</button>
+<div class="acc-body">
+<div class="acc-illust">
+<svg viewBox="0 0 120 60" width="120" height="60"><rect x="15" y="5" width="90" height="50" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><line x1="30" y1="5" x2="30" y2="55" stroke="currentColor" stroke-width="1" opacity=".3"/><text x="23" y="18" text-anchor="middle" fill="currentColor" font-size="6" opacity=".5">1</text><text x="23" y="28" text-anchor="middle" fill="currentColor" font-size="6" opacity=".5">2</text><text x="23" y="38" text-anchor="middle" fill="currentColor" font-size="6" opacity=".5">3</text><rect x="30" y="21" width="75" height="10" fill="rgba(220,20,60,0.08)"/><line x1="35" y1="16" x2="85" y2="16" stroke="currentColor" stroke-width="1" opacity=".3"/><line x1="35" y1="26" x2="95" y2="26" stroke="currentColor" stroke-width="1" opacity=".5"/><line x1="35" y1="36" x2="75" y2="36" stroke="currentColor" stroke-width="1" opacity=".3"/></svg>
+</div>
+<p>Click the <strong>pencil icon</strong> next to any file in the Files list. The content loads in the <strong>Editor</strong> tab with a monospace font, line numbers, and active-line highlighting.</p>
+<p>The editor shows a live <strong>character and line counter</strong> at the bottom. Click <strong>Save</strong> to write changes to the SD card, or <strong>Cancel</strong> to discard.</p>
+<p>Use <strong>Ctrl+S</strong> (or Cmd+S) as a keyboard shortcut to save.</p>
+<p style="padding-bottom:0"><strong>Limit:</strong> Web editing supports files up to <strong>64 KB</strong>. For larger files, download, edit locally, and re-upload.</p>
+</div>
+</div>
+
+<div class="acc-item">
+<button class="acc-btn" onclick="toggleAcc(this)">
+<span>Hardware Button Controls</span>
+<svg viewBox="0 0 24 24"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z" fill="currentColor"/></svg>
+</button>
+<div class="acc-body">
+<div class="acc-illust">
+<svg viewBox="0 0 120 60" width="120" height="60"><rect x="10" y="15" width="30" height="30" rx="15" fill="none" stroke="currentColor" stroke-width="2"/><text x="25" y="34" text-anchor="middle" fill="currentColor" font-size="8" font-weight="bold">UP</text><rect x="45" y="15" width="30" height="30" rx="15" fill="none" stroke="currentColor" stroke-width="2"/><text x="60" y="34" text-anchor="middle" fill="currentColor" font-size="7" font-weight="bold">DOWN</text><rect x="80" y="15" width="30" height="30" rx="15" fill="rgba(220,20,60,0.15)" stroke="currentColor" stroke-width="2"/><text x="95" y="34" text-anchor="middle" fill="currentColor" font-size="6" font-weight="bold">SELECT</text></svg>
+</div>
+<p><strong>UP Button (GPIO13):</strong> Navigate up through menus. In reading mode, short press scrolls up by one page; hold for continuous line-by-line scrolling.</p>
+<p><strong>DOWN Button (GPIO0):</strong> Navigate down through menus. In reading mode, short press scrolls down by one page; hold for continuous scrolling. <em>Do not hold during power-on (boot pin).</em></p>
+<p><strong>SELECT Button (GPIO12):</strong> Context-aware action. In menus, it enters the selected item. In reading mode, it acts as Back.</p>
+<p style="padding-bottom:0"><strong>Flow:</strong> Home &rarr; WiFi Portal / Files / Settings. Files &rarr; Select file &rarr; Reading mode. SELECT always returns to the previous screen.</p>
+</div>
+</div>
+
+<div class="acc-item">
+<button class="acc-btn" onclick="toggleAcc(this)">
+<span>Power Management &amp; Sleep</span>
+<svg viewBox="0 0 24 24"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z" fill="currentColor"/></svg>
+</button>
+<div class="acc-body">
+<div class="acc-illust">
+<svg viewBox="0 0 120 60" width="120" height="60"><rect x="40" y="5" width="40" height="50" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><rect x="52" y="2" width="16" height="4" rx="1" fill="currentColor"/><rect x="44" y="22" width="32" height="28" rx="1" fill="rgba(0,230,118,0.15)"/><path d="M60 28v12m-4-6h8" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".6"/><text x="60" y="18" text-anchor="middle" fill="currentColor" font-size="6" opacity=".7">3.7V</text></svg>
+</div>
+<p><strong>Battery:</strong> 3.7V 1100mAh Li-ion cell with TP4056 USB charging. Red LED = charging, Blue/Green LED = fully charged.</p>
+<p><strong>Auto Sleep:</strong> After 5 minutes of inactivity, the device enters light sleep. Display turns off, CPU power draw is minimised.</p>
+<p><strong>Wake Up:</strong> Press any button (UP, DOWN, or SELECT) to instantly resume from where you left off.</p>
+<p><strong>WiFi Power:</strong> WiFi and Bluetooth radios are fully disabled during reading. They activate only when entering WiFi Portal from the Home menu.</p>
+<p style="padding-bottom:0"><strong>Magnetic Switch:</strong> The magnetic reed switch provides hardware power cutoff &mdash; zero standby drain, ideal for long-term storage.</p>
+</div>
+</div>
+
+</div>
+</section>
+
+<!-- ══════════ ABOUT ══════════ -->
+<section id="tab-about" class="tab-panel">
+<div class="pg-hd">
+<h2>
+<svg viewBox="0 0 24 24" width="26" height="26"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="currentColor"/></svg>
+About
+</h2>
+<p>Full project profile and device runtime details from README</p>
+</div>
+
+<div class="about-hero">
+<h2>D.E.V_Darshan</h2>
+<p>ESP32-CAM Smart Reading Device v1.0 &middot; Offline-first and low-power by design</p>
+<div style="margin-top:14px">
+<span class="badge badge-pri">ESP32-CAM</span>&nbsp;
+<span class="badge badge-pri">Arduino Core</span>&nbsp;
+<span class="badge badge-pri">SD_MMC 1-bit</span>&nbsp;
+<span class="badge badge-pri">WiFi Portal</span>&nbsp;
+<span class="badge badge-pri">OTA Update</span>
+</div>
+</div>
+
+<div class="card">
+<h3>
+<svg viewBox="0 0 24 24" width="18" height="18"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z" fill="currentColor"/></svg>
+Project & Device Specifications
+</h3>
+<table class="spec-tbl">
+<tr><td>Project Version</td><td>D.E.V_Darshan v1.0</td></tr>
+<tr><td>Core Platform</td><td>ESP32-CAM (AI Thinker), ESP32-S + PSRAM</td></tr>
+<tr><td>Flash / Memory</td><td>4MB Flash + PSRAM buffering support</td></tr>
+<tr><td>Device Runtime (OS Base)</td><td>Espressif ESP32 Arduino Core (2.0.x+)</td></tr>
+<tr><td>Firmware Framework</td><td>Arduino (U8g2 + WebServer + WiFi + SD_MMC + Preferences + FS)</td></tr>
+<tr><td>Display</td><td>SSD1306 OLED 128&times;32, 4-line reading view</td></tr>
+<tr><td>Characters / Line</td><td>21 chars (6x10 body font), word-wrap optimized</td></tr>
+<tr><td>Storage Medium</td><td>MicroSD (FAT16/FAT32, typically up to 32GB)</td></tr>
+<tr><td>SD Interface</td><td>SD_MMC 1-bit mode (GPIO2, GPIO14, GPIO15)</td></tr>
+<tr><td>File Limits</td><td>Up to 200 files managed, newest-first sorting</td></tr>
+<tr><td>Portal Limits</td><td>2MB max upload, 64KB max web editing, .txt only</td></tr>
+<tr><td>WiFi Portal</td><td>SSID D.E.V_Darshan, IP 192.168.4.1, single client focus</td></tr>
+<tr><td>Firmware Update</td><td>OTA .bin flashing from Settings tab</td></tr>
+<tr><td>Power System</td><td>3.7V 1100mAh Li-ion + TP4056 + magnetic reed switch</td></tr>
+<tr><td>Battery Estimate</td><td>~31h reading / ~37h mixed / ~9h WiFi session</td></tr>
+<tr><td>Build Partition</td><td>Default 4MB with SPIFFS</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>
+<svg viewBox="0 0 24 24" width="18" height="18"><path d="M22 9V7h-2V5c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-2h2v-2h-2v-2h2v-2h-2V9h2zm-4 10H4V5h14v14zM6 13h5v4H6v-4zm6-6h4v3h-4V7zM6 7h5v5H6V7zm6 4h4v6h-4v-6z" fill="currentColor"/></svg>
+Device OS / Firmware Stack
+</h3>
+<div class="info-row"><span class="info-label">Main Entry</span><span class="info-value">D.E.V_Darshan_Sketch.ino (setup + loop)</span></div>
+<div class="info-row"><span class="info-label">Modules</span><span class="info-value">config, display, sd_reader, buttons, wifi_portal, portal</span></div>
+<div class="info-row"><span class="info-label">State Machine</span><span class="info-value">BOOT_INIT -> HOME -> FILE_MENU / SETTINGS / WIFI_PORTAL -> READING</span></div>
+<div class="info-row"><span class="info-label">Memory Strategy</span><span class="info-value">Line-by-line reading with circular buffer (~512B text buffer)</span></div>
+<div class="info-row"><span class="info-label">Bookmark Persistence</span><span class="info-value">ESP32 Preferences (NVS), saved every 10 scroll actions</span></div>
+<div class="info-row"><span class="info-label">Portal Frontend</span><span class="info-value">Embedded HTML/CSS/JS stored in PROGMEM (portal.h)</span></div>
+<div class="info-row"><span class="info-label">Radio Policy</span><span class="info-value">WiFi + Bluetooth disabled during reading; AP only on demand</span></div>
+<div class="info-row"><span class="info-label">CPU Policy</span><span class="info-value">80MHz reading mode, 240MHz during WiFi portal tasks</span></div>
+<div class="info-row"><span class="info-label">Boot Safety Design</span><span class="info-value">1-bit SD mode frees GPIO12/13 and avoids resistor-heavy boot pin conflicts</span></div>
+</div>
+
+<div class="card">
+<h3>
+<svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" fill="currentColor"/></svg>
+Major Features from README
+</h3>
+<ul class="feat-list">
+<li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="currentColor"/></svg>Reads .txt files line-by-line (memory-safe for very large files)</li>
+<li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="currentColor"/></svg>Newest-first file sorting with wrap-around menu navigation</li>
+<li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="currentColor"/></svg>Per-file bookmark restore using NVS non-volatile storage</li>
+<li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="currentColor"/></svg>Live OLED preview and web editor with 64KB safety cap</li>
+<li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="currentColor"/></svg>Drag-drop uploads with progress, type checks, and size checks</li>
+<li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="currentColor"/></svg>OTA firmware update from the portal Settings tab</li>
+<li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="currentColor"/></svg>Offline-first behavior: radios disabled outside WiFi portal mode</li>
+<li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="currentColor"/></svg>Zero external resistor hardware strategy with boot-safe GPIO mapping</li>
+<li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="currentColor"/></svg>Mobile-first portal UI with touch-friendly controls</li>
+<li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="currentColor"/></svg>Distraction-free reading focus with low-cost hardware (about $10 BOM)</li>
+</ul>
+</div>
+
+<div class="card">
+<h3>
+<svg viewBox="0 0 24 24" width="18" height="18"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.34C7 21.4 7.6 22 8.33 22h7.34c.73 0 1.33-.6 1.33-1.33V5.33C17 4.6 16.4 4 15.67 4z" fill="currentColor"/></svg>
+Power, Performance, and Safety Profile
+</h3>
+<div class="info-row"><span class="info-label">Reading Current Draw</span><span class="info-value">~35mA (WiFi OFF, BT OFF, 80MHz)</span></div>
+<div class="info-row"><span class="info-label">WiFi Portal Draw</span><span class="info-value">~120mA (AP + HTTP server active)</span></div>
+<div class="info-row"><span class="info-label">Idle Draw</span><span class="info-value">~25mA (display dimmed)</span></div>
+<div class="info-row"><span class="info-label">Deep Sleep</span><span class="info-value">~6uA theoretical standby profile</span></div>
+<div class="info-row"><span class="info-label">Radio Controls</span><span class="info-value">WiFi.mode(WIFI_OFF), btStop(), esp_wifi_stop() on boot</span></div>
+<div class="info-row"><span class="info-label">Battery Life Estimate</span><span class="info-value">~31h continuous reading on 1100mAh battery</span></div>
+<div class="info-row"><span class="info-label">Brownout Handling</span><span class="info-value">Optional 470uF capacitor if WiFi surge resets appear</span></div>
+<div class="info-row"><span class="info-label">Safety Practices</span><span class="info-value">Input debounce, SD write safety, WiFi cleanup, graceful error states</span></div>
+</div>
+
+<div class="card">
+<h3>
+<svg viewBox="0 0 24 24" width="18" height="18"><path d="M19 3H5c-1.1 0-2 .9-2 2v14a2 2 0 002 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM8 17h8v-2H8v2zm0-4h8v-2H8v2zm0-4h8V7H8v2z" fill="currentColor"/></svg>
+Build & Deployment Notes
+</h3>
+<div class="info-row"><span class="info-label">IDE Support</span><span class="info-value">Arduino IDE 2.x or PlatformIO</span></div>
+<div class="info-row"><span class="info-label">Board Package</span><span class="info-value">Espressif ESP32 board package 2.0.x+</span></div>
+<div class="info-row"><span class="info-label">Target Board</span><span class="info-value">AI Thinker ESP32-CAM</span></div>
+<div class="info-row"><span class="info-label">Upload Speed</span><span class="info-value">115200</span></div>
+<div class="info-row"><span class="info-label">Flash Settings</span><span class="info-value">80MHz, QIO, default 4MB SPIFFS partition</span></div>
+<div class="info-row"><span class="info-label">Serial Pins Reuse</span><span class="info-value">GPIO1/3 become OLED I2C after assembly (OLED used for runtime status)</span></div>
+<div class="info-row"><span class="info-label">OTA Path</span><span class="info-value">Build .bin and upload from the portal Settings -> Firmware Update</span></div>
+</div>
+
+<div class="card">
+<div class="author-card">
+<div class="author-av">SB</div>
+<div class="author-name">Sakshyam Bastakoti</div>
+<div class="author-role">Creator &amp; Developer</div>
+<div style="font-size:.85em;color:var(--txt3);margin-bottom:12px">
+<a href="http://sakshyambastakoti.com.np" target="_blank" style="color:var(--pri);text-decoration:none">sakshyambastakoti.com.np</a>
+</div>
+<div class="author-bio">
+Designer and engineer behind D.E.V_Darshan &mdash; a compact open-source reader focused on low cost, long battery life, and deep focus. The project repurposes ESP32-CAM hardware into a practical text reading system with robust firmware architecture and a complete WiFi management portal.
+</div>
+<div class="vision-block">
+<strong style="color:var(--pri);">&ldquo;</strong> I believe technology should empower focus, not fragment it. D.E.V_Darshan is my answer to endless scrolling &mdash; a device that does one thing exceptionally well: let you read. Every design decision, from the magnetic power switch to the single-bit SD interface, prioritises simplicity, efficiency, and the pure joy of reading. <strong style="color:var(--pri);">&rdquo;</strong>
+</div>
+<div style="margin-top:20px;display:flex;flex-wrap:wrap;justify-content:center;gap:10px">
+<span class="badge badge-pri">Open Hardware</span>
+<span class="badge badge-pri">ESP32 Platform</span>
+<span class="badge badge-pri">Arduino Framework</span>
+<span class="badge badge-pri">MIT License</span>
+</div>
+</div>
+</div>
+
+<div style="text-align:center;padding:24px 16px;font-size:.72em;color:var(--txt3);line-height:1.8;border-top:1px solid var(--brd);margin-top:8px">
+<div style="margin-bottom:8px">
+<svg viewBox="0 0 24 24" width="18" height="18" style="color:var(--pri);vertical-align:middle"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z" fill="currentColor"/></svg>
+</div>
+D.E.V_Darshan v1.0 &middot; Designed &amp; Engineered by Sakshyam Bastakoti<br>
+Built with precision. Powered by passion.<br>
+<a href="http://sakshyambastakoti.com.np" style="color:var(--pri);text-decoration:none">sakshyambastakoti.com.np</a>
+</div>
+</section>
+
+</div><!-- /main -->
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!--  JAVASCRIPT                                                             -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<script>
+/* ═══ Constants ═══ */
+var MAX_SIZE=2*1024*1024,MAX_EDIT=65536;
+
+/* ═══ State ═══ */
+var curFile='',dirty=false,selUpFiles=[],origContent='';
+var tabNames=['dashboard','files','editor','settings','guide','about'];
+
+/* ═══ Utility ═══ */
+function fmt(b){if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(1)+' MB'}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function fmtDate(ts){if(!ts||ts<946684800)return'--';var d=new Date(ts*1000);return d.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'})}
+function fmtUp(s){var d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),sec=s%60;if(d>0)return d+'d '+h+'h '+m+'m';if(h>0)return h+'h '+m+'m '+sec+'s';return m+'m '+sec+'s'}
+
+/* ═══ Toast ═══ */
+function toast(msg,type){
+var t=document.createElement('div');t.className='toast '+(type||'info');
+var icons={ok:'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z',err:'M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z',info:'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z'};
+var ic=icons[type]||icons.info;
+t.innerHTML='<svg viewBox="0 0 24 24" width="18" height="18" style="flex-shrink:0"><path d="'+ic+'" fill="currentColor"/></svg>'+esc(msg);
+document.getElementById('toastBox').appendChild(t);
+setTimeout(function(){t.style.opacity='0';t.style.transition='opacity .35s';setTimeout(function(){t.remove()},400)},3500);
 }
 
-function restH(s) {
-  hIdx += s;
-  if (hIdx < 0) hIdx = 0;
-  if (hIdx >= hist.length) hIdx = hist.length - 1;
-  elEd.value = hist[hIdx] || '';
-  updEd();
+/* ═══ Modal ═══ */
+function showModal(title,msg,showInp,onOk){
+document.getElementById('mTitle').textContent=title;
+document.getElementById('mMsg').textContent=msg;
+var inp=document.getElementById('mInput');
+inp.style.display=showInp?'block':'none';inp.value='';
+document.getElementById('modalOv').classList.add('show');
+if(showInp)setTimeout(function(){inp.focus()},120);
+document.getElementById('mOk').onclick=function(){var v=inp.value;hideModal();onOk(v)};
+}
+function hideModal(){document.getElementById('modalOv').classList.remove('show')}
+
+/* ═══ Sidebar ═══ */
+function toggleSb(){
+document.getElementById('sidebar').classList.toggle('open');
+document.getElementById('sbBk').classList.toggle('show');
+}
+function closeSb(){
+document.getElementById('sidebar').classList.remove('open');
+document.getElementById('sbBk').classList.remove('show');
 }
 
-function escapeHtml(unsafe) {
-    return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+/* ═══ Sidebar Collapse ═══ */
+function toggleSbCollapse(){
+var sb=document.getElementById('sidebar');
+var isCollapsed=sb.classList.toggle('collapsed');
+document.documentElement.style.setProperty('--sb-w',isCollapsed?'60px':'250px');
+localStorage.setItem('devDarshanSbCollapsed',isCollapsed?'1':'0');
+if(curFile){setTimeout(function(){updLines();updHL()},400)}
+}
+(function(){
+var saved=localStorage.getItem('devDarshanSbCollapsed');
+if(saved==='1'){document.getElementById('sidebar').classList.add('collapsed');
+document.documentElement.style.setProperty('--sb-w','60px');}
+})();
+
+/* ═══ Tab Navigation ═══ */
+var navBtns=document.querySelectorAll('.sb-nav button');
+navBtns.forEach(function(btn){btn.addEventListener('click',function(){showTab(btn.dataset.tab);closeSb()})});
+
+function showTab(name){
+if(dirty&&curFile&&name!=='editor'){if(!confirm('You have unsaved changes. Switch tab anyway?'))return}
+document.querySelectorAll('.tab-panel').forEach(function(t){t.classList.remove('active')});
+navBtns.forEach(function(b){b.classList.remove('active')});
+var idx=tabNames.indexOf(name);if(idx>=0)navBtns[idx].classList.add('active');
+var el=document.getElementById('tab-'+name);if(el)el.classList.add('active');
+if(name==='dashboard')loadDash();
+if(name==='files'){loadFiles();loadUsage()}
+if(name==='settings')loadSettings();
 }
 
-function updEd() {
-  const v = elEd.value;
-  document.getElementById('charCount').textContent = v.length + ' chars';
-  const lns = v.split('\n');
-  let bH = '', lh = '';
-  lns.forEach((l, i) => {
-    lh += (i + 1) + '<br>';
-    let esc = escapeHtml(l);
-    if(l.length > OLED_COLS) {
-      bH += escapeHtml(l.substring(0, OLED_COLS)) + '<span class="overflow">' + escapeHtml(l.substring(OLED_COLS)) + '</span>\n';
-    } else {
-      bH += esc + '\n';
-    }
-  });
-  elBack.innerHTML = bH; elLines.innerHTML = lh;
-  
-  elEd.style.height = 'auto';
-  elEd.style.height = elBack.scrollHeight + 'px';
+/* ═══ Dashboard ═══ */
+function loadDash(){
+fetch('/info').then(function(r){return r.json()}).then(function(d){
+document.getElementById('dFw').textContent='v'+d.firmware;
+document.getElementById('dFiles').textContent=d.files;
+var pct=d.totalBytes>0?Math.round(d.usedBytes/d.totalBytes*100):0;
+document.getElementById('dStorage').textContent=pct+'%';
+document.getElementById('dSd').innerHTML=d.sdMounted?'<span style="color:var(--ok)">Healthy</span>':'<span style="color:var(--err)">Error</span>';
+document.getElementById('dWifi').innerHTML='<span style="color:var(--ok)">Active</span>';
+document.getElementById('dUp').textContent=fmtUp(d.uptime||0);
 
-  procOled(v);
+document.getElementById('dsFill').style.width=pct+'%';
+document.getElementById('dsUsed').textContent='Used: '+fmt(d.usedBytes)+' ('+pct+'%)';
+document.getElementById('dsFree').textContent='Free: '+fmt(d.totalBytes-d.usedBytes);
+
+document.getElementById('dashInfo').innerHTML=
+'<div class="info-row"><span class="info-label">Device</span><span class="info-value">'+esc(d.device)+'</span></div>'
++'<div class="info-row"><span class="info-label">Firmware</span><span class="info-value">v'+esc(d.firmware)+'</span></div>'
++'<div class="info-row"><span class="info-label">Author</span><span class="info-value">'+esc(d.author)+'</span></div>'
++'<div class="info-row"><span class="info-label">CPU Frequency</span><span class="info-value">'+d.cpuFreq+' MHz</span></div>'
++'<div class="info-row"><span class="info-label">Free Heap RAM</span><span class="info-value">'+fmt(d.freeHeap)+'</span></div>'
++'<div class="info-row"><span class="info-label">WiFi SSID</span><span class="info-value">'+esc(d.ssid)+'</span></div>'
++'<div class="info-row"><span class="info-label">Portal IP</span><span class="info-value">192.168.4.1</span></div>';
+}).catch(function(){
+document.getElementById('dashInfo').innerHTML='<p style="color:var(--err);text-align:center;padding:12px">Failed to load device data</p>';
+});
 }
 
-ca.addEventListener('scroll', () => { elLines.scrollTop = ca.scrollTop; });
-elEd.addEventListener('input', () => { updEd(); });
-elEd.addEventListener('change',()=> saveH());
-
-function wTxt(t) {
-  const l = t.split('\n'); let o = [];
-  l.forEach(x => {
-    if(x.length === 0) { o.push(''); return; }
-    let p = 0;
-    while(p < x.length) {
-      if(x.length - p <= OLED_COLS) { o.push(x.substring(p)); break; }
-      let b = OLED_COLS; let s = b;
-      while(s > 0 && x.charAt(p + s) !== ' ') s--;
-      if(s > 0) b = s;
-      o.push(x.substring(p, p + b)); p += b;
-      if(p < x.length && x.charAt(p) === ' ') p++;
-    }
-  });
-  if(o.length===0) o.push(''); return o;
+/* ═══ Storage ═══ */
+function loadUsage(){
+fetch('/usage').then(function(r){return r.json()}).then(function(d){
+var pct=d.total>0?Math.round(d.used/d.total*100):0;
+document.getElementById('dsFill').style.width=pct+'%';
+document.getElementById('dsUsed').textContent='Used: '+fmt(d.used)+' ('+pct+'%)';
+document.getElementById('dsFree').textContent='Free: '+fmt(d.free);
+}).catch(function(){});
 }
 
-function procOled(v) {
-  oledLines = wTxt(v);
-  scrollOffset = Math.min(scrollOffset, Math.max(0, oledLines.length - OLED_ROWS));
-  rend();
+/* ═══ File List ═══ */
+function loadFiles(){
+fetch('/files').then(function(r){return r.json()}).then(function(files){
+var el=document.getElementById('fileList');
+if(!files.length){el.innerHTML='<div class="empty-st"><svg viewBox="0 0 24 24" width="44" height="44"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="currentColor"/></svg><p style="margin-top:10px;font-size:.88em">No .txt files found on SD card</p></div>';document.getElementById('selAllBtn').style.display='none';return}
+document.getElementById('selAllBtn').style.display='inline-flex';
+files.sort(function(a,b){return(b.modified||0)-(a.modified||0)});
+el.innerHTML=files.map(function(f,i){return '<div class="file-row" data-name="'+esc(f.name)+'">'
++'<label class="cb-wrap"><input type="checkbox" class="cb" value="'+esc(f.name)+'"><span class="cb-box"></span></label>'
++'<div class="file-info">'
++'<div class="fi-icon"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="currentColor"/></svg></div>'
++'<div style="min-width:0"><div class="file-name">'+(i+1)+'. '+esc(f.name)+'</div>'
++'<div class="file-meta">'+fmt(f.size)+' &middot; '+fmtDate(f.modified)+'</div></div>'
++'</div>'
++'<div class="file-actions">'
++'<button data-action="edit" title="Edit"><svg viewBox="0 0 24 24" width="15" height="15"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/></svg></button>'
++'<button data-action="rename" title="Rename"><svg viewBox="0 0 24 24" width="15" height="15"><path d="M2.5 4v3h5v12h3V7h5V4h-13zm19 5h-9v3h3v7h3v-7h3V9z" fill="currentColor"/></svg></button>'
++'<button data-action="download" title="Download"><svg viewBox="0 0 24 24" width="15" height="15"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill="currentColor"/></svg></button>'
++'<button data-action="delete" class="del" title="Delete"><svg viewBox="0 0 24 24" width="15" height="15"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="currentColor"/></svg></button>'
++'</div></div>'}).join('');
+}).catch(function(){
+document.getElementById('fileList').innerHTML='<div class="empty-st"><p style="color:var(--err)">Error loading files</p></div>';
+});
 }
 
-function rend() {
-  const al = document.getElementById('selAlign').value;
-  const va = document.getElementById('selVAlign').value;
-  
-  document.getElementById('stLines').textContent = oledLines.length;
-  const maxO = Math.max(0, oledLines.length - OLED_ROWS);
-  document.getElementById('stScroll').textContent = oledLines.length <= OLED_ROWS ? '-' : (scrollOffset === 0 ? 'TOP' : (scrollOffset >= maxO ? 'BTM' : Math.round((scrollOffset/maxO)*100)+'%'));
-
-  let pad = 0;
-  if (oledLines.length < OLED_ROWS) {
-    if (va === 'middle') pad = Math.floor((OLED_ROWS - oledLines.length)/2);
-    if (va === 'bottom') pad = OLED_ROWS - oledLines.length;
-  }
-  
-  for(let i=0; i<OLED_ROWS; i++) {
-    const el = document.getElementById('r'+i);
-    el.style.textAlign = al;
-    let sI = i - pad;
-    if (sI >= 0 && sI < oledLines.length) {
-        el.textContent = oledLines[scrollOffset + sI];
-    } else {
-        el.textContent = '';
-    }
-    
-    // Manual pseudo-centering for scaling
-    if (al === 'center') {
-      let t = el.textContent;
-      let diff = OLED_COLS - t.length;
-      if (diff > 0) { el.textContent = ' '.repeat(Math.floor(diff/2)) + t; el.style.textAlign = 'left'; }
-    } else if (al === 'right') {
-      let t = el.textContent;
-      let diff = OLED_COLS - t.length;
-      if (diff > 0) { el.textContent = ' '.repeat(diff) + t; el.style.textAlign = 'left'; }
-    }
-  }
-}
-
-document.getElementById('hwUp').onclick = () => { if(scrollOffset>0) { scrollOffset--; rend(); } };
-document.getElementById('hwDown').onclick = () => { if(scrollOffset<oledLines.length-OLED_ROWS) { scrollOffset++; rend(); } };
-document.getElementById('hwSel').onclick = () => { scrollOffset = 0; rend(); };
-
-['selAlign','selVAlign'].forEach(id=>document.getElementById(id).onchange=rend);
-document.getElementById('chkInvert').onchange = (e) => document.getElementById('oledScreen').classList.toggle('inverted', e.target.checked);
-
-const mut = (f) => { elEd.value = f(elEd.value); updEd(); saveH(); };
-document.getElementById('btnRemoveNewlines').onclick = () => mut(v=>v.replace(/\n+/g,' '));
-document.getElementById('btnRemoveSpaces').onclick = () => mut(v=>v.replace(/\s{2,}/g,' '));
-document.getElementById('btnUpper').onclick = () => mut(v=>v.toUpperCase());
-document.getElementById('btnLower').onclick = () => mut(v=>v.toLowerCase());
-document.getElementById('btnNewQuestion').onclick = () => mut(v=>v.replace(/\?\s*/g,'?\n'));
-
-document.getElementById('btnClear').onclick = () => mut(()=>'');
-document.getElementById('btnUndo').onclick = () => restH(-1);
-document.getElementById('btnRedo').onclick = () => restH(1);
-
-document.addEventListener('keydown', e => {
-  if (e.ctrlKey && e.key==='z') { e.preventDefault(); restH(-1); }
-  if (e.ctrlKey && e.key==='y') { e.preventDefault(); restH(1); }
-  if (document.activeElement !== elEd && document.activeElement !== ca) {
-    if(e.key==='ArrowUp') { e.preventDefault(); document.getElementById('hwUp').click(); }
-    if(e.key==='ArrowDown') { e.preventDefault(); document.getElementById('hwDown').click(); }
-  }
+document.getElementById('selAllBtn').addEventListener('click',function(){
+var cbs=document.querySelectorAll('.cb');
+var anyUnchecked=document.querySelectorAll('.cb:not(:checked)').length>0;
+for(var i=0;i<cbs.length;i++){cbs[i].checked=anyUnchecked;}
+document.getElementById('delSelBtn').style.display=anyUnchecked?'inline-flex':'none';
+this.innerHTML=anyUnchecked?'<svg viewBox="0 0 24 24" width="14" height="14"><path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z" fill="currentColor"/></svg> Deselect All':'<svg viewBox="0 0 24 24" width="14" height="14"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"/></svg> Select All';
 });
 
-let sv = localStorage.getItem('oled_v2');
-if (sv) elEd.value = sv; else elEd.value = "Load successful.\nSystem ready.\nChecking components... OK\nWaiting for input.";
-saveH(); updEd();
-
-// Drag
-let idn=false, sy, sTop;
-ca.addEventListener('mousedown', e => { idn=true; sy=e.pageY-ca.offsetTop; sTop=ca.scrollTop; });
-ca.addEventListener('mouseleave', () => idn=false); ca.addEventListener('mouseup', () => idn=false);
-ca.addEventListener('mousemove', e => { if(!idn) return; e.preventDefault(); ca.scrollTop = sTop - (e.pageY-ca.offsetTop - sy)*1.5; });
-
-elEd.addEventListener('paste', e => {
-  if(document.getElementById('chkAutoFormat').checked) {
-    setTimeout(() => {
-      mut(v => {
-        let cleaned = v.replace(/\s{2,}/g, ' ');
-        return wTxt(cleaned).join("\n");
-      });
-    }, 10);
-  } else {
-    setTimeout(() => {
-       mut(v => wTxt(v).join("\n"));
-    }, 10);
-  }
+document.getElementById('fileList').addEventListener('change',function(e){
+if(e.target.classList.contains('cb')){
+var cbs=document.querySelectorAll('.cb:checked');
+document.getElementById('delSelBtn').style.display=cbs.length>0?'inline-flex':'none';
+var allLen=document.querySelectorAll('.cb').length;
+var btn=document.getElementById('selAllBtn');
+if(cbs.length===allLen){
+btn.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14"><path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z" fill="currentColor"/></svg> Deselect All';
+}else{
+btn.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"/></svg> Select All';
+}
+}
+});
+document.getElementById('delSelBtn').addEventListener('click',function(){
+var cbs=document.querySelectorAll('.cb:checked');
+if(cbs.length===0)return;
+if(!confirm('Delete '+cbs.length+' files?'))return;
+var count=0;
+this.disabled=true;
+for(var i=0;i<cbs.length;i++){
+fetch('/delete',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'name='+encodeURIComponent(cbs[i].value)})
+.then(function(){count++;if(count===cbs.length){toast('Deleted '+count+' files','ok');loadFiles();document.getElementById('delSelBtn').style.display='none';document.getElementById('delSelBtn').disabled=false;}});
+}
 });
 
-document.getElementById('btnSave').addEventListener('click', () => {
-  const text = elEd.value;
-  const blob = new Blob([text], { type: "text/plain" });
-  const anchor = document.createElement("a");
-  anchor.download = "dev_darshan_data.txt";
-  anchor.href = window.URL.createObjectURL(blob);
-  anchor.click();
-  window.URL.revokeObjectURL(anchor.href);
+/* ═══ File Actions (event delegation) ═══ */
+document.getElementById('fileList').addEventListener('click',function(e){
+var btn=e.target.closest('[data-action]');if(!btn)return;
+var row=btn.closest('.file-row');if(!row)return;
+var name=row.dataset.name;
+switch(btn.dataset.action){
+case 'edit':editFile(name);break;
+case 'rename':renameFile(name);break;
+case 'download':downloadFile(name);break;
+case 'delete':confirmDel(name);break;
+}
 });
 
+/* ═══ Upload ═══ */
+var dz=document.getElementById('dropZone');
+var fi=document.getElementById('fileInput');
+var ub=document.getElementById('uploadBtn');
 
+dz.addEventListener('click',function(){fi.click()});
+dz.addEventListener('dragover',function(e){e.preventDefault();dz.classList.add('over')});
+dz.addEventListener('dragleave',function(){dz.classList.remove('over')});
+dz.addEventListener('drop',function(e){e.preventDefault();dz.classList.remove('over');pickFiles(e.dataTransfer.files)});
+fi.addEventListener('change',function(){pickFiles(fi.files)});
 
+function pickFiles(files){
+if(!files||files.length===0)return;
+selUpFiles=[];var totSize=0;
+for(var i=0;i<files.length;i++){
+var f=files[i];
+if(!f.name.toLowerCase().endsWith('.txt')){toast('Skipped '+f.name+': not .txt','err');continue}
+if(f.size>MAX_SIZE){toast('Skipped '+f.name+': over 2 MB','err');continue}
+if(f.size===0){toast('Skipped '+f.name+': empty','err');continue}
+selUpFiles.push(f);totSize+=f.size;
+}
+if(selUpFiles.length>0){
+var txt=selUpFiles.length===1?selUpFiles[0].name:selUpFiles.length+' files selected';
+document.getElementById('selFile').textContent=txt+' ('+fmt(totSize)+')';
+ub.disabled=false;
+}
+}
+
+ub.addEventListener('click',function(){
+if(selUpFiles.length===0)return;ub.disabled=true;
+var prog=document.getElementById('progress');prog.style.display='block';
+var currentIdx=0;
+
+function uploadNext(){
+if(currentIdx>=selUpFiles.length){
+prog.style.display='none';document.getElementById('progressFill').style.width='0';
+toast(selUpFiles.length>1?'All files uploaded successfully!':'File uploaded successfully!','ok');loadFiles();loadUsage();
+selUpFiles=[];document.getElementById('selFile').textContent='';fi.value='';
+return;
+}
+var f=selUpFiles[currentIdx];
+if(selUpFiles.length>1)document.getElementById('progressText').textContent='Uploading '+(currentIdx+1)+'/'+selUpFiles.length+'...';
+var xhr=new XMLHttpRequest();xhr.open('POST','/upload');
+xhr.upload.onprogress=function(e){
+if(e.lengthComputable){
+var filePct=e.loaded/e.total;
+var p=Math.round(((currentIdx+filePct)/selUpFiles.length)*100);
+document.getElementById('progressFill').style.width=p+'%';
+if(selUpFiles.length===1)document.getElementById('progressText').textContent=p+'%';
+}
+};
+xhr.onload=function(){
+if(xhr.status===200){currentIdx++;uploadNext();}
+else{toast('Failed: '+f.name+' ('+xhr.responseText+')','err');ub.disabled=false;prog.style.display='none';}
+};
+xhr.onerror=function(){toast('Network error during upload','err');ub.disabled=false;prog.style.display='none';};
+var fd=new FormData();fd.append('file',f);xhr.send(fd);
+}
+uploadNext();
+});
+
+/* ═══ Edit File ═══ */
+function editFile(name){
+showTab('editor');
+document.getElementById('fnTxt').textContent=name;
+document.getElementById('edEmpty').style.display='none';
+document.getElementById('edBody').style.display='flex';
+document.getElementById('edActs').style.display='flex';
+var ta=document.getElementById('edArea');
+ta.value='Loading file content...';ta.disabled=true;
+curFile=name;dirty=false;
+document.getElementById('edDot').classList.remove('show');
+document.getElementById('edStatus').textContent='';
+fetch('/read?name='+encodeURIComponent(name)).then(function(r){
+if(!r.ok)throw new Error(r.statusText);return r.text()
+}).then(function(c){
+ta.value=c;ta.disabled=false;origContent=c;
+updLines();updCount();updHL();updCursorPos();oledBuild();ta.focus();
+}).catch(function(e){toast('Failed to load: '+e.message,'err');ta.value='';ta.disabled=false});
+}
+
+function saveFile(){
+if(!curFile)return;
+var c=document.getElementById('edArea').value;
+if(c.length>MAX_EDIT){toast('File too large for web editor (max 64 KB)','err');return}
+var sb=document.getElementById('saveBtn');sb.disabled=true;
+fetch('/save?name='+encodeURIComponent(curFile),{method:'POST',headers:{'Content-Type':'text/plain'},body:c})
+.then(function(r){if(!r.ok)throw new Error('Save failed');return r.text()})
+.then(function(){toast('File saved successfully!','ok');dirty=false;origContent=c;document.getElementById('edDot').classList.remove('show');document.getElementById('edStatus').textContent='Saved';sb.disabled=false})
+.catch(function(e){toast(e.message,'err');sb.disabled=false});
+}
+
+function cancelEdit(){
+if(dirty&&!confirm('Discard unsaved changes?'))return;
+curFile='';dirty=false;origContent='';
+document.getElementById('fnTxt').textContent='untitled';
+document.getElementById('edEmpty').style.display='flex';
+document.getElementById('edBody').style.display='none';
+document.getElementById('edActs').style.display='none';
+document.getElementById('edDot').classList.remove('show');
+document.getElementById('edStatus').textContent='';
+document.getElementById('charCnt').textContent='Ready';
+document.getElementById('charTop').textContent='0 chars';
+document.getElementById('edArea').value='';
+updLines();oledReset();
+}
+document.getElementById('saveBtn').addEventListener('click',saveFile);
+document.getElementById('cancelBtn').addEventListener('click',cancelEdit);
+
+/* ═══ Editor events ═══ */
+var edArea=document.getElementById('edArea');
+var edGutter=document.getElementById('edGutter');
+var edDot=document.getElementById('edDot');
+
+function syncEdScroll(){
+edGutter.scrollTop=edArea.scrollTop;
+updHL();
+}
+
+function bindEdWheelForward(el){
+el.addEventListener('wheel',function(e){
+if(!curFile)return;
+e.preventDefault();
+edArea.scrollTop+=e.deltaY;
+syncEdScroll();
+},{passive:false});
+}
+
+var edTouchY=0;
+function bindEdTouchForward(el){
+el.addEventListener('touchstart',function(e){
+if(e.touches&&e.touches.length){edTouchY=e.touches[0].clientY}
+},{passive:true});
+el.addEventListener('touchmove',function(e){
+if(!curFile||!e.touches||!e.touches.length)return;
+var y=e.touches[0].clientY;
+var dy=edTouchY-y;
+edTouchY=y;
+edArea.scrollTop+=dy;
+syncEdScroll();
+e.preventDefault();
+},{passive:false});
+}
+edArea.addEventListener('input',function(){
+dirty=true;
+edDot.classList.add('show');
+document.getElementById('edStatus').textContent='Modified';
+updLines();updCount();updHL();oledBuild();
+});
+edArea.addEventListener('scroll',syncEdScroll);
+edArea.addEventListener('click',function(){updHL();updCursorPos()});
+edArea.addEventListener('keyup',function(e){
+if(e.key.indexOf('Arrow')===0||e.key==='Home'||e.key==='End'){updHL();updCursorPos()}
+});
+edArea.addEventListener('keydown',function(e){
+if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();saveFile()}
+if(e.key==='Tab'){e.preventDefault();var s=edArea.selectionStart,en=edArea.selectionEnd;edArea.value=edArea.value.substring(0,s)+'    '+edArea.value.substring(en);edArea.selectionStart=edArea.selectionEnd=s+4;edArea.dispatchEvent(new Event('input'))}
+});
+
+function applyEdTransform(fn){
+if(!curFile)return;
+edArea.value=fn(edArea.value);
+edArea.dispatchEvent(new Event('input'));
+}
+
+document.getElementById('fmtStripBtn').addEventListener('click',function(){
+applyEdTransform(function(v){return v.replace(/\n+/g,' ')});
+});
+document.getElementById('fmtSquashBtn').addEventListener('click',function(){
+applyEdTransform(function(v){return v.replace(/\s{2,}/g,' ')});
+});
+document.getElementById('fmtUpperBtn').addEventListener('click',function(){
+applyEdTransform(function(v){return v.toUpperCase()});
+});
+document.getElementById('fmtLowerBtn').addEventListener('click',function(){
+applyEdTransform(function(v){return v.toLowerCase()});
+});
+document.getElementById('fmtBreakBtn').addEventListener('click',function(){
+applyEdTransform(function(v){return v.replace(/\?\s*/g,'?\n')});
+});
+
+edArea.addEventListener('paste',function(e){
+var autoFmt=document.getElementById('oledAutoFmtChk');
+if(!autoFmt||!autoFmt.checked)return;
+
+e.preventDefault();
+var clip=(e.clipboardData||window.clipboardData);
+if(!clip)return;
+
+var txt=clip.getData('text')||'';
+txt=txt.replace(/\r\n/g,'\n').replace(/\t/g,'    ');
+txt=txt.replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n');
+
+var s=edArea.selectionStart;
+var en=edArea.selectionEnd;
+edArea.value=edArea.value.substring(0,s)+txt+edArea.value.substring(en);
+edArea.selectionStart=edArea.selectionEnd=s+txt.length;
+edArea.dispatchEvent(new Event('input'));
+});
+
+bindEdWheelForward(edGutter);
+bindEdWheelForward(document.getElementById('lineNums'));
+bindEdWheelForward(document.querySelector('.ed-content'));
+bindEdTouchForward(edGutter);
+bindEdTouchForward(document.getElementById('lineNums'));
+
+function updLines(){
+var m=document.getElementById('edMirror'),n=document.getElementById('lineNums'),ls=edArea.value.split('\n');
+m.style.width=edArea.clientWidth+'px';
+m.textContent='';
+var f=document.createDocumentFragment();
+for(var i=0;i<ls.length;i++){var d=document.createElement('div');d.textContent=ls[i]||'\u00a0';f.appendChild(d)}
+m.appendChild(f);
+var ds=m.children,h='';
+for(var i=0;i<ds.length;i++)h+='<div class="ln" style="height:'+ds[i].offsetHeight+'px">'+(i+1)+'</div>';
+n.innerHTML=h;
+}
+function updCount(){
+var v=edArea.value;
+document.getElementById('charCnt').textContent=v.length.toLocaleString()+' chars \u00b7 '+v.split('\n').length+' lines';
+document.getElementById('charTop').textContent=v.length.toLocaleString()+' chars';
+}
+function updCursorPos(){
+var pos=edArea.selectionStart;
+var lines=edArea.value.substr(0,pos).split('\n');
+var ln=lines.length;
+var col=lines[lines.length-1].length+1;
+document.getElementById('edStatus').textContent='Ln '+ln+', Col '+col;
+}
+function updHL(){
+var pos=edArea.selectionStart;
+var curLine=edArea.value.substr(0,pos).split('\n').length-1;
+var m=document.getElementById('edMirror'),ds=m.children;
+var top=8;
+for(var i=0;i<curLine&&i<ds.length;i++)top+=ds[i].offsetHeight;
+var h=ds[curLine]?ds[curLine].offsetHeight:20;
+top-=edArea.scrollTop;
+var hl=document.getElementById('lineHl');
+if(top+h<0||top>edArea.clientHeight){hl.style.display='none'}
+else{hl.style.display='block';hl.style.top=top+'px';hl.style.height=h+'px'}
+}
+
+/* ═══ Rename ═══ */
+function renameFile(name){
+var base=name.toLowerCase().endsWith('.txt')?name.slice(0,-4):name;
+showModal('Rename File','Enter a new name for "'+name+'"',true,function(nw){
+if(!nw||!nw.trim())return;
+nw=nw.trim();if(!nw.toLowerCase().endsWith('.txt'))nw+='.txt';
+fetch('/rename?old='+encodeURIComponent(name)+'&new='+encodeURIComponent(nw),{method:'POST'})
+.then(function(r){if(r.ok){toast('Renamed to '+nw,'ok');loadFiles();if(curFile===name){curFile=nw;document.getElementById('fnTxt').textContent=nw}}
+else return r.text().then(function(t){toast('Rename failed: '+t,'err')})})
+.catch(function(){toast('Network error','err')});
+});
+document.getElementById('mInput').value=base;
+}
+
+/* ═══ Delete ═══ */
+function confirmDel(name){
+showModal('Delete File','Are you sure you want to delete "'+name+'"? This cannot be undone.',false,function(){
+fetch('/delete?name='+encodeURIComponent(name),{method:'POST'})
+.then(function(r){if(r.ok){toast('File deleted','ok');loadFiles();loadUsage();if(curFile===name)cancelEdit()}
+else return r.text().then(function(t){toast('Delete failed: '+t,'err')})})
+.catch(function(){toast('Network error','err')});
+});
+}
+
+/* ═══ Download ═══ */
+function downloadFile(name){
+var a=document.createElement('a');a.href='/download?name='+encodeURIComponent(name);
+a.download=name;document.body.appendChild(a);a.click();a.remove();
+}
+
+/* ═══ Create New File ═══ */
+document.getElementById('newFileBtn').addEventListener('click',function(){
+showModal('Create New File','Enter a name for the new text file:',true,function(name){
+if(!name||!name.trim())return;
+name=name.trim();if(!name.toLowerCase().endsWith('.txt'))name+='.txt';
+fetch('/create?name='+encodeURIComponent(name),{method:'POST'})
+.then(function(r){if(r.ok){toast('"'+name+'" created!','ok');loadFiles();editFile(name)}
+else return r.text().then(function(t){toast('Create failed: '+t,'err')})})
+.catch(function(){toast('Network error','err')});
+});
+});
+
+/* ═══ Settings ═══ */
+function loadSettings(){
+fetch('/info').then(function(r){return r.json()}).then(function(d){
+document.getElementById('wifiInfo').innerHTML=
+'<div class="info-row"><span class="info-label">Network SSID</span><span class="info-value">'+esc(d.ssid)+'</span></div>'
++'<div class="info-row"><span class="info-label">Portal IP</span><span class="info-value">192.168.4.1</span></div>'
++'<div class="info-row"><span class="info-label">WiFi Channel</span><span class="info-value">6</span></div>'
++'<div class="info-row"><span class="info-label">Max Upload Size</span><span class="info-value">'+fmt(d.maxUpload)+'</span></div>'
++'<div class="info-row"><span class="info-label">Auto Shutdown</span><span class="info-value">'+Math.round(d.wifiTimeout/60000)+' min inactivity</span></div>';
+
+var totalB=d.totalBytes,usedB=d.usedBytes,freeB=totalB-usedB;
+var pct=totalB>0?Math.round(usedB/totalB*100):0;
+document.getElementById('storageInfo').innerHTML=
+'<div class="info-row"><span class="info-label">Total Capacity</span><span class="info-value">'+fmt(totalB)+'</span></div>'
++'<div class="info-row"><span class="info-label">Used Space</span><span class="info-value">'+fmt(usedB)+' ('+pct+'%)</span></div>'
++'<div class="info-row"><span class="info-label">Available</span><span class="info-value">'+fmt(freeB)+'</span></div>'
++'<div class="storage-bar" style="margin-top:8px"><div class="storage-fill" style="width:'+pct+'%"></div></div>';
+
+document.getElementById('sysInfo').innerHTML=
+'<div class="info-row"><span class="info-label">Free Heap RAM</span><span class="info-value">'+fmt(d.freeHeap)+'</span></div>'
++'<div class="info-row"><span class="info-label">CPU Frequency</span><span class="info-value">'+d.cpuFreq+' MHz</span></div>'
++'<div class="info-row"><span class="info-label">SD Card</span><span class="info-value">'+(d.sdMounted?'<span style="color:var(--ok)">Mounted</span>':'<span style="color:var(--err)">Not Found</span>')+'</span></div>'
++'<div class="info-row"><span class="info-label">Uptime</span><span class="info-value">'+fmtUp(d.uptime||0)+'</span></div>';
+}).catch(function(){
+document.getElementById('wifiInfo').innerHTML='<p style="color:var(--err);text-align:center;padding:12px">Failed to load settings</p>';
+});
+}
+
+/* ═══ Accordion ═══ */
+function toggleAcc(btn){btn.classList.toggle('open');btn.nextElementSibling.classList.toggle('open')}
+
+/* ═══ Protection ═══ */
+window.addEventListener('beforeunload',function(e){if(dirty){e.preventDefault();e.returnValue=''}});
+document.getElementById('mInput').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();document.getElementById('mOk').click()}});
+
+/* ═══ Theme Toggle ═══ */
+(function(){
+var toggle=document.getElementById('themeToggle');
+var knob=document.getElementById('themeKnob');
+var saved=localStorage.getItem('devDarshanTheme');
+if(saved==='light'){document.documentElement.classList.add('light');toggle.checked=true;knob.style.transform='translateX(16px)'}
+else{document.documentElement.classList.remove('light')}
+toggle.addEventListener('change',function(){
+if(toggle.checked){document.documentElement.classList.add('light');knob.style.transform='translateX(16px)';localStorage.setItem('devDarshanTheme','light')}
+else{document.documentElement.classList.remove('light');knob.style.transform='translateX(0)';localStorage.setItem('devDarshanTheme','dark')}
+});
+})();
+
+/* ═══ OLED Preview ═══ */
+var OLED_COLS=32,OLED_ROWS=4,oledWrapped=[],oledTop=0;
+var oledAlign='left',oledVAlign='top';
+
+function oledWrapLine(raw){
+var out=[];
+if(raw.length===0){out.push('');return out}
+var pos=0,len=raw.length;
+while(pos<len){
+if(len-pos<=OLED_COLS){out.push(raw.substring(pos));break}
+var brk=OLED_COLS,sp=brk;
+while(sp>0&&raw.charAt(pos+sp)!==' ')sp--;
+if(sp>0)brk=sp;
+out.push(raw.substring(pos,pos+brk));
+pos+=brk;
+if(pos<len&&raw.charAt(pos)===' ')pos++;
+}
+return out;
+}
+
+function oledBuild(){
+var txt=document.getElementById('edArea').value;
+var rawLines=txt.split('\n');
+oledWrapped=[];
+for(var i=0;i<rawLines.length;i++){
+var w=oledWrapLine(rawLines[i]);
+for(var j=0;j<w.length;j++)oledWrapped.push(w[j]);
+}
+if(oledWrapped.length===0)oledWrapped.push('');
+oledTop=0;
+oledRender();
+document.getElementById('oledPanel').style.display='block';
+}
+
+function oledRender(){
+var total=oledWrapped.length;
+var pad=0;
+if(total<OLED_ROWS){
+if(oledVAlign==='middle')pad=Math.floor((OLED_ROWS-total)/2);
+else if(oledVAlign==='bottom')pad=OLED_ROWS-total;
+}
+
+for(var i=0;i<OLED_ROWS;i++){
+var el=document.getElementById('oledR'+i);
+var src=i-pad;
+var idx=oledTop+src;
+el.textContent=(src>=0&&idx<total)?oledWrapped[idx]:'';
+el.style.textAlign=oledAlign;
+}
+document.getElementById('oledTotal').textContent=total;
+var endLine=Math.min(oledTop+OLED_ROWS,total);
+document.getElementById('oledLine').textContent=(oledTop+1)+' \u2013 '+endLine;
+var pct=total<=OLED_ROWS?100:Math.round(endLine/total*100);
+var pos=oledTop===0?'Top':(endLine>=total?'Bottom':pct+'%');
+document.getElementById('oledScroll').textContent=pos;
+}
+
+function oledScrollUp(){
+if(oledTop>0){oledTop--;oledRender()}
+}
+function oledScrollDown(){
+if(oledTop<oledWrapped.length-OLED_ROWS){oledTop++;oledRender()}
+}
+function oledPageUp(){
+oledTop=Math.max(0,oledTop-OLED_ROWS);
+oledRender();
+}
+function oledPageDown(){
+oledTop=Math.min(Math.max(0,oledWrapped.length-OLED_ROWS),oledTop+OLED_ROWS);
+oledRender();
+}
+function oledReset(){
+oledWrapped=[];oledTop=0;
+for(var i=0;i<OLED_ROWS;i++)document.getElementById('oledR'+i).textContent='';
+document.getElementById('oledPanel').style.display='none';
+document.getElementById('oledTotal').textContent='0';
+document.getElementById('oledLine').textContent='1 \u2013 4';
+document.getElementById('oledScroll').textContent='Top';
+}
+
+document.getElementById('oledUp').addEventListener('click',oledScrollUp);
+document.getElementById('oledDown').addEventListener('click',oledScrollDown);
+document.getElementById('oledSel').addEventListener('click',function(){oledTop=0;oledRender()});
+
+function applyOledControlState(){
+oledAlign=document.getElementById('oledAlignSel').value;
+oledVAlign=document.getElementById('oledVAlignSel').value;
+var screen=document.getElementById('oledScreen');
+screen.classList.toggle('inverted',document.getElementById('oledInvertChk').checked);
+oledRender();
+}
+
+document.getElementById('oledAlignSel').addEventListener('change',applyOledControlState);
+document.getElementById('oledVAlignSel').addEventListener('change',applyOledControlState);
+document.getElementById('oledInvertChk').addEventListener('change',applyOledControlState);
+
+document.addEventListener('keydown',function(e){
+if(!curFile||document.activeElement===document.getElementById('edArea'))return;
+if(e.key==='ArrowUp'){e.preventDefault();oledScrollUp()}
+else if(e.key==='ArrowDown'){e.preventDefault();oledScrollDown()}
+else if(e.key==='PageUp'){e.preventDefault();oledPageUp()}
+else if(e.key==='PageDown'){e.preventDefault();oledPageDown()}
+else if(e.key==='Home'){e.preventDefault();oledTop=0;oledRender()}
+else if(e.key==='End'){e.preventDefault();oledTop=Math.max(0,oledWrapped.length-OLED_ROWS);oledRender()}
+});
+
+/* ═══ Resize ═══ */
+window.addEventListener('resize',function(){if(curFile){updLines();updHL()}});
+
+/* ═══ Init ═══ */
+loadDash();
 </script>
 </body>
 </html>
