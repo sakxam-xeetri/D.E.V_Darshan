@@ -445,15 +445,7 @@ html.light .oled-btn:hover{border-color:var(--pri);background:linear-gradient(14
 <p>TXT Reader Portal</p>
 </div>
 <nav class="sb-nav" id="sbNav">
-<button class="active" data-tab="dashboard">
-<svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" fill="currentColor"/></svg>
-<span class="sb-text">Dashboard</span>
-</button>
-<button data-tab="files">
-<svg viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" fill="currentColor"/></svg>
-<span class="sb-text">Files</span>
-</button>
-<button data-tab="editor">
+<button class="active" data-tab="editor">
 <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/></svg>
 <span class="sb-text">Editor</span>
 </button>
@@ -508,131 +500,8 @@ D.E.V_Darshan
 <!-- ════════════════════════════════════════════════════════════════════════ -->
 <div class="main" id="mainArea">
 
-<!-- ══════════ DASHBOARD ══════════ -->
-<section id="tab-dashboard" class="tab-panel active">
-<div class="pg-hd">
-<h2>
-<svg viewBox="0 0 24 24" width="26" height="26"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" fill="currentColor"/></svg>
-Dashboard
-</h2>
-<p>Device status and system overview</p>
-</div>
-
-<div class="stat-grid" id="dashGrid">
-<div class="stat-card">
-<div class="st-icon red"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" fill="currentColor"/></svg></div>
-<div class="st-lbl">Firmware</div>
-<div class="st-val" id="dFw">—</div>
-</div>
-<div class="stat-card">
-<div class="st-icon red"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="currentColor"/></svg></div>
-<div class="st-lbl">Total Files</div>
-<div class="st-val" id="dFiles">—</div>
-</div>
-<div class="stat-card">
-<div class="st-icon amb"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z" fill="currentColor"/></svg></div>
-<div class="st-lbl">Storage</div>
-<div class="st-val" id="dStorage">—</div>
-</div>
-<div class="stat-card">
-<div class="st-icon grn"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z" fill="currentColor"/></svg></div>
-<div class="st-lbl">SD Health</div>
-<div class="st-val" id="dSd">—</div>
-</div>
-<div class="stat-card">
-<div class="st-icon blu"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.24 4.24 0 00-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z" fill="currentColor"/></svg></div>
-<div class="st-lbl">WiFi Status</div>
-<div class="st-val" id="dWifi">—</div>
-</div>
-<div class="stat-card">
-<div class="st-icon red"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" fill="currentColor"/></svg></div>
-<div class="st-lbl">Uptime</div>
-<div class="st-val" id="dUp">—</div>
-</div>
-</div>
-
-<div class="card">
-<h3>
-<svg viewBox="0 0 24 24" width="18" height="18"><path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z" fill="currentColor"/></svg>
-Storage Overview
-</h3>
-<div class="storage-bar"><div class="storage-fill" id="dsFill" style="width:0"></div></div>
-<div class="storage-text">
-<span id="dsUsed">Calculating...</span>
-<span id="dsFree">&nbsp;</span>
-</div>
-</div>
-
-<div class="card">
-<h3>
-<svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="currentColor"/></svg>
-System Information
-</h3>
-<div id="dashInfo"><div class="empty-st"><p>Loading device data...</p></div></div>
-</div>
-</section>
-
-<!-- ══════════ FILES ══════════ -->
-<section id="tab-files" class="tab-panel">
-<div class="pg-hd">
-<h2>
-<svg viewBox="0 0 24 24" width="26" height="26"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" fill="currentColor"/></svg>
-File Manager
-</h2>
-<p>Upload, manage and organise your text files</p>
-</div>
-
-<div class="card">
-<h3>
-<svg viewBox="0 0 24 24" width="18" height="18"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z" fill="currentColor"/></svg>
-Upload File
-</h3>
-<div class="drop-zone" id="dropZone">
-<svg viewBox="0 0 24 24" width="44" height="44"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM8 15.01l1.41 1.41L11 14.84V19h2v-4.16l1.59 1.59L16 15.01 12.01 11 8 15.01z" fill="currentColor"/></svg>
-<p>Tap to select or drag &amp; drop a .txt file</p>
-<p style="font-size:.68em;color:var(--txt3);margin-top:6px">Max 2 MB &middot; .txt files only</p>
-</div>
-<input type="file" id="fileInput" accept=".txt,text/plain" multiple hidden>
-<div id="selFile" style="font-size:.78em;color:var(--txt2);margin-top:10px;word-break:break-all"></div>
-<button class="btn btn-pri" id="uploadBtn" disabled style="width:100%;margin-top:12px;justify-content:center">
-<svg viewBox="0 0 24 24" width="16" height="16"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z" fill="currentColor"/></svg>
-Upload
-</button>
-<div class="progress" id="progress">
-<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-<div class="progress-text" id="progressText">0%</div>
-</div>
-</div>
-
-<div class="card">
-<h3 style="justify-content:space-between">
-<span style="display:flex;align-items:center;gap:10px">
-<svg viewBox="0 0 24 24" width="18" height="18"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="currentColor"/></svg>
-FILES ON SD CARD
-</span>
-<div style="display:flex;gap:4px;align-items:center">
-<button class="btn btn-sec" id="selAllBtn" style="padding:7px 14px;font-size:.78em;display:none">
-<svg viewBox="0 0 24 24" width="14" height="14"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"/></svg>
-Select All
-</button>
-<button class="btn" id="delSelBtn" style="padding:7px 14px;font-size:.78em;background:var(--err);display:none">
-<svg viewBox="0 0 24 24" width="14" height="14"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="currentColor"/></svg>
-Del Selected
-</button>
-<button class="btn btn-sec" id="newFileBtn" style="padding:7px 14px;font-size:.78em">
-<svg viewBox="0 0 24 24" width="14" height="14"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor"/></svg>
-New File
-</button>
-</div>
-</h3>
-<div id="fileList" style="max-height:440px;overflow-y:auto">
-<div class="empty-st"><p>Loading files...</p></div>
-</div>
-</div>
-</section>
-
 <!-- ══════════ EDITOR ══════════ -->
-<section id="tab-editor" class="tab-panel">
+<section id="tab-editor" class="tab-panel active">
 
 <div class="ed-split" id="edSplit">
 <aside class="ed-tools-panel sim-panel">
@@ -716,7 +585,7 @@ Close
 </div>
 <div id="edEmpty" class="ed-empty">
 <svg viewBox="0 0 24 24" width="48" height="48"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="currentColor"/></svg>
-<p style="margin-top:10px;font-size:.86em">Select a file from <strong>Files</strong> to begin editing</p>
+<p style="margin-top:10px;font-size:.86em">Start typing to edit and preview on the simulated OLED</p>
 <p style="font-size:.72em;margin-top:4px;opacity:.6">Ctrl+S to save</p>
 </div>
 <div class="ed-statusbar" id="edFoot">
@@ -1099,7 +968,6 @@ var MAX_SIZE=2*1024*1024,MAX_EDIT=65536;
 
 /* ═══ State ═══ */
 var curFile='',dirty=false,selUpFiles=[],origContent='';
-var tabNames=['dashboard','files','editor','settings','guide','about'];
 
 /* ═══ Utility ═══ */
 function fmt(b){if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(1)+' MB'}
@@ -1161,57 +1029,34 @@ function showTab(name){
 if(dirty&&curFile&&name!=='editor'){if(!confirm('You have unsaved changes. Switch tab anyway?'))return}
 document.querySelectorAll('.tab-panel').forEach(function(t){t.classList.remove('active')});
 navBtns.forEach(function(b){b.classList.remove('active')});
-var idx=tabNames.indexOf(name);if(idx>=0)navBtns[idx].classList.add('active');
+var activeBtn=document.querySelector('.sb-nav button[data-tab="'+name+'"]');
+if(activeBtn)activeBtn.classList.add('active');
 var el=document.getElementById('tab-'+name);if(el)el.classList.add('active');
-if(name==='dashboard')loadDash();
-if(name==='files'){loadFiles();loadUsage()}
 if(name==='settings')loadSettings();
-}
-
-/* ═══ Dashboard ═══ */
-function loadDash(){
-fetch('/info').then(function(r){return r.json()}).then(function(d){
-document.getElementById('dFw').textContent='v'+d.firmware;
-document.getElementById('dFiles').textContent=d.files;
-var pct=d.totalBytes>0?Math.round(d.usedBytes/d.totalBytes*100):0;
-document.getElementById('dStorage').textContent=pct+'%';
-document.getElementById('dSd').innerHTML=d.sdMounted?'<span style="color:var(--ok)">Healthy</span>':'<span style="color:var(--err)">Error</span>';
-document.getElementById('dWifi').innerHTML='<span style="color:var(--ok)">Active</span>';
-document.getElementById('dUp').textContent=fmtUp(d.uptime||0);
-
-document.getElementById('dsFill').style.width=pct+'%';
-document.getElementById('dsUsed').textContent='Used: '+fmt(d.usedBytes)+' ('+pct+'%)';
-document.getElementById('dsFree').textContent='Free: '+fmt(d.totalBytes-d.usedBytes);
-
-document.getElementById('dashInfo').innerHTML=
-'<div class="info-row"><span class="info-label">Device</span><span class="info-value">'+esc(d.device)+'</span></div>'
-+'<div class="info-row"><span class="info-label">Firmware</span><span class="info-value">v'+esc(d.firmware)+'</span></div>'
-+'<div class="info-row"><span class="info-label">Author</span><span class="info-value">'+esc(d.author)+'</span></div>'
-+'<div class="info-row"><span class="info-label">CPU Frequency</span><span class="info-value">'+d.cpuFreq+' MHz</span></div>'
-+'<div class="info-row"><span class="info-label">Free Heap RAM</span><span class="info-value">'+fmt(d.freeHeap)+'</span></div>'
-+'<div class="info-row"><span class="info-label">WiFi SSID</span><span class="info-value">'+esc(d.ssid)+'</span></div>'
-+'<div class="info-row"><span class="info-label">Portal IP</span><span class="info-value">192.168.4.1</span></div>';
-}).catch(function(){
-document.getElementById('dashInfo').innerHTML='<p style="color:var(--err);text-align:center;padding:12px">Failed to load device data</p>';
-});
 }
 
 /* ═══ Storage ═══ */
 function loadUsage(){
+var fill=document.getElementById('dsFill');
+var used=document.getElementById('dsUsed');
+var free=document.getElementById('dsFree');
+if(!fill||!used||!free)return;
 fetch('/usage').then(function(r){return r.json()}).then(function(d){
 var pct=d.total>0?Math.round(d.used/d.total*100):0;
-document.getElementById('dsFill').style.width=pct+'%';
-document.getElementById('dsUsed').textContent='Used: '+fmt(d.used)+' ('+pct+'%)';
-document.getElementById('dsFree').textContent='Free: '+fmt(d.free);
+fill.style.width=pct+'%';
+used.textContent='Used: '+fmt(d.used)+' ('+pct+'%)';
+free.textContent='Free: '+fmt(d.free);
 }).catch(function(){});
 }
 
 /* ═══ File List ═══ */
 function loadFiles(){
-fetch('/files').then(function(r){return r.json()}).then(function(files){
 var el=document.getElementById('fileList');
-if(!files.length){el.innerHTML='<div class="empty-st"><svg viewBox="0 0 24 24" width="44" height="44"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="currentColor"/></svg><p style="margin-top:10px;font-size:.88em">No .txt files found on SD card</p></div>';document.getElementById('selAllBtn').style.display='none';return}
-document.getElementById('selAllBtn').style.display='inline-flex';
+var selAll=document.getElementById('selAllBtn');
+if(!el)return;
+fetch('/files').then(function(r){return r.json()}).then(function(files){
+if(!files.length){el.innerHTML='<div class="empty-st"><svg viewBox="0 0 24 24" width="44" height="44"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z" fill="currentColor"/></svg><p style="margin-top:10px;font-size:.88em">No .txt files found on SD card</p></div>';if(selAll)selAll.style.display='none';return}
+if(selAll)selAll.style.display='inline-flex';
 files.sort(function(a,b){return(b.modified||0)-(a.modified||0)});
 el.innerHTML=files.map(function(f,i){return '<div class="file-row" data-name="'+esc(f.name)+'">'
 +'<label class="cb-wrap"><input type="checkbox" class="cb" value="'+esc(f.name)+'"><span class="cb-box"></span></label>'
@@ -1227,24 +1072,29 @@ el.innerHTML=files.map(function(f,i){return '<div class="file-row" data-name="'+
 +'<button data-action="delete" class="del" title="Delete"><svg viewBox="0 0 24 24" width="15" height="15"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="currentColor"/></svg></button>'
 +'</div></div>'}).join('');
 }).catch(function(){
-document.getElementById('fileList').innerHTML='<div class="empty-st"><p style="color:var(--err)">Error loading files</p></div>';
+el.innerHTML='<div class="empty-st"><p style="color:var(--err)">Error loading files</p></div>';
 });
 }
 
-document.getElementById('selAllBtn').addEventListener('click',function(){
+var selAllBtn=document.getElementById('selAllBtn');
+if(selAllBtn)selAllBtn.addEventListener('click',function(){
 var cbs=document.querySelectorAll('.cb');
 var anyUnchecked=document.querySelectorAll('.cb:not(:checked)').length>0;
 for(var i=0;i<cbs.length;i++){cbs[i].checked=anyUnchecked;}
-document.getElementById('delSelBtn').style.display=anyUnchecked?'inline-flex':'none';
+var delBtn=document.getElementById('delSelBtn');
+if(delBtn)delBtn.style.display=anyUnchecked?'inline-flex':'none';
 this.innerHTML=anyUnchecked?'<svg viewBox="0 0 24 24" width="14" height="14"><path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z" fill="currentColor"/></svg> Deselect All':'<svg viewBox="0 0 24 24" width="14" height="14"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"/></svg> Select All';
 });
 
-document.getElementById('fileList').addEventListener('change',function(e){
+var fileListEl=document.getElementById('fileList');
+if(fileListEl)fileListEl.addEventListener('change',function(e){
 if(e.target.classList.contains('cb')){
 var cbs=document.querySelectorAll('.cb:checked');
-document.getElementById('delSelBtn').style.display=cbs.length>0?'inline-flex':'none';
+var delBtn=document.getElementById('delSelBtn');
+if(delBtn)delBtn.style.display=cbs.length>0?'inline-flex':'none';
 var allLen=document.querySelectorAll('.cb').length;
 var btn=document.getElementById('selAllBtn');
+if(!btn)return;
 if(cbs.length===allLen){
 btn.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14"><path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z" fill="currentColor"/></svg> Deselect All';
 }else{
@@ -1252,7 +1102,8 @@ btn.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14"><path d="M19 3H5c
 }
 }
 });
-document.getElementById('delSelBtn').addEventListener('click',function(){
+var delSelBtn=document.getElementById('delSelBtn');
+if(delSelBtn)delSelBtn.addEventListener('click',function(){
 var cbs=document.querySelectorAll('.cb:checked');
 if(cbs.length===0)return;
 if(!confirm('Delete '+cbs.length+' files?'))return;
@@ -1260,12 +1111,12 @@ var count=0;
 this.disabled=true;
 for(var i=0;i<cbs.length;i++){
 fetch('/delete',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'name='+encodeURIComponent(cbs[i].value)})
-.then(function(){count++;if(count===cbs.length){toast('Deleted '+count+' files','ok');loadFiles();document.getElementById('delSelBtn').style.display='none';document.getElementById('delSelBtn').disabled=false;}});
+.then(function(){count++;if(count===cbs.length){toast('Deleted '+count+' files','ok');loadFiles();delSelBtn.style.display='none';delSelBtn.disabled=false;}});
 }
 });
 
 /* ═══ File Actions (event delegation) ═══ */
-document.getElementById('fileList').addEventListener('click',function(e){
+if(fileListEl)fileListEl.addEventListener('click',function(e){
 var btn=e.target.closest('[data-action]');if(!btn)return;
 var row=btn.closest('.file-row');if(!row)return;
 var name=row.dataset.name;
@@ -1282,14 +1133,16 @@ var dz=document.getElementById('dropZone');
 var fi=document.getElementById('fileInput');
 var ub=document.getElementById('uploadBtn');
 
+if(dz&&fi&&ub){
 dz.addEventListener('click',function(){fi.click()});
 dz.addEventListener('dragover',function(e){e.preventDefault();dz.classList.add('over')});
 dz.addEventListener('dragleave',function(){dz.classList.remove('over')});
 dz.addEventListener('drop',function(e){e.preventDefault();dz.classList.remove('over');pickFiles(e.dataTransfer.files)});
 fi.addEventListener('change',function(){pickFiles(fi.files)});
+}
 
 function pickFiles(files){
-if(!files||files.length===0)return;
+if(!ub||!files||files.length===0)return;
 selUpFiles=[];var totSize=0;
 for(var i=0;i<files.length;i++){
 var f=files[i];
@@ -1300,12 +1153,13 @@ selUpFiles.push(f);totSize+=f.size;
 }
 if(selUpFiles.length>0){
 var txt=selUpFiles.length===1?selUpFiles[0].name:selUpFiles.length+' files selected';
-document.getElementById('selFile').textContent=txt+' ('+fmt(totSize)+')';
+var selFile=document.getElementById('selFile');
+if(selFile)selFile.textContent=txt+' ('+fmt(totSize)+')';
 ub.disabled=false;
 }
 }
 
-ub.addEventListener('click',function(){
+if(ub)ub.addEventListener('click',function(){
 if(selUpFiles.length===0)return;ub.disabled=true;
 var prog=document.getElementById('progress');prog.style.display='block';
 var currentIdx=0;
@@ -1314,7 +1168,7 @@ function uploadNext(){
 if(currentIdx>=selUpFiles.length){
 prog.style.display='none';document.getElementById('progressFill').style.width='0';
 toast(selUpFiles.length>1?'All files uploaded successfully!':'File uploaded successfully!','ok');loadFiles();loadUsage();
-selUpFiles=[];document.getElementById('selFile').textContent='';fi.value='';
+selUpFiles=[];var selFile=document.getElementById('selFile');if(selFile)selFile.textContent='';fi.value='';
 return;
 }
 var f=selUpFiles[currentIdx];
@@ -1437,7 +1291,7 @@ if(e.key==='Tab'){e.preventDefault();var s=edArea.selectionStart,en=edArea.selec
 });
 
 function applyEdTransform(fn){
-if(!curFile)return;
+if(!curFile&&!edArea.value)return;
 edArea.value=fn(edArea.value);
 edArea.dispatchEvent(new Event('input'));
 }
@@ -1550,7 +1404,8 @@ a.download=name;document.body.appendChild(a);a.click();a.remove();
 }
 
 /* ═══ Create New File ═══ */
-document.getElementById('newFileBtn').addEventListener('click',function(){
+var newFileBtn=document.getElementById('newFileBtn');
+if(newFileBtn)newFileBtn.addEventListener('click',function(){
 showModal('Create New File','Enter a name for the new text file:',true,function(name){
 if(!name||!name.trim())return;
 name=name.trim();if(!name.toLowerCase().endsWith('.txt'))name+='.txt';
@@ -1719,7 +1574,25 @@ else if(e.key==='End'){e.preventDefault();oledTop=Math.max(0,oledWrapped.length-
 window.addEventListener('resize',function(){if(curFile){updLines();updHL()}});
 
 /* ═══ Init ═══ */
-loadDash();
+showTab('editor');
+(function initEditorTab(){
+var ta=document.getElementById('edArea');
+if(!ta)return;
+if(!ta.value.trim()){
+ta.value='Load successful.\nSystem ready.\nChecking components... OK\nWaiting for input.';
+}
+curFile='scratch.txt';
+document.getElementById('fnTxt').textContent=curFile;
+document.getElementById('fnTxt').style.display='inline';
+document.getElementById('edEmpty').style.display='none';
+document.getElementById('edBody').style.display='flex';
+document.getElementById('edActs').style.display='flex';
+dirty=false;
+origContent=ta.value;
+document.getElementById('edDot').classList.remove('show');
+document.getElementById('edStatus').textContent='';
+updLines();updCount();updHL();updCursorPos();oledBuild();
+})();
 </script>
 </body>
 </html>
