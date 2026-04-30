@@ -518,6 +518,7 @@ Tools &amp; Settings
 <button class="sim-tool-btn" id="fmtUpperBtn"><svg viewBox="0 0 24 24"><path d="M4 20h2l2-6h4l2 6h2L11 4H9L4 20zm4.6-8L10 7.7 11.4 12H8.6zM18 20h2V8h-2v12z" fill="currentColor"/></svg>Uppercase</button>
 <button class="sim-tool-btn" id="fmtLowerBtn"><svg viewBox="0 0 24 24"><path d="M7 20h2V4H7v16zm5 0h7v-2h-7v2zm0-4h7v-2h-7v2zm0-4h7v-2h-7v2z" fill="currentColor"/></svg>Lowercase</button>
 <button class="sim-tool-btn" id="fmtBreakBtn"><svg viewBox="0 0 24 24"><path d="M19 13h-6v-2h6V8l5 4-5 4v-3zM4 6h8v2H4V6zm0 10h8v2H4v-2z" fill="currentColor"/></svg>Break after '?'</button>
+<button class="sim-tool-btn" id="fmtCapTitleBtn"><svg viewBox="0 0 24 24"><path d="M5 4v3h5.5v12h3V7H19V4H5z" fill="currentColor"/></svg>Capitalize '?'</button>
 </div>
 </details>
 
@@ -1343,6 +1344,33 @@ e.preventDefault();
 },{passive:false});
 }
 edArea.addEventListener('input',function(){
+var val = edArea.value;
+var lines = val.split('\n');
+var changed = false;
+for(var i=0; i<lines.length; i++){
+  if(lines[i].length > 32){
+    var over = lines[i].substring(32);
+    lines[i] = lines[i].substring(0, 32);
+    lines.splice(i+1, 0, over);
+    changed = true;
+  }
+}
+if(changed){
+  var s = edArea.selectionStart;
+  var beforeCursor = val.substring(0, s);
+  var beforeLines = beforeCursor.split('\n');
+  var addedNewlines = 0;
+  for(var i=0; i<beforeLines.length; i++){
+    if(beforeLines[i].length > 32){
+      var over = beforeLines[i].substring(32);
+      beforeLines[i] = beforeLines[i].substring(0, 32);
+      beforeLines.splice(i+1, 0, over);
+      addedNewlines++;
+    }
+  }
+  edArea.value = lines.join('\n');
+  edArea.selectionStart = edArea.selectionEnd = s + addedNewlines;
+}
 dirty=true;
 edDot.classList.add('show');
 document.getElementById('edStatus').textContent='Modified';
@@ -1378,6 +1406,16 @@ applyEdTransform(function(v){return v.toLowerCase()});
 });
 document.getElementById('fmtBreakBtn').addEventListener('click',function(){
 applyEdTransform(function(v){return v.replace(/\?\s*/g,'?\n')});
+});
+document.getElementById('fmtCapTitleBtn').addEventListener('click',function(){
+applyEdTransform(function(v){
+  return v.replace(/([^.!?\n]+)\?/g, function(match, p1) {
+    var titleCased = p1.replace(/\w\S*/g, function(txt){
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+    return titleCased + '?';
+  });
+});
 });
 
 edArea.addEventListener('paste',function(e){
