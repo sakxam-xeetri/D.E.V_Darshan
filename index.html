@@ -1726,7 +1726,7 @@ showTab('editor');
 var ta=document.getElementById('edArea');
 if(!ta)return;
 if(!ta.value.trim()){
-ta.value='Load successful.\nSystem ready.\nChecking components... OK\nWaiting for input.';
+ta.value='PROMPT FOR AI:\n\nPlease generate the text in .txt format. Ensure that each line has a maximum of exactly 32 characters. Do not include any line that exceeds 32 characters. This is for a custom reading device.';
 }
 curFile='scratch.txt';
 document.getElementById('fnTxt').textContent=curFile;
