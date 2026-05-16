@@ -1502,6 +1502,7 @@ applyEdTransform(function(v){
           .replace(/≥/g, ' >= ')
           .replace(/≠/g, ' != ')
           .replace(/≈/g, ' ~= ')
+          .replace(/∝/g, ' prop ')
           .replace(/√/g, ' sqrt ')
           .replace(/∞/g, ' inf ')
           .replace(/α/g, ' alpha ')
@@ -1580,12 +1581,27 @@ if (unSupList) {
     var lh = '';
     for (var i = 0; i < keys.length; i++) {
         var charStr = (keys[i] === '\t' || keys[i] === '\r' || keys[i] === '\n') ? 'Whitespace/Tab' : keys[i];
-        lh += '<div style="display:flex; justify-content:space-between; background:var(--bg2); padding:4px 8px; border-radius:4px; border:1px solid var(--brd);"><span>`' + charStr + '`</span> <span style="color:var(--pri); font-weight:bold;">' + unsupportedCount[keys[i]] + '</span></div>';
+        var escKey = keys[i].replace(/\\/g, '\\\\').replace(/'/g, '\\\'').replace(/"/g, '\\"');
+        lh += '<div onclick="findNextUnsup(\'' + escKey + '\')" style="display:flex; justify-content:space-between; background:var(--bg2); padding:4px 8px; border-radius:4px; border:1px solid var(--brd); cursor:pointer;" title="Find next \'' + charStr + '\'"><span>`' + charStr + '`</span> <span style="color:var(--pri); font-weight:bold;">' + unsupportedCount[keys[i]] + '</span></div>';
     }
     unSupList.innerHTML = lh;
   }
 }
 }
+window.findNextUnsup = function(char) {
+  var area = document.getElementById('edArea');
+  var val = area.value;
+  var start = area.selectionEnd;
+  var idx = val.indexOf(char, start);
+  if (idx === -1 && start > 0) idx = val.indexOf(char, 0);
+  if (idx !== -1) {
+    area.focus();
+    area.selectionStart = idx;
+    area.selectionEnd = idx + char.length;
+    area.blur(); area.focus();
+    if(typeof updCursorPos==='function') updCursorPos();
+  }
+};
 function updCount(){
 var v=edArea.value;
 document.getElementById('charCnt').textContent=v.length.toLocaleString()+' chars \u00b7 '+v.split('\n').length+' lines';
