@@ -681,6 +681,8 @@ Tools &amp; Settings
 <button class="sim-tool-btn" id="fmtUpperBtn"><svg viewBox="0 0 24 24"><path d="M4 20h2l2-6h4l2 6h2L11 4H9L4 20zm4.6-8L10 7.7 11.4 12H8.6zM18 20h2V8h-2v12z" fill="currentColor"/></svg>Uppercase</button>
 <button class="sim-tool-btn" id="fmtLowerBtn"><svg viewBox="0 0 24 24"><path d="M7 20h2V4H7v16zm5 0h7v-2h-7v2zm0-4h7v-2h-7v2zm0-4h7v-2h-7v2z" fill="currentColor"/></svg>Lowercase</button>
 <button class="sim-tool-btn" id="fmtBreakBtn"><svg viewBox="0 0 24 24"><path d="M19 13h-6v-2h6V8l5 4-5 4v-3zM4 6h8v2H4V6zm0 10h8v2H4v-2z" fill="currentColor"/></svg>Break after '?'</button>
+<button class="sim-tool-btn" id="fmtCapTitleBtn"><svg viewBox="0 0 24 24"><path d="M5 4v3h5.5v12h3V7H19V4H5z" fill="currentColor"/></svg>Capitalize '?'</button>
+<button class="sim-tool-btn" id="fmtSanitizeBtn" style="grid-column: 1 / -1; justify-content: center; background: rgba(220, 20, 60, 0.08); border-color: rgba(220, 20, 60, 0.25); color: var(--pri);"><svg viewBox="0 0 24 24"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z" fill="currentColor"/></svg>Sanitize OLED Chars</button>
 </div>
 </details>
 
@@ -1474,6 +1476,27 @@ applyEdTransform(function(v){return v.toLowerCase()});
 });
 document.getElementById('fmtBreakBtn').addEventListener('click',function(){
 applyEdTransform(function(v){return v.replace(/\?\s*/g,'?\n')});
+});
+document.getElementById('fmtCapTitleBtn').addEventListener('click',function(){
+applyEdTransform(function(v){
+  return v.replace(/([^.!?\n]+)\?/g, function(match, p1) {
+    var titleCased = p1.replace(/\w\S*/g, function(txt){
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+    return titleCased + '?';
+  });
+});
+});
+document.getElementById('fmtSanitizeBtn').addEventListener('click',function(){
+applyEdTransform(function(v){
+  if(v.normalize) v = v.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  return v.replace(/[“”«»]/g, '"')
+          .replace(/[‘’‹›]/g, "'")
+          .replace(/[—–]/g, '-')
+          .replace(/…/g, '...')
+          .replace(/°/g, ' deg')
+          .replace(/[^ \x21-\x7E\r\n\t]/g, '');
+});
 });
 
 edArea.addEventListener('paste',function(e){
