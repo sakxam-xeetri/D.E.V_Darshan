@@ -711,6 +711,13 @@ Tools &amp; Settings
 <input type="checkbox" id="oledAutoFmtChk">
 </div>
 </details>
+
+<details class="sim-tools-sec" open>
+<summary>Unsupported Characters</summary>
+<div id="unsupportedCharsWrap" style="font-size:0.85em; color:var(--txt2); padding:4px 0">
+<div id="unsupportedCharsList" style="display:flex; flex-direction:column; gap:4px; max-height:150px; overflow-y:auto; padding-right:4px;">No unsupported characters.</div>
+</div>
+</details>
 </div>
 </aside>
 
@@ -1499,11 +1506,40 @@ var m=document.getElementById('edMirror'),n=document.getElementById('lineNums'),
 m.style.width=edArea.clientWidth+'px';
 m.textContent='';
 var f=document.createDocumentFragment();
-for(var i=0;i<ls.length;i++){var d=document.createElement('div');d.textContent=ls[i]||'\u00a0';f.appendChild(d)}
+var unsupportedCount = {};
+for(var i=0;i<ls.length;i++){
+  var d=document.createElement('div');
+  if(ls[i]){
+    d.innerHTML=esc(ls[i]).replace(/([^ \x21-\x7E])/g, function(match, char) {
+      if (!unsupportedCount[char]) unsupportedCount[char] = 0;
+      unsupportedCount[char]++;
+      return '<span class="warn-bg" title="Unsupported font character">' + char + '</span>';
+    });
+  }else{
+    d.innerHTML='\u00a0';
+  }
+  f.appendChild(d);
+}
 m.appendChild(f);
 var ds=m.children,h='';
 for(var i=0;i<ds.length;i++)h+='<div class="ln" style="height:'+ds[i].offsetHeight+'px">'+(i+1)+'</div>';
 n.innerHTML=h;
+
+// Update unsupported characters panel
+var unSupList = document.getElementById('unsupportedCharsList');
+if (unSupList) {
+  var keys = Object.keys(unsupportedCount);
+  if (keys.length === 0) {
+    unSupList.innerHTML = 'No unsupported characters.';
+  } else {
+    var lh = '';
+    for (var i = 0; i < keys.length; i++) {
+        var charStr = (keys[i] === '\t' || keys[i] === '\r' || keys[i] === '\n') ? 'Whitespace/Tab' : keys[i];
+        lh += '<div style="display:flex; justify-content:space-between; background:var(--bg2); padding:4px 8px; border-radius:4px; border:1px solid var(--brd);"><span>`' + charStr + '`</span> <span style="color:var(--pri); font-weight:bold;">' + unsupportedCount[keys[i]] + '</span></div>';
+    }
+    unSupList.innerHTML = lh;
+  }
+}
 }
 function updCount(){
 var v=edArea.value;
