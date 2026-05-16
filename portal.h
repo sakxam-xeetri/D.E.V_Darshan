@@ -1598,8 +1598,10 @@ window.findNextUnsup = function(char) {
     area.focus();
     area.selectionStart = idx;
     area.selectionEnd = idx + char.length;
+    // Scroll cursor into view by creating a temporary range
     area.blur(); area.focus();
     if(typeof updCursorPos==='function') updCursorPos();
+    if(typeof updHL==='function') updHL();
   }
 };
 function updCount(){
