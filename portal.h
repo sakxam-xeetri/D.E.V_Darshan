@@ -1517,8 +1517,7 @@ applyEdTransform(function(v){
           .replace(/Ω/g, ' Omega ')
           .replace(/ω/g, ' omega ')
           .replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]/g, function(m){return '^'+'0123456789'['⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(m)];})
-          .replace(/[₀₁₂₃₄₅₆₇₈₉]/g, function(m){return '_'+'0123456789'['₀₁₂₃₄₅₆₇₈₉'.indexOf(m)];})
-          .replace(/[^ \x21-\x7E\r\n\t]/g, '');
+          .replace(/[₀₁₂₃₄₅₆₇₈₉]/g, function(m){return '_'+'0123456789'['₀₁₂₃₄₅₆₇₈₉'.indexOf(m)];});
 });
 });
 
