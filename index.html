@@ -222,10 +222,12 @@ html.light .sb-toggle:hover{background:rgba(0,0,0,.04)}
 .line-nums{padding:8px 0;font:13px/20px 'JetBrains Mono','Fira Code','Consolas','Courier New',monospace;color:var(--ed-gutter-txt);user-select:none}
 .ln{text-align:right;padding-right:8px;line-height:20px;box-sizing:border-box}
 .ed-content{font:13px/20px 'Fira Code','JetBrains Mono','Consolas','Courier New',monospace;flex:0 0 auto;width:var(--editor-content-width);max-width:var(--editor-content-width);min-width:0;position:relative;overflow:hidden}
-.ed-area{display:block;width:100%;height:100%;resize:none;border:none;padding:8px 16px;box-sizing:border-box;font:13px/20px 'Fira Code','JetBrains Mono','Consolas','Courier New',monospace;outline:none;background:transparent;color:var(--ed-txt);tab-size:4;caret-color:var(--ed-cursor);white-space:pre-wrap;overflow-y:auto;overflow-x:hidden;word-wrap:break-word;overflow-wrap:break-word;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.ed-area{position:relative;z-index:2;display:block;width:100%;height:100%;resize:none;border:none;padding:8px 16px;box-sizing:border-box;font:13px/20px 'Fira Code','JetBrains Mono','Consolas','Courier New',monospace;outline:none;background:transparent;color:var(--ed-txt);tab-size:4;caret-color:var(--ed-cursor);white-space:pre-wrap;overflow-y:auto;overflow-x:hidden;word-wrap:break-word;overflow-wrap:break-word;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .ed-area::selection{background:var(--ed-sel)}
 .ed-area::placeholder{color:var(--ed-gutter-txt);font-style:italic}
-.ed-mirror{position:absolute;top:0;left:0;visibility:hidden;overflow:hidden;pointer-events:none;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:break-word;font:13px/20px 'Fira Code','JetBrains Mono','Consolas','Courier New',monospace;padding:0 16px;box-sizing:border-box;tab-size:4}
+.ed-mirror{position:absolute;top:0;left:0;right:0;visibility:visible;pointer-events:none;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:break-word;font:13px/20px 'Fira Code','JetBrains Mono','Consolas','Courier New',monospace;padding:8px 16px;box-sizing:border-box;tab-size:4;color:transparent;z-index:1}
+.ed-mirror .warn-bg{background:rgba(220,20,60,0.35);border-radius:2px}
+html.light .ed-mirror .warn-bg{background:rgba(220,20,60,0.25)}
 .line-hl{position:absolute;left:0;right:0;height:20px;background:var(--ed-hl);pointer-events:none;transition:top .05s,height .05s;border-left:1px solid var(--ed-hl-brd)}
 .ed-statusbar{display:flex;justify-content:space-between;align-items:center;padding:0 14px;height:26px;background:rgba(0,0,0,.35);border:1px solid var(--ed-brd);border-top:none;font:11px/26px 'Segoe UI',sans-serif;color:var(--ed-foot-txt);flex-shrink:0}
 .ed-statusbar span{white-space:nowrap}
@@ -304,6 +306,8 @@ html.light .sb-toggle:hover{background:rgba(0,0,0,.04)}
 .oled-screen.inverted{background:#00e1ff}
 .oled-screen.inverted .oled-row{color:#000;text-shadow:none;font-weight:700}
 .oled-row{height:24px;line-height:24px;white-space:pre;font-family:'Consolas','Courier New',monospace;font-size:16px;letter-spacing:0;color:#00e1ff;padding:0;overflow:hidden}
+.oled-row .warn-char{background:var(--pri);color:#fff;border-radius:2px;outline:1px solid var(--pri-glow)}
+html.light .oled-row .warn-char{background:var(--err);color:#fff;outline:1px solid rgba(198,40,40,0.5)}
 html.light .oled-row{color:#00e1ff}
 .oled-btns{display:flex;gap:10px;align-items:center}
 .oled-btn{width:44px;height:44px;border-radius:50%;border:2px solid #333;background:linear-gradient(145deg,#1a1a1a,#0a0a0a);color:var(--txt2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;transition:all .15s var(--ease);user-select:none;box-shadow:0 3px 8px rgba(0,0,0,.5)}
@@ -1316,6 +1320,8 @@ var edDot=document.getElementById('edDot');
 
 function syncEdScroll(){
 edGutter.scrollTop=edArea.scrollTop;
+var mirror = document.getElementById('edMirror');
+if(mirror) mirror.style.transform = 'translateY(-' + edArea.scrollTop + 'px)';
 updHL();
 }
 
@@ -1456,7 +1462,15 @@ var m=document.getElementById('edMirror'),n=document.getElementById('lineNums'),
 m.style.width=edArea.clientWidth+'px';
 m.textContent='';
 var f=document.createDocumentFragment();
-for(var i=0;i<ls.length;i++){var d=document.createElement('div');d.textContent=ls[i]||'\u00a0';f.appendChild(d)}
+for(var i=0;i<ls.length;i++){
+  var d=document.createElement('div');
+  if(ls[i]){
+    d.innerHTML=esc(ls[i]).replace(/([^ \x21-\x7E])/g,'<span class="warn-bg" title="Unsupported font character">$1</span>');
+  }else{
+    d.innerHTML='\u00a0';
+  }
+  f.appendChild(d);
+}
 m.appendChild(f);
 var ds=m.children,h='';
 for(var i=0;i<ds.length;i++)h+='<div class="ln" style="height:'+ds[i].offsetHeight+'px">'+(i+1)+'</div>';
@@ -1665,7 +1679,8 @@ for(var i=0;i<OLED_ROWS;i++){
 var el=document.getElementById('oledR'+i);
 var src=i-pad;
 var idx=oledTop+src;
-el.textContent=(src>=0&&idx<total)?oledWrapped[idx]:'';
+var lineTxt=(src>=0&&idx<total)?oledWrapped[idx]:'';
+el.innerHTML=esc(lineTxt).replace(/([^ \x21-\x7E])/g, '<span class="warn-char" title="Potential unsupported character">$1</span>');
 el.style.textAlign=oledAlign;
 }
 document.getElementById('oledTotal').textContent=total;
