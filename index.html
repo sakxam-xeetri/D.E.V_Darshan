@@ -553,13 +553,6 @@ Tools &amp; Settings
 <input type="checkbox" id="oledAutoFmtChk">
 </div>
 </details>
-
-<details class="sim-tools-sec" open>
-<summary>Unsupported Characters</summary>
-<div id="unsupportedCharsWrap" style="font-size:0.85em; color:var(--txt2); padding:4px 0">
-<div id="unsupportedCharsList" style="display:flex; flex-direction:column; gap:4px; max-height:150px; overflow-y:auto; padding-right:4px;">No unsupported characters.</div>
-</div>
-</details>
 </div>
 </aside>
 
@@ -637,6 +630,13 @@ Hardware Preview
 <div class="oled-info-row"><span class="oled-info-lbl">Visible Lines</span><span class="oled-info-val">4</span></div>
 <div class="oled-info-row"><span class="oled-info-lbl">Font</span><span class="oled-info-val">4×6 mono (u8g2)</span></div>
 <div class="oled-info-row"><span class="oled-info-lbl">Resolution</span><span class="oled-info-val">128×32 px</span></div>
+
+<div class="oled-info-row" style="flex-direction:column; align-items:flex-start; gap:8px; border-bottom:none; margin-top:8px;">
+  <span class="oled-info-lbl" style="color:var(--txt)">Unsupported Characters</span>
+  <div id="unsupportedCharsWrap" style="font-size:0.85em; color:var(--txt2); width:100%; border:1px solid var(--brd); border-radius:4px; padding:6px; background:var(--bg2);">
+    <div id="unsupportedCharsList" style="display:flex; flex-direction:column; gap:4px; max-height:100px; overflow-y:auto; padding-right:4px;">No unsupported characters.</div>
+  </div>
+</div>
 </div>
 </div>
 </div>
