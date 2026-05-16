@@ -207,7 +207,7 @@ html.light .sb-toggle:hover{background:rgba(0,0,0,.04)}
 .file-actions button.del:hover{background:var(--err-bg);color:var(--err)}
 
 /* ── Editor (index-like data editor) ── */
-.ed-container{display:flex;flex-direction:column;flex:0 0 auto;width:var(--editor-panel-width);max-width:100%;min-height:0}
+.ed-container{display:flex;flex-direction:column;flex:0 0 auto;width:fit-content;max-width:100%;min-height:0}
 .ed-toolbar{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(0,0,0,.35);border-bottom:1px solid var(--ed-brd);flex-shrink:0;font-size:.78em;color:var(--txt2)}
 .ed-tabs{display:flex;align-items:center;height:100%;gap:8px;min-width:0}
 .ed-tab{display:flex;align-items:center;gap:6px;font:12px/1 'Segoe UI',sans-serif;color:var(--ed-tab-active-txt);white-space:nowrap;min-width:0}
@@ -221,7 +221,7 @@ html.light .sb-toggle:hover{background:rgba(0,0,0,.04)}
 .ed-gutter{width:50px;flex-shrink:0;overflow:hidden;background:rgba(0,0,0,.22);border-right:1px solid var(--ed-gutter-brd)}
 .line-nums{padding:8px 0;font:13px/20px 'JetBrains Mono','Fira Code','Consolas','Courier New',monospace;color:var(--ed-gutter-txt);user-select:none}
 .ln{text-align:right;padding-right:8px;line-height:20px;box-sizing:border-box}
-.ed-content{flex:0 0 auto;width:var(--editor-content-width);max-width:var(--editor-content-width);min-width:0;position:relative;overflow:hidden}
+.ed-content{font:13px/20px 'Fira Code','JetBrains Mono','Consolas','Courier New',monospace;flex:0 0 auto;width:var(--editor-content-width);max-width:var(--editor-content-width);min-width:0;position:relative;overflow:hidden}
 .ed-area{display:block;width:100%;height:100%;resize:none;border:none;padding:8px 16px;box-sizing:border-box;font:13px/20px 'Fira Code','JetBrains Mono','Consolas','Courier New',monospace;outline:none;background:transparent;color:var(--ed-txt);tab-size:4;caret-color:var(--ed-cursor);white-space:pre-wrap;overflow-y:auto;overflow-x:hidden;word-wrap:break-word;overflow-wrap:break-word;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .ed-area::selection{background:var(--ed-sel)}
 .ed-area::placeholder{color:var(--ed-gutter-txt);font-style:italic}
@@ -300,7 +300,7 @@ html.light .sb-toggle:hover{background:rgba(0,0,0,.04)}
 .oled-device{display:flex;flex-direction:column;align-items:center;gap:12px}
 .oled-frame{background:#000;border-radius:6px;padding:8px 10px;border:2px solid #222;box-shadow:0 0 20px rgba(0,0,0,.6),inset 0 0 8px rgba(0,0,0,.5);position:relative}
 .oled-frame::before{content:'SSD1306 128\00d732';position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--txt3);white-space:nowrap;letter-spacing:.5px}
-.oled-screen{width:var(--editor-char-width);height:96px;background:#000;position:relative;overflow:hidden;image-rendering:pixelated;border:1px solid #111}
+.oled-screen{font:16px/24px 'Consolas','Courier New',monospace;width:var(--editor-char-width);height:96px;background:#000;position:relative;overflow:hidden;image-rendering:pixelated;border:1px solid #111}
 .oled-screen.inverted{background:#00e1ff}
 .oled-screen.inverted .oled-row{color:#000;text-shadow:none;font-weight:700}
 .oled-row{height:24px;line-height:24px;white-space:pre;font-family:'Consolas','Courier New',monospace;font-size:16px;letter-spacing:0;color:#00e1ff;padding:0;overflow:hidden}
