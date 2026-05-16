@@ -19,7 +19,7 @@
 --sb-w:250px;--sb-w-col:60px;--radius:0px;
 --ease:cubic-bezier(.4,0,.2,1);
 --ed-bg:#1E1E2E;--ed-gutter:#181825;--ed-gutter-txt:#585B70;--ed-gutter-brd:#313244;--ed-txt:#CDD6F4;--ed-cursor:#F38BA8;--ed-sel:rgba(220,20,60,.28);--ed-hl:rgba(220,20,60,.06);--ed-hl-brd:#DC143C;--ed-tab-bg:#181825;--ed-tab-active:#1E1E2E;--ed-tab-txt:#BAC2DE;--ed-tab-active-txt:#CDD6F4;--ed-foot-bg:#181825;--ed-foot-txt:#6C7086;--ed-brd:#313244;
---oled-cols:32;--editor-char-width:calc(var(--oled-cols) * 1ch + 2px);--editor-content-width:calc(var(--editor-char-width) + 48px);--editor-panel-width:calc(var(--editor-content-width) + 51px)
+--oled-cols:32;--editor-char-width:calc(var(--oled-cols) * 1ch + 8px);--editor-content-width:calc(var(--editor-char-width) + 48px);--editor-panel-width:calc(var(--editor-content-width) + 51px)
 }
 
 /* Light theme */
@@ -1359,31 +1359,34 @@ e.preventDefault();
 }
 edArea.addEventListener('input',function(){
 var val = edArea.value;
+var s = edArea.selectionStart;
 var lines = val.split('\n');
 var changed = false;
+var newCursor = s;
+var charCount = 0; // chars consumed from original val up to cursor
+
 for(var i=0; i<lines.length; i++){
   if(lines[i].length > 32){
+    var lineStart = charCount; // position of line start in original val (incl \n)
     var over = lines[i].substring(32);
     lines[i] = lines[i].substring(0, 32);
     lines.splice(i+1, 0, over);
     changed = true;
+    // If the cursor was past the split point on this line, shift it right by 1 (the inserted \n)
+    var splitPos = lineStart + 32; // position in original val where split happens
+    if(s > splitPos){
+      newCursor++;
+      s++; // keep future comparisons correct as we shift
+    }
+    charCount += 33; // 32 chars + the new \n we inserted
+    i++; // skip the newly-inserted continuation line
+  } else {
+    charCount += lines[i].length + 1; // +1 for the \n after this line
   }
 }
 if(changed){
-  var s = edArea.selectionStart;
-  var beforeCursor = val.substring(0, s);
-  var beforeLines = beforeCursor.split('\n');
-  var addedNewlines = 0;
-  for(var i=0; i<beforeLines.length; i++){
-    if(beforeLines[i].length > 32){
-      var over = beforeLines[i].substring(32);
-      beforeLines[i] = beforeLines[i].substring(0, 32);
-      beforeLines.splice(i+1, 0, over);
-      addedNewlines++;
-    }
-  }
   edArea.value = lines.join('\n');
-  edArea.selectionStart = edArea.selectionEnd = s + addedNewlines;
+  edArea.selectionStart = edArea.selectionEnd = newCursor;
 }
 dirty=true;
 edDot.classList.add('show');
@@ -1469,6 +1472,12 @@ applyEdTransform(function(v){
           .replace(/σ/g, ' sigma ')
           .replace(/Ω/g, ' Omega ')
           .replace(/ω/g, ' omega ')
+          .replace(/Φ/g, ' Phi ')
+          .replace(/φ/g, ' phi ')
+          .replace(/ε/g, ' epsilon ')
+          .replace(/∮/g, ' contour int ')
+          .replace(/·/g, '.')
+          .replace(/µ/g, ' mu ')
           .replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]/g, function(m){return '^'+'0123456789'['⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(m)];})
           .replace(/[₀₁₂₃₄₅₆₇₈₉]/g, function(m){return '_'+'0123456789'['₀₁₂₃₄₅₆₇₈₉'.indexOf(m)];});
 });
