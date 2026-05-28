@@ -93,6 +93,8 @@
 // ─────────────────────────────────────────────────────────────────────────────
 #define WIFI_SSID             "D.E.V_Darshan"
 #define WIFI_PASSWORD         "readmore"
+#define PORTAL_ADMIN_USER     "admin"
+#define PORTAL_ADMIN_PASSWORD WIFI_PASSWORD
 #define WIFI_CHANNEL          6
 #define MAX_UPLOAD_SIZE       2097152 // 2MB
 #define PORTAL_IP             "192.168.4.1"

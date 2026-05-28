@@ -213,6 +213,7 @@ static void handleUpdate() {
 
 // Complete OTA firmware upload
 static void handleUpdateComplete() {
+    if (!requireAuth()) return;
     lastPortalActivityMs = millis();
 
     server->sendHeader("Connection", "close");
@@ -230,7 +231,16 @@ static void handleUpdateComplete() {
 // ─── File Operations ─────────────────────────────────────────────────────────
 
 // Return JSON list of .txt files with size and last modified timestamp
+static bool requireAuth() {
+    if (!server->authenticate(PORTAL_ADMIN_USER, PORTAL_ADMIN_PASSWORD)) {
+        server->requestAuthentication();
+        return false;
+    }
+    return true;
+}
+
 static void handleFileList() {
+    if (!requireAuth()) return;
     lastPortalActivityMs = millis();
     File root = SD_MMC.open("/");
     if (!root) {
@@ -275,6 +285,7 @@ static void handleFileList() {
 
 // Return JSON SD usage info
 static void handleUsage() {
+    if (!requireAuth()) return;
     lastPortalActivityMs = millis();
     uint64_t total = SD_MMC.totalBytes();
     uint64_t used  = SD_MMC.usedBytes();
@@ -295,6 +306,7 @@ static void handleUsage() {
 
 // Read file content for the web editor (streamed)
 static void handleReadFile() {
+    if (!requireAuth()) return;
     lastPortalActivityMs = millis();
 
     if (!server->hasArg("name")) {
@@ -402,6 +414,7 @@ static void handleRenameFile() {
 
 // Delete a file from SD card
 static void handleDeleteFile() {
+    if (!requireAuth()) return;
     lastPortalActivityMs = millis();
 
     if (!server->hasArg("name")) {
