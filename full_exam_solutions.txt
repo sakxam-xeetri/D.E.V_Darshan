@@ -1,14 +1,14 @@
-================================================================================
+================================
            COMPLETE MASTER EXAM SOLUTIONS FOR 100% FULL MARKS
-================================================================================
+================================
 
 
---------------------------------------------------------------------------------
-SECTION 1: MECHANICS — SIMPLE HARMONIC MOTION (SHM)
---------------------------------------------------------------------------------
+--------------------------------
+SECTION 1: MECHANICS - SIMPLE HARMONIC MOTION (SHM)
+--------------------------------
 
 QUESTION 1 (1 Mark)
--------------------
+--------------------------------
 Question: What are the essential conditions for a motion to be Simple Harmonic 
 Motion (SHM)? Define SHM with an example.
 
@@ -23,7 +23,7 @@ ANSWER:
    (i)  Restoring Force / Acceleration Condition: The restoring force (or 
         acceleration) must be directly proportional to the displacement from 
         the mean position:
-            F ∝ -x   or   a ∝ -x
+            F is directly proportional to -x   or   a is directly proportional to -x
         (where negative sign shows force is opposite to displacement).
    (ii) Direction Condition: The restoring force must always act towards the 
         equilibrium (mean) position.
@@ -36,7 +36,7 @@ ANSWER:
 
 
 QUESTION 2 (3 Marks)
--------------------
+--------------------------------
 Question: Show that the motion of a simple pendulum is Simple Harmonic Motion 
 and derive the expression for its time period. Show that its time period is 
 independent of the mass of the bob.
@@ -65,7 +65,7 @@ ANSWER:
 
 5. Proof of SHM:
    For small angular displacement (theta < 10 degrees):
-         sin(theta) ≈ theta = arc / radius = x / L
+         sin(theta) approx theta = arc / radius = x / L
    Substituting sin(theta) = x / L:
          F = -mg * (x / L)
    By Newton's 2nd Law (F = m * a):
@@ -73,7 +73,7 @@ ANSWER:
          a = -(g / L) * x
 
    Since 'g' and 'L' are constants at a given place:
-         a ∝ -x
+         a is directly proportional to -x
    Since acceleration is directly proportional to displacement and directed 
    towards the mean position, the motion of a simple pendulum is SIMPLE HARMONIC.
 
@@ -90,7 +90,7 @@ ANSWER:
 
 
 QUESTION 3 (3 Marks)
--------------------
+--------------------------------
 Question: Show that the motion of a mass attached to a vertical spring is Simple 
 Harmonic Motion and find its time period. Mention the necessary assumptions made.
 
@@ -120,7 +120,7 @@ ANSWER:
 
 4. Proof of SHM:
    m * a = -k * y  ==>  a = -(k / m) * y
-   Since k and m are constants, a ∝ -y. Thus, the motion is Simple Harmonic.
+   Since k and m are constants, a is directly proportional to -y. Thus, the motion is Simple Harmonic.
 
 5. Time Period Derivation:
    Comparing with a = -w^2 * y:
@@ -129,7 +129,7 @@ ANSWER:
 
 
 QUESTION 4 (3 Marks)
--------------------
+--------------------------------
 Question: Derive an expression for the total energy of a particle in SHM and 
 show that it obeys the principle of conservation of energy. Find the position 
 where K.E. and P.E. are equal.
@@ -162,30 +162,30 @@ ANSWER:
    Since m, w, and A are constants, Total Energy E = (1/2)*m*w^2*A^2 is CONSTANT 
    at all points and all times.
    - At Mean Position (x = 0): P.E. = 0, K.E. = (1/2)*m*w^2*A^2 = E.
-   - At Extreme Position (x = ±A): K.E. = 0, P.E. = (1/2)*m*w^2*A^2 = E.
+   - At Extreme Position (x = +/-A): K.E. = 0, P.E. = (1/2)*m*w^2*A^2 = E.
    Energy continuously transforms between K.E. and P.E. while total energy remains conserved.
 
 6. Position where K.E. = P.E.:
          (1/2)*m*w^2*(A^2 - x^2) = (1/2)*m*w^2*x^2
-         A^2 - x^2 = x^2  ==>  2*x^2 = A^2  ==>  x = ± A / sqrt(2)
+         A^2 - x^2 = x^2  ==>  2*x^2 = A^2  ==>  x = +/- A / sqrt(2)
 
 
 QUESTION 5 (1 Mark)
--------------------
+--------------------------------
 Question: "All SHM is periodic motion, not all periodic motion is SHM". Express 
 your understanding of this statement with an example.
 
 ANSWER:
 - Periodic motion repeats at equal intervals of time. SHM is a special periodic 
   motion where particle oscillates back and forth about a mean position with 
-  restoring force F ∝ -x.
+  restoring force F is directly proportional to -x.
 - Example: The revolution of Earth around the Sun is periodic (takes 365 days), 
   but it is NOT SHM because there is no back-and-forth oscillation about a mean 
   position under a restoring force proportional to displacement.
 
 
 QUESTION 6 (2 Marks)
--------------------
+--------------------------------
 Question: Explain the variation of acceleration and velocity with displacement 
 and time for a particle executing SHM.
 
@@ -193,22 +193,22 @@ ANSWER:
 - Displacement:   x(t) = A * sin(w*t)
 - Velocity:       v(t) = A * w * cos(w*t) = w * sqrt(A^2 - x^2)
   * At mean position (x = 0): Velocity is MAXIMUM, v_max = A * w.
-  * At extreme positions (x = ±A): Velocity is ZERO, v = 0.
+  * At extreme positions (x = +/-A): Velocity is ZERO, v = 0.
 - Acceleration:   a(t) = -A * w^2 * sin(w*t) = -w^2 * x
   * At mean position (x = 0): Acceleration is ZERO.
-  * At extreme positions (x = ±A): Acceleration is MAXIMUM, a_max = w^2 * A.
+  * At extreme positions (x = +/-A): Acceleration is MAXIMUM, a_max = w^2 * A.
 - Phase Relations: Velocity leads displacement by pi/2 (90 deg). 
   Acceleration leads displacement by pi (180 deg).
 
 
 QUESTION 7 (2 Marks)
--------------------
+--------------------------------
 Question: A pendulum clock is taken to the moon; will it gain or lose time? Why?
 
 ANSWER:
 - Time period formula for simple pendulum: T = 2*pi * sqrt(L / g).
 - Acceleration due to gravity on the moon (g_moon) is 1/6th of gravity on Earth (g_earth).
-- Since T ∝ 1 / sqrt(g), a smaller 'g' on moon causes time period 'T' to INCREASE.
+- Since T is directly proportional to 1 / sqrt(g), a smaller 'g' on moon causes time period 'T' to INCREASE.
 - The pendulum takes longer to complete one oscillation (swings slower). 
   Therefore, the clock will LOSE TIME.
 
@@ -234,7 +234,7 @@ Comparing with standard equation y = A * sin(w*t + phi_0):
     E = 0.5 * 0.1 * (100)^2 * (0.5)^2
     E = 0.5 * 0.1 * 10000 * 0.25
     E = 125 Joules.
-Final Answer: Initial Phase = 135° (3π/4 rad), Total Energy = 125 J.
+Final Answer: Initial Phase = 135deg (3pi/4 rad), Total Energy = 125 J.
 
 
 QUESTION 9 (2 Marks - Numerical)
@@ -257,7 +257,7 @@ Final Answer: Displacement at t = 3 s is 0 cm (particle is at mean position).
 
 
 QUESTION 10 (2 Marks - Numerical)
----------------------------------
+--------------------------------
 Question: A body of mass 200 g executes SHM with amplitude 20 mm. Maximum force 
 acting on it is 0.6 N. Calculate maximum velocity.
 
@@ -271,7 +271,7 @@ Formula: F_max = m * a_max = m * w^2 * A
       0.6 = 0.2 * w^2 * 0.02
       0.6 = 0.004 * w^2
       w^2 = 0.6 / 0.004 = 150
-      w = sqrt(150) ≈ 12.247 rad/s
+      w = sqrt(150) approx 12.247 rad/s
 
 Maximum Velocity v_max:
       v_max = w * A = 12.247 * 0.02 = 0.245 m/s.
@@ -279,7 +279,7 @@ Final Answer: Maximum velocity = 0.245 m/s.
 
 
 QUESTION 11 (2 Marks - Numerical)
----------------------------------
+--------------------------------
 Question: An SHM has time period 5 seconds and amplitude r = 10 cm. Find the 
 time it takes to travel r/2 starting from mean position.
 
@@ -295,16 +295,16 @@ Since starting from mean position, sine equation applies:
       1 / 2 = sin((2*pi/5) * t)
 Since sin(pi/6) = 1/2:
       (2*pi/5) * t = pi / 6
-      t = (pi / 6) * (5 / (2*pi)) = 5 / 12 seconds ≈ 0.417 s.
+      t = (pi / 6) * (5 / (2*pi)) = 5 / 12 seconds approx 0.417 s.
 Final Answer: Time required = 5/12 s (0.417 seconds).
 
 
---------------------------------------------------------------------------------
-SECTION 2: WAVES — WAVE MOTION
---------------------------------------------------------------------------------
+--------------------------------
+SECTION 2: WAVES - WAVE MOTION
+--------------------------------
 
 QUESTION 12 (3 Marks)
----------------------
+--------------------------------
 Question: Derive an equation of a progressive wave propagating along positive 
 x-axis. What modification is needed if it travels in the opposite direction?
 
@@ -340,7 +340,7 @@ ANSWER:
 
 
 QUESTION 13 (3 Marks)
----------------------
+--------------------------------
 Question: Define phase of a wave and derive the relation between phase difference 
 and path difference.
 
@@ -366,7 +366,7 @@ ANSWER:
 
 
 QUESTION 14 (2 Marks)
----------------------
+--------------------------------
 Question: A wave transmits energy. Does it transmit linear momentum? Why is a 
 longitudinal wave called a pressure wave?
 
@@ -381,9 +381,9 @@ ANSWER:
 
 
 QUESTION 15 (2 Marks - Numerical)
----------------------------------
+--------------------------------
 Question: A wave of frequency 500 Hz travels at 350 m/s.
-Find: (i) Distance between two points 60° out of phase.
+Find: (i) Distance between two points 60deg out of phase.
       (ii) Phase change of a particle in 10^-3 s.
 
 SOLUTION:
@@ -395,20 +395,20 @@ Given:
 (i) Phase difference d_phi = 60 degrees = 60 * (pi / 180) = pi / 3 radians.
     Formula: d_phi = (2*pi / lambda) * dx
     dx = (lambda / (2*pi)) * d_phi
-    dx = (0.7 / (2*pi)) * (pi / 3) = 0.7 / 6 ≈ 0.1167 meters (11.67 cm).
+    dx = (0.7 / (2*pi)) * (pi / 3) = 0.7 / 6 approx 0.1167 meters (11.67 cm).
 
 (ii) Time interval dt = 10^-3 s.
     Formula: d_phi = w * dt = 2*pi*f * dt
     d_phi = 2*pi * 500 * 10^-3 = pi radians = 180 degrees.
-Final Answer: (i) Path diff = 0.1167 m, (ii) Phase change = 180° (π rad).
+Final Answer: (i) Path diff = 0.1167 m, (ii) Phase change = 180deg (pi rad).
 
 
---------------------------------------------------------------------------------
-SECTION 3: MAGNETISM — CIRCULAR COIL & AXIS
---------------------------------------------------------------------------------
+--------------------------------
+SECTION 3: MAGNETISM - CIRCULAR COIL & AXIS
+--------------------------------
 
 QUESTION 16 (3 Marks)
----------------------
+--------------------------------
 Question: State Biot-Savart's Law. Explain current element and its significance.
 
 ANSWER:
@@ -435,7 +435,7 @@ ANSWER:
 
 
 QUESTION 17 (3 Marks)
----------------------
+--------------------------------
 Question: Using Biot-Savart's Law, derive an expression for magnetic flux density 
 at the centre of a current carrying circular coil.
 
@@ -447,9 +447,9 @@ ANSWER:
 2. Derivation:
    Consider a small current element I*dl on circumference of coil.
    Distance of element from centre O is radius R.
-   Angle theta between tangent element dl and radius vector R is 90 degrees (sin 90° = 1).
+   Angle theta between tangent element dl and radius vector R is 90 degrees (sin 90deg = 1).
    By Biot-Savart's Law, field dB at centre O due to element dl:
-         dB = (mu_0 / 4*pi) * (I * dl * sin 90°) / R^2
+         dB = (mu_0 / 4*pi) * (I * dl * sin 90deg) / R^2
          dB = (mu_0 / 4*pi) * (I * dl) / R^2
 
    By Right Hand Rule, dB for all elements points perpendicular to coil plane in same direction.
@@ -464,7 +464,7 @@ ANSWER:
 
 
 QUESTION 18 (3 Marks)
----------------------
+--------------------------------
 Question: Derive an expression for magnetic flux density at any point on the axis 
 of a current carrying circular coil using Biot-Savart Law.
 
@@ -496,7 +496,7 @@ ANSWER:
 
 
 QUESTION 19 (3 Marks - Numerical)
----------------------------------
+--------------------------------
 Question: A closely wound coil of radius 6 cm carrying current 2.5 A has magnetic 
 field 6.39 * 10^-4 T on axis 6 cm from center. Find number of turns N.
 
@@ -517,12 +517,12 @@ Substituting into B formula:
 Solving for N:
       N = (B * 4 * sqrt(2) * R) / (mu_0 * I)
       N = (6.39*10^-4 * 4 * 1.4142 * 0.06) / (4*pi*10^-7 * 2.5)
-      N = (2.1687 * 10^-4) / (3.1416 * 10^-6) ≈ 69.03 ≈ 70 turns.
+      N = (2.1687 * 10^-4) / (3.1416 * 10^-6) approx 69.03 approx 70 turns.
 Final Answer: Number of turns N = 70 turns.
 
 
 QUESTION 20 (2 Marks - Numerical)
----------------------------------
+--------------------------------
 Question: In Bohr model of hydrogen atom, electron circulates at radius 5.1*10^-11 m 
 at frequency 6.8*10^15 rev/s. Calculate magnetic field at center of orbit.
 
@@ -537,16 +537,16 @@ Equivalent Current I = charge / time = e * f:
 
 Magnetic Field at Center B = mu_0 * I / (2 * r):
       B = (4*pi*10^-7 * 1.088*10^-3) / (2 * 5.1*10^-11)
-      B = (1.367 * 10^-9) / (1.02 * 10^-10) ≈ 13.4 Tesla.
+      B = (1.367 * 10^-9) / (1.02 * 10^-10) approx 13.4 Tesla.
 Final Answer: Magnetic field at center = 13.4 T.
 
 
---------------------------------------------------------------------------------
-SECTION 4: MODERN PHYSICS — ELECTRONS
---------------------------------------------------------------------------------
+--------------------------------
+SECTION 4: MODERN PHYSICS - ELECTRONS
+--------------------------------
 
 QUESTION 21 (3 Marks)
----------------------
+--------------------------------
 Question: What is specific charge? Describe J.J. Thomson's experiment for measuring 
 the specific charge (e/m) of an electron.
 
@@ -582,7 +582,7 @@ ANSWER:
 
 
 QUESTION 22 (3 Marks)
----------------------
+--------------------------------
 Question: Explain effect of electric field on charged particle and show that path 
 of an electron in a uniform electric field is parabolic.
 
@@ -612,7 +612,7 @@ ANSWER:
 
 
 QUESTION 23 (2 Marks - Numerical)
----------------------------------
+--------------------------------
 Question: An electron accelerated through potential difference 2000 V enters 
 magnetic field 0.02 T perpendicularly. Find radius of path.
 
@@ -626,16 +626,16 @@ Given:
 Velocity v acquired: (1/2)*m*v^2 = e*V
       v = sqrt(2 * e * V / m)
       v = sqrt(2 * 1.6*10^-19 * 2000 / 9.1*10^-31)
-      v = sqrt(7.033 * 10^14) ≈ 2.652 * 10^7 m/s.
+      v = sqrt(7.033 * 10^14) approx 2.652 * 10^7 m/s.
 
 Radius of circular path in magnetic field r = m*v / (e*B):
       r = (9.1*10^-31 * 2.652*10^7) / (1.6*10^-19 * 0.02)
-      r = (2.413 * 10^-23) / (3.2 * 10^-21) ≈ 0.00754 m = 7.54 mm.
+      r = (2.413 * 10^-23) / (3.2 * 10^-21) approx 0.00754 m = 7.54 mm.
 Final Answer: Radius of path = 7.54 mm (0.754 cm).
 
 
 QUESTION 24 (2 Marks - Numerical)
----------------------------------
+--------------------------------
 Question: Electron beam with velocity 3*10^7 m/s deflects 2 mm passing 10 cm through 
 electric field 1800 V/m. Calculate e/m.
 
@@ -656,7 +656,7 @@ Final Answer: Specific charge e/m = 2.0 * 10^11 C/kg.
 
 
 QUESTION 25 (2 Marks - Numerical)
----------------------------------
+--------------------------------
 Question: Electron beam accelerated from rest through 5 kV in vacuum strikes surface. 
 Current is 50 uA. Determine force exerted on surface assuming electrons brought to rest.
 
@@ -669,7 +669,7 @@ Given:
 
 Step 1: Velocity of electrons:
       v = sqrt(2 * e * V / m) = sqrt(2 * 1.6*10^-19 * 5000 / 9.1*10^-31)
-      v = sqrt(1.758 * 10^15) ≈ 4.193 * 10^7 m/s.
+      v = sqrt(1.758 * 10^15) approx 4.193 * 10^7 m/s.
 
 Step 2: Number of electrons striking per second (N_s):
       Current I = N_s * e  ==>  N_s = I / e
@@ -682,4 +682,4 @@ Step 3: Force exerted = Rate of change of momentum (dp / dt):
       F = 3.125*10^14 * 9.1*10^-31 * 4.193*10^7
       F = 1.192 * 10^-8 Newton.
 Final Answer: Force exerted on surface = 1.192 * 10^-8 N.
-================================================================================
+================================
