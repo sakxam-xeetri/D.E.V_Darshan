@@ -1,0 +1,700 @@
+import sys
+
+content = """================================================================================
+           COMPLETE MASTER EXAM SOLUTIONS FOR 100% FULL MARKS
+================================================================================
+Subject: Physics (Class 12 / Higher Secondary / University Prep)
+Topics Covered:
+  1. Mechanics: Simple Harmonic Motion (SHM)
+  2. Waves: Wave Motion
+  3. Magnetism: Circular Coil & Axis Field
+  4. Modern Physics: Electrons
+================================================================================
+
+
+--------------------------------------------------------------------------------
+SECTION 1: MECHANICS — SIMPLE HARMONIC MOTION (SHM)
+--------------------------------------------------------------------------------
+
+QUESTION 1 (1 Mark)
+-------------------
+Question: What are the essential conditions for a motion to be Simple Harmonic 
+Motion (SHM)? Define SHM with an example.
+
+ANSWER:
+1. Definition of SHM:
+   Simple Harmonic Motion (SHM) is a special type of periodic oscillatory motion 
+   in which a particle moves back and forth about a fixed mean (equilibrium) 
+   position such that its acceleration is directly proportional to its displacement 
+   from the mean position and is always directed towards the mean position.
+
+2. Essential Conditions for SHM:
+   (i)  Restoring Force / Acceleration Condition: The restoring force (or 
+        acceleration) must be directly proportional to the displacement from 
+        the mean position:
+            F ∝ -x   or   a ∝ -x
+        (where negative sign shows force is opposite to displacement).
+   (ii) Direction Condition: The restoring force must always act towards the 
+        equilibrium (mean) position.
+   (iii) System Requirements: The medium/system must possess inertia and elasticity, 
+        and friction/air resistance must be negligible.
+
+3. Example:
+   - Motion of a simple pendulum for small angular displacement.
+   - Motion of a mass attached to an elastic spring.
+
+
+QUESTION 2 (3 Marks)
+-------------------
+Question: Show that the motion of a simple pendulum is Simple Harmonic Motion 
+and derive the expression for its time period. Show that its time period is 
+independent of the mass of the bob.
+
+ANSWER:
+1. Definition of Simple Pendulum:
+   An ideal simple pendulum consists of a heavy point mass (bob) suspended from 
+   a rigid support by a light, inextensible, and perfectly flexible string.
+
+2. Setup / Assumptions ("Suppose..."):
+   Suppose a bob of mass 'm' is attached to one end of an inextensible string of 
+   length 'L', suspended from a rigid support 'O'. Let the bob be displaced 
+   through a small angle 'theta' from its mean position 'OA' to position 'B'.
+   Let 'x' be the small linear displacement of the bob from the mean position (arc AB = x).
+
+3. Forces Acting on the Bob at Position B:
+   (i)  Weight 'mg' of the bob acting vertically downwards.
+   (ii) Tension 'T' in the string acting along 'BO' towards support 'O'.
+
+4. Resolving Weight 'mg':
+   - Component mg*cos(theta) along the string balances the tension T:
+         T = mg * cos(theta)
+   - Component mg*sin(theta) perpendicular to string acts as restoring force:
+         Restoring Force F = -mg * sin(theta)
+     (Negative sign indicates force is directed opposite to displacement x).
+
+5. Proof of SHM:
+   For small angular displacement (theta < 10 degrees):
+         sin(theta) ≈ theta = arc / radius = x / L
+   Substituting sin(theta) = x / L:
+         F = -mg * (x / L)
+   By Newton's 2nd Law (F = m * a):
+         m * a = -mg * (x / L)
+         a = -(g / L) * x
+
+   Since 'g' and 'L' are constants at a given place:
+         a ∝ -x
+   Since acceleration is directly proportional to displacement and directed 
+   towards the mean position, the motion of a simple pendulum is SIMPLE HARMONIC.
+
+6. Derivation of Time Period:
+   Comparing a = -(g/L)*x with standard SHM equation a = -w^2 * x:
+         w^2 = g / L  ==>  w = sqrt(g / L)
+   Since Time Period T = 2*pi / w:
+         T = 2*pi * sqrt(L / g)
+
+7. Independence of Mass of the Bob:
+   The derived formula T = 2*pi * sqrt(L / g) contains no mass term 'm'. 
+   Hence, the time period of a simple pendulum depends only on the length 'L' 
+   and acceleration due to gravity 'g', and is strictly INDEPENDENT of mass.
+
+
+QUESTION 3 (3 Marks)
+-------------------
+Question: Show that the motion of a mass attached to a vertical spring is Simple 
+Harmonic Motion and find its time period. Mention the necessary assumptions made.
+
+ANSWER:
+1. Setup / Assumptions ("Suppose..."):
+   Consider a light, elastic spring of spring constant 'k' hung vertically from a 
+   rigid support. Suppose a body of mass 'm' is attached to its lower free end.
+   Assumptions made:
+   (i)   Spring is massless and perfectly obeys Hooke's Law within elastic limit.
+   (ii)  Air resistance and internal friction are neglected.
+   (iii) Motion is purely vertical along a straight line.
+
+2. Equilibrium State:
+   When mass 'm' is attached, the spring stretches by extension 'e' to equilibrium position 'O'.
+         Downward weight = Upward restoring force
+         m * g = k * e   --- (Equation 1)
+
+3. Displaced State:
+   Suppose the mass is pulled downwards by additional displacement 'y' from 'O' and released.
+   Total extension in spring = e + y
+   Total upward restoring force = k*(e + y)
+   Net restoring force F on mass 'm':
+         F = Downward Weight - Upward Force
+         F = mg - k*(e + y) = mg - k*e - k*y
+   From Eq (1), mg = k*e:
+         F = -k * y
+
+4. Proof of SHM:
+   m * a = -k * y  ==>  a = -(k / m) * y
+   Since k and m are constants, a ∝ -y. Thus, the motion is Simple Harmonic.
+
+5. Time Period Derivation:
+   Comparing with a = -w^2 * y:
+         w^2 = k / m  ==>  w = sqrt(k / m)
+         Time Period T = 2*pi / w = 2*pi * sqrt(m / k)
+
+
+QUESTION 4 (3 Marks)
+-------------------
+Question: Derive an expression for the total energy of a particle in SHM and 
+show that it obeys the principle of conservation of energy. Find the position 
+where K.E. and P.E. are equal.
+
+ANSWER:
+1. Setup ("Suppose..."):
+   Suppose a particle of mass 'm' executes SHM along a straight line with 
+   amplitude 'A' and angular frequency 'w'.
+   Displacement equation: x = A * sin(w*t)
+   Velocity equation:     v = w * sqrt(A^2 - x^2)
+
+2. Potential Energy (P.E.):
+   Restoring force at displacement x: F = -k*x (where k = m*w^2).
+   Work done dW against restoring force for small displacement dx:
+         dW = -F * dx = k * x * dx
+   Total work done in displacing particle from mean position (0) to x:
+         P.E. = U = Integral[0 to x] (k * x dx) = (1/2) * k * x^2
+         P.E. = (1/2) * m * w^2 * x^2   --- (Equation 1)
+
+3. Kinetic Energy (K.E.):
+         K.E. = K = (1/2) * m * v^2 = (1/2) * m * [w * sqrt(A^2 - x^2)]^2
+         K.E. = (1/2) * m * w^2 * (A^2 - x^2)   --- (Equation 2)
+
+4. Total Mechanical Energy (E):
+         E = P.E. + K.E.
+         E = (1/2)*m*w^2*x^2 + (1/2)*m*w^2*(A^2 - x^2)
+         E = (1/2) * m * w^2 * A^2   --- (Equation 3)
+
+5. Proof of Conservation of Energy:
+   Since m, w, and A are constants, Total Energy E = (1/2)*m*w^2*A^2 is CONSTANT 
+   at all points and all times.
+   - At Mean Position (x = 0): P.E. = 0, K.E. = (1/2)*m*w^2*A^2 = E.
+   - At Extreme Position (x = ±A): K.E. = 0, P.E. = (1/2)*m*w^2*A^2 = E.
+   Energy continuously transforms between K.E. and P.E. while total energy remains conserved.
+
+6. Position where K.E. = P.E.:
+         (1/2)*m*w^2*(A^2 - x^2) = (1/2)*m*w^2*x^2
+         A^2 - x^2 = x^2  ==>  2*x^2 = A^2  ==>  x = ± A / sqrt(2)
+
+
+QUESTION 5 (1 Mark)
+-------------------
+Question: "All SHM is periodic motion, not all periodic motion is SHM". Express 
+your understanding of this statement with an example.
+
+ANSWER:
+- Periodic motion repeats at equal intervals of time. SHM is a special periodic 
+  motion where particle oscillates back and forth about a mean position with 
+  restoring force F ∝ -x.
+- Example: The revolution of Earth around the Sun is periodic (takes 365 days), 
+  but it is NOT SHM because there is no back-and-forth oscillation about a mean 
+  position under a restoring force proportional to displacement.
+
+
+QUESTION 6 (2 Marks)
+-------------------
+Question: Explain the variation of acceleration and velocity with displacement 
+and time for a particle executing SHM.
+
+ANSWER:
+- Displacement:   x(t) = A * sin(w*t)
+- Velocity:       v(t) = A * w * cos(w*t) = w * sqrt(A^2 - x^2)
+  * At mean position (x = 0): Velocity is MAXIMUM, v_max = A * w.
+  * At extreme positions (x = ±A): Velocity is ZERO, v = 0.
+- Acceleration:   a(t) = -A * w^2 * sin(w*t) = -w^2 * x
+  * At mean position (x = 0): Acceleration is ZERO.
+  * At extreme positions (x = ±A): Acceleration is MAXIMUM, a_max = w^2 * A.
+- Phase Relations: Velocity leads displacement by pi/2 (90 deg). 
+  Acceleration leads displacement by pi (180 deg).
+
+
+QUESTION 7 (2 Marks)
+-------------------
+Question: A pendulum clock is taken to the moon; will it gain or lose time? Why?
+
+ANSWER:
+- Time period formula for simple pendulum: T = 2*pi * sqrt(L / g).
+- Acceleration due to gravity on the moon (g_moon) is 1/6th of gravity on Earth (g_earth).
+- Since T ∝ 1 / sqrt(g), a smaller 'g' on moon causes time period 'T' to INCREASE.
+- The pendulum takes longer to complete one oscillation (swings slower). 
+  Therefore, the clock will LOSE TIME.
+
+
+QUESTION 8 (2 Marks - Numerical)
+--------------------------------
+Question: A body of mass 0.1 kg is executing SHM according to equation:
+          y = 0.5 * sin(100*t + 3*pi/4) meters.
+Find: (i) Initial Phase   (ii) Total Energy.
+
+SOLUTION:
+Given equation: y = 0.5 * sin(100*t + 3*pi/4)
+Comparing with standard equation y = A * sin(w*t + phi_0):
+- Amplitude A = 0.5 m
+- Angular frequency w = 100 rad/s
+- Mass m = 0.1 kg
+
+(i) Initial Phase (phi_0):
+    phi_0 = 3*pi/4 radians = (3 * 180) / 4 = 135 degrees.
+
+(ii) Total Energy (E):
+    E = (1/2) * m * w^2 * A^2
+    E = 0.5 * 0.1 * (100)^2 * (0.5)^2
+    E = 0.5 * 0.1 * 10000 * 0.25
+    E = 125 Joules.
+Final Answer: Initial Phase = 135° (3π/4 rad), Total Energy = 125 J.
+
+
+QUESTION 9 (2 Marks - Numerical)
+--------------------------------
+Question: A particle executes SHM about point x = 0. At t = 0 it has displacement 
+x = 2 cm and zero velocity. If frequency of motion is 0.25 s^-1, find displacement at t = 3 s.
+
+SOLUTION:
+Given:
+- At t = 0, velocity v = 0. This means at t = 0, the particle is at EXTREME position.
+- Amplitude A = 2 cm = 0.02 m
+- Frequency f = 0.25 s^-1  ==>  w = 2*pi*f = 2*pi*0.25 = pi/2 rad/s
+Since particle starts from extreme position, cosine equation applies:
+      x(t) = A * cos(w*t)
+At t = 3 seconds:
+      x(3) = 2 * cos((pi/2) * 3) = 2 * cos(3*pi/2)
+Since cos(3*pi/2) = cos(270 deg) = 0:
+      x(3) = 0 cm.
+Final Answer: Displacement at t = 3 s is 0 cm (particle is at mean position).
+
+
+QUESTION 10 (2 Marks - Numerical)
+---------------------------------
+Question: A body of mass 200 g executes SHM with amplitude 20 mm. Maximum force 
+acting on it is 0.6 N. Calculate maximum velocity.
+
+SOLUTION:
+Given:
+- Mass m = 200 g = 0.2 kg
+- Amplitude A = 20 mm = 0.02 m
+- Maximum Force F_max = 0.6 N
+
+Formula: F_max = m * a_max = m * w^2 * A
+      0.6 = 0.2 * w^2 * 0.02
+      0.6 = 0.004 * w^2
+      w^2 = 0.6 / 0.004 = 150
+      w = sqrt(150) ≈ 12.247 rad/s
+
+Maximum Velocity v_max:
+      v_max = w * A = 12.247 * 0.02 = 0.245 m/s.
+Final Answer: Maximum velocity = 0.245 m/s.
+
+
+QUESTION 11 (2 Marks - Numerical)
+---------------------------------
+Question: An SHM has time period 5 seconds and amplitude r = 10 cm. Find the 
+time it takes to travel r/2 starting from mean position.
+
+SOLUTION:
+Given:
+- Time period T = 5 s  ==>  w = 2*pi / T = 2*pi / 5 rad/s
+- Amplitude A = r = 10 cm
+- Displacement y = r / 2
+
+Since starting from mean position, sine equation applies:
+      y = r * sin(w*t)
+      r / 2 = r * sin((2*pi/5) * t)
+      1 / 2 = sin((2*pi/5) * t)
+Since sin(pi/6) = 1/2:
+      (2*pi/5) * t = pi / 6
+      t = (pi / 6) * (5 / (2*pi)) = 5 / 12 seconds ≈ 0.417 s.
+Final Answer: Time required = 5/12 s (0.417 seconds).
+
+
+--------------------------------------------------------------------------------
+SECTION 2: WAVES — WAVE MOTION
+--------------------------------------------------------------------------------
+
+QUESTION 12 (3 Marks)
+---------------------
+Question: Derive an equation of a progressive wave propagating along positive 
+x-axis. What modification is needed if it travels in the opposite direction?
+
+ANSWER:
+1. Definition of Progressive Wave:
+   A wave which travels continuously in a medium in a definite direction without 
+   change in form and amplitude is called a progressive wave.
+
+2. Setup / Assumptions ("Suppose..."):
+   Suppose a simple harmonic progressive wave travels along positive x-axis with 
+   velocity 'v', amplitude 'A', and frequency 'f' in a medium.
+   Let displacement of particle at origin (x = 0) at any time 't' be:
+         y(0, t) = A * sin(w*t)   --- (Equation 1)
+   where w = 2*pi*f = 2*pi / T is angular frequency.
+
+3. Derivation:
+   As wave propagates along positive x-axis, it reaches a particle at distance 'x' 
+   from origin after time t' = x / v.
+   Therefore, motion of particle at position 'x' lags behind motion of origin particle by x/v.
+   Displacement y(x, t) of particle at position 'x' at time 't':
+         y(x, t) = A * sin[ w * (t - x/v) ]   --- (Equation 2)
+
+   Substituting w = 2*pi / T and v = lambda / T:
+         y(x, t) = A * sin[ 2*pi/T * (t - x / (lambda/T)) ]
+         y(x, t) = A * sin[ 2*pi * (t/T - x/lambda) ]   --- (Standard Form 1)
+
+   Using wave propagation constant k = 2*pi / lambda:
+         y(x, t) = A * sin(w*t - k*x)   --- (Standard Form 2)
+
+4. Modification for Opposite Direction:
+   If the wave propagates along negative x-axis (opposite direction), phase leads by k*x:
+         y(x, t) = A * sin(w*t + k*x)  or  y(x, t) = A * sin[ 2*pi * (t/T + x/lambda) ]
+
+
+QUESTION 13 (3 Marks)
+---------------------
+Question: Define phase of a wave and derive the relation between phase difference 
+and path difference.
+
+ANSWER:
+1. Definition of Phase:
+   The phase of a wave at any instant defines the state of vibration of a particle 
+   at that instant regarding its displacement and direction of motion. In y = A*sin(w*t - k*x), 
+   the angle phi = (w*t - k*x) is the phase.
+
+2. Setup ("Suppose..."):
+   Consider a progressive wave propagating along x-axis: y = A * sin(w*t - k*x).
+   Suppose at instant 't', two particles are located at positions x1 and x2.
+         Phase of particle 1: phi_1 = w*t - k*x1
+         Phase of particle 2: phi_2 = w*t - k*x2
+
+3. Derivation of Relation:
+   Phase difference d_phi = phi_1 - phi_2:
+         d_phi = (w*t - k*x1) - (w*t - k*x2) = k * (x2 - x1)
+   Let path difference dx = x2 - x1.
+   Since wave number k = 2*pi / lambda:
+         d_phi = (2*pi / lambda) * dx
+   Formula: Phase Difference = (2*pi / Wavelength) * Path Difference.
+
+
+QUESTION 14 (2 Marks)
+---------------------
+Question: A wave transmits energy. Does it transmit linear momentum? Why is a 
+longitudinal wave called a pressure wave?
+
+ANSWER:
+- Transmission of Linear Momentum:
+  YES. A wave carries both energy and linear momentum through the medium. 
+  Linear momentum p = E / v (where E is energy transported and v is wave speed).
+- Why Longitudinal Wave is Called Pressure Wave:
+  Longitudinal waves travel as alternating compressions (high pressure/density) 
+  and rarefactions (low pressure/density). As these pressure variations propagate 
+  through the medium, local pressure changes continuously. Hence called pressure wave.
+
+
+QUESTION 15 (2 Marks - Numerical)
+---------------------------------
+Question: A wave of frequency 500 Hz travels at 350 m/s.
+Find: (i) Distance between two points 60° out of phase.
+      (ii) Phase change of a particle in 10^-3 s.
+
+SOLUTION:
+Given:
+- Frequency f = 500 Hz
+- Velocity v = 350 m/s
+- Wavelength lambda = v / f = 350 / 500 = 0.7 meters.
+
+(i) Phase difference d_phi = 60 degrees = 60 * (pi / 180) = pi / 3 radians.
+    Formula: d_phi = (2*pi / lambda) * dx
+    dx = (lambda / (2*pi)) * d_phi
+    dx = (0.7 / (2*pi)) * (pi / 3) = 0.7 / 6 ≈ 0.1167 meters (11.67 cm).
+
+(ii) Time interval dt = 10^-3 s.
+    Formula: d_phi = w * dt = 2*pi*f * dt
+    d_phi = 2*pi * 500 * 10^-3 = pi radians = 180 degrees.
+Final Answer: (i) Path diff = 0.1167 m, (ii) Phase change = 180° (π rad).
+
+
+--------------------------------------------------------------------------------
+SECTION 3: MAGNETISM — CIRCULAR COIL & AXIS
+--------------------------------------------------------------------------------
+
+QUESTION 16 (3 Marks)
+---------------------
+Question: State Biot-Savart's Law. Explain current element and its significance.
+
+ANSWER:
+1. Statement of Biot-Savart Law:
+   Biot-Savart's law states that magnetic flux density dB produced at point 'P' 
+   at distance 'r' by a small current element I*dl of a conductor carrying current I is:
+   (i)   Directly proportional to current I.
+   (ii)  Directly proportional to length of element dl.
+   (iii) Directly proportional to sin(theta), where theta is angle between dl and position vector r.
+   (iv)  Inversely proportional to square of distance r^2.
+
+2. Mathematical Form:
+         dB = (mu_0 / 4*pi) * (I * dl * sin(theta) / r^2)
+   where mu_0 / 4*pi = 10^-7 T*m/A.
+
+3. Vector Form:
+         dB_vec = (mu_0 / 4*pi) * (I * dl_vec x r_hat / r^2)
+
+4. Current Element & Significance:
+   - A current element I*dl_vec is a vector quantity having magnitude I*dl and 
+     direction along current flow.
+   - Significance: It serves as the basic elementary source of magnetic field in 
+     magnetism, exactly analogous to point charge 'dq' in electrostatics.
+
+
+QUESTION 17 (3 Marks)
+---------------------
+Question: Using Biot-Savart's Law, derive an expression for magnetic flux density 
+at the centre of a current carrying circular coil.
+
+ANSWER:
+1. Setup ("Suppose..."):
+   Suppose a circular coil of radius 'R' carries steady current 'I'. We wish to find 
+   magnetic field 'B' at its centre 'O'.
+
+2. Derivation:
+   Consider a small current element I*dl on circumference of coil.
+   Distance of element from centre O is radius R.
+   Angle theta between tangent element dl and radius vector R is 90 degrees (sin 90° = 1).
+   By Biot-Savart's Law, field dB at centre O due to element dl:
+         dB = (mu_0 / 4*pi) * (I * dl * sin 90°) / R^2
+         dB = (mu_0 / 4*pi) * (I * dl) / R^2
+
+   By Right Hand Rule, dB for all elements points perpendicular to coil plane in same direction.
+   Total field B at centre O is integral of dB around circumference:
+         B = Integral(dB) = (mu_0 * I / (4*pi * R^2)) * Integral(dl)
+   Since Integral(dl) = Circumference = 2*pi*R:
+         B = (mu_0 * I / (4*pi * R^2)) * (2*pi*R)
+         B = mu_0 * I / (2 * R)
+
+   For a coil of N turns:
+         B_center = mu_0 * N * I / (2 * R)
+
+
+QUESTION 18 (3 Marks)
+---------------------
+Question: Derive an expression for magnetic flux density at any point on the axis 
+of a current carrying circular coil using Biot-Savart Law.
+
+ANSWER:
+1. Setup ("Suppose..."):
+   Consider a circular coil of radius 'R' carrying current 'I'. Let 'P' be a point 
+   on coil axis at distance 'x' from centre 'O'.
+   Distance from element on coil to point P: r = sqrt(R^2 + x^2).
+
+2. Derivation:
+   Field dB at P due to element dl at top of coil:
+         dB = (mu_0 / 4*pi) * (I * dl) / r^2 = (mu_0 / 4*pi) * (I * dl) / (R^2 + x^2)
+   Resolving dB into components:
+   - Axial component: dB_x = dB * sin(phi) along axis away from center O.
+   - Perpendicular component: dB_perp = dB * cos(phi).
+   Symmetry shows perpendicular components from opposite elements cancel out.
+   Net field B at P is sum of axial components:
+         B = Integral(dB * sin(phi))
+   From right triangle at point P: sin(phi) = R / r = R / sqrt(R^2 + x^2).
+
+         B = Integral[ (mu_0 / 4*pi) * (I * dl / (R^2 + x^2)) * (R / sqrt(R^2 + x^2)) ]
+         B = (mu_0 * I * R / (4*pi * (R^2 + x^2)^(3/2))) * Integral(dl)
+   Since Integral(dl) = 2*pi*R:
+         B = (mu_0 * I * R * 2*pi*R) / (4*pi * (R^2 + x^2)^(3/2))
+         B = (mu_0 * I * R^2) / [ 2 * (R^2 + x^2)^(3/2) ]
+
+   For N turns:
+         B_axis = (mu_0 * N * I * R^2) / [ 2 * (R^2 + x^2)^(3/2) ]
+
+
+QUESTION 19 (3 Marks - Numerical)
+---------------------------------
+Question: A closely wound coil of radius 6 cm carrying current 2.5 A has magnetic 
+field 6.39 * 10^-4 T on axis 6 cm from center. Find number of turns N.
+
+SOLUTION:
+Given:
+- Radius R = 6 cm = 0.06 m
+- Axial distance x = 6 cm = 0.06 m (Notice R = x)
+- Current I = 2.5 A
+- Magnetic field B = 6.39 * 10^-4 T
+
+Formula: B_axis = (mu_0 * N * I * R^2) / [ 2 * (R^2 + x^2)^(3/2) ]
+Since x = R:
+      (R^2 + R^2)^(3/2) = (2*R^2)^(3/2) = 2^(3/2) * R^3 = 2*sqrt(2) * R^3
+Substituting into B formula:
+      B = (mu_0 * N * I * R^2) / [ 2 * 2*sqrt(2) * R^3 ]
+      B = (mu_0 * N * I) / [ 4 * sqrt(2) * R ]
+
+Solving for N:
+      N = (B * 4 * sqrt(2) * R) / (mu_0 * I)
+      N = (6.39*10^-4 * 4 * 1.4142 * 0.06) / (4*pi*10^-7 * 2.5)
+      N = (2.1687 * 10^-4) / (3.1416 * 10^-6) ≈ 69.03 ≈ 70 turns.
+Final Answer: Number of turns N = 70 turns.
+
+
+QUESTION 20 (2 Marks - Numerical)
+---------------------------------
+Question: In Bohr model of hydrogen atom, electron circulates at radius 5.1*10^-11 m 
+at frequency 6.8*10^15 rev/s. Calculate magnetic field at center of orbit.
+
+SOLUTION:
+Given:
+- Radius r = 5.1 * 10^-11 m
+- Frequency f = 6.8 * 10^15 rev/s
+- Electron charge e = 1.6 * 10^-19 C
+
+Equivalent Current I = charge / time = e * f:
+      I = 1.6*10^-19 * 6.8*10^15 = 1.088 * 10^-3 A.
+
+Magnetic Field at Center B = mu_0 * I / (2 * r):
+      B = (4*pi*10^-7 * 1.088*10^-3) / (2 * 5.1*10^-11)
+      B = (1.367 * 10^-9) / (1.02 * 10^-10) ≈ 13.4 Tesla.
+Final Answer: Magnetic field at center = 13.4 T.
+
+
+--------------------------------------------------------------------------------
+SECTION 4: MODERN PHYSICS — ELECTRONS
+--------------------------------------------------------------------------------
+
+QUESTION 21 (3 Marks)
+---------------------
+Question: What is specific charge? Describe J.J. Thomson's experiment for measuring 
+the specific charge (e/m) of an electron.
+
+ANSWER:
+1. Definition of Specific Charge:
+   Specific charge of a particle is the ratio of its electric charge to its mass (e/m). 
+   Unit: C/kg. Value for electron: 1.76 * 10^11 C/kg.
+
+2. Experimental Setup ("Suppose..."):
+   Suppose a narrow beam of electrons emitted from cathode 'C' is accelerated by 
+   anode potential 'V'. The beam enters a region of crossed uniform electric field 
+   'E' (between parallel plates) and magnetic field 'B' (from Helmholtz coils).
+
+3. Theory & Formulas:
+   (i) Velocity Selector (Crossed Fields):
+       Adjust E and B so electric force Fe = e*E (upward) equals magnetic force Fm = e*v*B (downward).
+       Beam passes undeflected:
+             e * E = e * v * B  ==>  v = E / B
+
+   (ii) Electric Deflection Alone (Magnetic Field Off):
+       Electric force gives upward acceleration: a_y = e*E / m.
+       Time spent in plates of length 'L': t = L / v.
+       Vertical deflection y on screen:
+             y = (1/2) * a_y * t^2 = (1/2) * (e*E / m) * (L / v)^2 = (e * E * L^2) / (2 * m * v^2)
+
+   (iii) Formula for e/m:
+       Substitute v = E / B into deflection formula:
+             y = (e * E * L^2) / (2 * m * (E/B)^2) = (e * B^2 * L^2) / (2 * m * E)
+             e/m = (2 * y * E) / (B^2 * L^2)
+
+       Alternatively, using accelerating potential V (1/2*m*v^2 = e*V ==> v^2 = 2*e*V/m):
+             e/m = E^2 / (2 * V * B^2)
+
+
+QUESTION 22 (3 Marks)
+---------------------
+Question: Explain effect of electric field on charged particle and show that path 
+of an electron in a uniform electric field is parabolic.
+
+ANSWER:
+1. Setup ("Suppose..."):
+   Suppose an electron of mass 'm' and charge '-e' enters a uniform electric field 'E' 
+   acting downwards along y-axis with initial horizontal velocity 'v' along x-axis.
+
+2. Horizontal Motion:
+   No electric force acts horizontally (F_x = 0 ==> a_x = 0).
+   Horizontal displacement at time 't':
+         x = v * t  ==>  t = x / v
+
+3. Vertical Motion:
+   Electric force acts vertically upwards: F_y = e * E.
+   Vertical acceleration: a_y = e * E / m.
+   Vertical displacement 'y' at time 't':
+         y = (1/2) * a_y * t^2 = (1/2) * (e*E / m) * t^2
+
+4. Proof of Parabolic Path:
+   Substituting t = x / v into vertical equation:
+         y = (1/2) * (e*E / m) * (x / v)^2
+         y = [ e * E / (2 * m * v^2) ] * x^2
+   Since e, E, m, v are constants, let C = e*E / (2*m*v^2):
+         y = C * x^2
+   This is the equation of a PARABOLA. Hence, electron path in electric field is parabolic.
+
+
+QUESTION 23 (2 Marks - Numerical)
+---------------------------------
+Question: An electron accelerated through potential difference 2000 V enters 
+magnetic field 0.02 T perpendicularly. Find radius of path.
+
+SOLUTION:
+Given:
+- Accelerating voltage V = 2000 V
+- Magnetic field B = 0.02 T
+- Mass of electron m = 9.1 * 10^-31 kg
+- Charge of electron e = 1.6 * 10^-19 C
+
+Velocity v acquired: (1/2)*m*v^2 = e*V
+      v = sqrt(2 * e * V / m)
+      v = sqrt(2 * 1.6*10^-19 * 2000 / 9.1*10^-31)
+      v = sqrt(7.033 * 10^14) ≈ 2.652 * 10^7 m/s.
+
+Radius of circular path in magnetic field r = m*v / (e*B):
+      r = (9.1*10^-31 * 2.652*10^7) / (1.6*10^-19 * 0.02)
+      r = (2.413 * 10^-23) / (3.2 * 10^-21) ≈ 0.00754 m = 7.54 mm.
+Final Answer: Radius of path = 7.54 mm (0.754 cm).
+
+
+QUESTION 24 (2 Marks - Numerical)
+---------------------------------
+Question: Electron beam with velocity 3*10^7 m/s deflects 2 mm passing 10 cm through 
+electric field 1800 V/m. Calculate e/m.
+
+SOLUTION:
+Given:
+- Velocity v = 3 * 10^7 m/s
+- Deflection y = 2 mm = 0.002 m
+- Length of field L = 10 cm = 0.10 m
+- Electric field E = 1800 V/m
+
+Formula: y = (e * E * L^2) / (2 * m * v^2)
+Solving for e/m:
+      e/m = (2 * y * v^2) / (E * L^2)
+      e/m = (2 * 0.002 * (3*10^7)^2) / (1800 * (0.10)^2)
+      e/m = (0.004 * 9*10^14) / (1800 * 0.01)
+      e/m = (3.6 * 10^12) / 18 = 2.0 * 10^11 C/kg.
+Final Answer: Specific charge e/m = 2.0 * 10^11 C/kg.
+
+
+QUESTION 25 (2 Marks - Numerical)
+---------------------------------
+Question: Electron beam accelerated from rest through 5 kV in vacuum strikes surface. 
+Current is 50 uA. Determine force exerted on surface assuming electrons brought to rest.
+
+SOLUTION:
+Given:
+- Voltage V = 5 kV = 5000 V
+- Current I = 50 uA = 50 * 10^-6 A
+- Electron mass m = 9.1 * 10^-31 kg
+- Electron charge e = 1.6 * 10^-19 C
+
+Step 1: Velocity of electrons:
+      v = sqrt(2 * e * V / m) = sqrt(2 * 1.6*10^-19 * 5000 / 9.1*10^-31)
+      v = sqrt(1.758 * 10^15) ≈ 4.193 * 10^7 m/s.
+
+Step 2: Number of electrons striking per second (N_s):
+      Current I = N_s * e  ==>  N_s = I / e
+      N_s = (50 * 10^-6) / (1.6 * 10^-19) = 3.125 * 10^14 electrons/second.
+
+Step 3: Force exerted = Rate of change of momentum (dp / dt):
+      Initial momentum of 1 electron = m * v
+      Final momentum = 0 (brought to rest)
+      Force F = N_s * m * v
+      F = 3.125*10^14 * 9.1*10^-31 * 4.193*10^7
+      F = 1.192 * 10^-8 Newton.
+Final Answer: Force exerted on surface = 1.192 * 10^-8 N.
+================================================================================
+"""
+
+with open("d:/D.E.V_Darshan/full_exam_solutions.txt", "w", encoding="utf-8") as f:
+    f.write(content)
+
+print("Successfully created full_exam_solutions.txt!")

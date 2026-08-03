@@ -1,0 +1,319 @@
+================================
+   OLED PHYSICS EXAM ANSWERS    
+================================
+
+--------------------------------
+1. SIMPLE HARMONIC MOTION (SHM) 
+--------------------------------
+
+Q1: Conditions for SHM
+--------------------------------
+1. Restoring force F is directly
+   proportional to displacement:
+   F = -k * x
+2. Force is always directed
+   towards the mean position.
+
+Q2: Simple Pendulum Derivation
+--------------------------------
+Restoring Torque:
+tau = -m * g * L * sin(theta)
+
+For small angle theta:
+sin(theta) ~= theta
+tau = -m * g * L * theta
+
+Moment of inertia:
+I * alpha = tau
+alpha = -(m * g * L / I) * theta
+
+For point mass bob: I = m * L^2
+alpha = -(g / L) * theta
+
+Compare alpha = -w^2 * theta:
+w = sqrt(g / L)
+
+Time Period T = 2 * pi / w
+T = 2 * pi * sqrt(L / g)
+
+Note: T is independent of mass
+'m' of the bob.
+
+Q3: Mass Attached to Spring
+--------------------------------
+Restoring Force F = -k * y
+m * a = -k * y
+a = -(k / m) * y
+
+Comparing with a = -w^2 * y:
+w = sqrt(k / m)
+
+Time Period T = 2 * pi / w
+T = 2 * pi * sqrt(m / k)
+
+Q4: Total Energy in SHM
+--------------------------------
+P.E. = (1/2) * k * x^2
+     = (1/2) * m * w^2 * x^2
+
+K.E. = (1/2) * m * v^2
+     = (1/2)*m*w^2*(A^2-x^2)
+
+Total Energy E = P.E. + K.E.
+E = (1/2) * m * w^2 * A^2
+(Energy remains CONSTANT)
+
+Position where K.E. = P.E.:
+(1/2)*m*w^2*(A^2-x^2) = 
+(1/2)*m*w^2*x^2
+=> A^2 - x^2 = x^2
+=> 2 * x^2 = A^2
+=> x = +- A / sqrt(2)
+
+Q5: SHM Equation Numerical
+--------------------------------
+Given: y = 0.5*sin(100t+3*pi/4)
+m = 0.1 kg, A = 0.5 m
+
+(i) Initial Phase:
+    phi = 3*pi/4 rad = 135 deg
+
+(ii) Total Energy:
+    w = 100 rad/s
+    E = (1/2) * m * w^2 * A^2
+    E = 0.5*0.1*100^2*0.5^2
+    E = 125 Joules
+
+Q6: Force & Velocity Numerical
+--------------------------------
+m = 0.2 kg, A = 0.02 m
+F_max = 0.6 N
+
+F_max = m * w^2 * A
+0.6 = 0.2 * w^2 * 0.02
+w^2 = 150 => w = 12.25 rad/s
+
+v_max = w * A = 12.25 * 0.02
+v_max = 0.245 m/s
+
+Q7: Time to Travel r/2
+--------------------------------
+T = 5 s, Amplitude = r
+y = r * sin(w * t)
+r / 2 = r * sin(2 * pi * t / 5)
+1 / 2 = sin(2 * pi * t / 5)
+2 * pi * t / 5 = pi / 6
+t = 5 / 12 = 0.417 seconds
+
+--------------------------------
+2. WAVES & WAVE MOTION         
+--------------------------------
+
+Q8: Progressive Wave Derivation
+--------------------------------
+Displacement at origin (x = 0):
+y(0, t) = A * sin(w * t)
+
+Wave travels distance x with
+speed v in time t' = x / v.
+
+Displacement at position x:
+y(x, t) = A * sin(w * (t - x/v))
+y(x, t) = A * sin(w*t - (w/v)*x)
+
+Since k = w / v = 2*pi / lambda:
+y(x, t) = A * sin(w*t - k*x)
+
+If wave travels in opposite
+(-x) direction:
+y(x, t) = A * sin(w*t + k*x)
+
+Q9: Phase & Path Difference
+--------------------------------
+Phase change over 1 wavelength
+(lambda) is 2*pi radians.
+
+For path difference dx:
+d_phi = (2*pi / lambda) * dx
+
+Q10: Wave Momentum
+--------------------------------
+Q: Does a wave transmit linear
+   momentum?
+A: YES. Waves carry both energy
+   and linear momentum:
+   p = E / v
+
+Q11: Pressure Wave
+--------------------------------
+Q: Why is longitudinal wave
+   called a pressure wave?
+A: It propagates as a series of
+   compressions & rarefactions,
+   causing periodic variation
+   in local pressure & density.
+
+Q12: Wave Phase Numerical
+--------------------------------
+f = 500 Hz, v = 350 m/s
+lambda = v / f = 350/500 = 0.7 m
+
+(i) d_phi = 60 deg = pi/3 rad
+    dx = (lambda / 2*pi) * d_phi
+    dx = (0.7 / 2*pi) * (pi/3)
+    dx = 0.7 / 6 = 0.117 m
+
+(ii) dt = 10^-3 s
+    d_phi = w * dt = 2*pi*f * dt
+    d_phi = 2*pi * 500 * 10^-3
+    d_phi = pi rad = 180 deg
+
+--------------------------------
+3. MAGNETISM (CIRCULAR COIL)   
+--------------------------------
+
+Q13: Biot-Savart Law
+--------------------------------
+dB = (mu_0 / 4*pi) *
+     (I * dl * sin(theta) / r^2)
+
+Vector form:
+dB = (mu_0 / 4*pi) *
+     (I * dl x r_hat / r^2)
+
+Current element I*dl:
+It is the vector source of
+magnetic field, analogous to
+charge dq in electrostatics.
+
+Q14: Field at Center of Coil
+--------------------------------
+dB = (mu_0/4*pi) * (I*dl / R^2)
+B = integral(dB)
+B = (mu_0 * I / (4*pi * R^2)) *
+    integral(dl)
+
+Since integral(dl) = 2*pi*R:
+B = (mu_0 * I * 2*pi*R) /
+    (4*pi * R^2)
+B = mu_0 * I / (2 * R)
+
+For N turns:
+B = mu_0 * N * I / (2 * R)
+
+Q15: Field on Axis of Coil
+--------------------------------
+B_axis = (mu_0 * N * I * R^2) /
+         [2 * (R^2 + x^2)^(3/2)]
+
+Q16: Axis Field Numerical
+--------------------------------
+R = 0.06 m, x = 0.06 m
+I = 2.5 A, B = 6.39 * 10^-4 T
+
+B = mu_0 * N * I * R^2 /
+    [2 * (R^2 + x^2)^(3/2)]
+
+(R^2+x^2)^(3/2) = 2^(3/2)*R^3
+               = 2*sqrt(2)*R^3
+
+B = mu_0 * N * I /
+    (4 * sqrt(2) * R)
+
+N = (B * 4 * sqrt(2) * R) /
+    (mu_0 * I)
+N = (6.39e-4*4*1.414*0.06) /
+    (4*pi*10^-7 * 2.5)
+N = 69.3 ~= 70 turns
+
+Q17: Bohr Atom Field Numerical
+--------------------------------
+r = 5.1 * 10^-11 m
+f = 6.8 * 10^15 rev/s
+
+Current I = e * f
+I = 1.6e-19 * 6.8e15
+I = 1.088 * 10^-3 A
+
+B = mu_0 * I / (2 * r)
+B = (4*pi*10^-7 * 1.088e-3) /
+    (2 * 5.1e-11)
+B = 13.4 Tesla
+
+--------------------------------
+4. MODERN PHYSICS (ELECTRONS)  
+--------------------------------
+
+Q18: J.J. Thomson e/m Experiment
+--------------------------------
+1. Velocity Selector:
+   Fe = Fm => e*E = e*v*B
+   v = E / B
+
+2. Electric Deflection:
+   y = (1/2) * a * t^2
+   a = e*E / m,  t = L / v
+
+   y = (e*E*L^2) / (2*m*v^2)
+
+   Substitute v = E / B:
+   y = (e * B^2 * L^2) /
+       (2 * m * E)
+
+3. Specific Charge formula:
+   e/m = (2 * y * E) /
+         (B^2 * L^2)
+
+   Or using Accelerating V:
+   e/m = E^2 / (2 * V * B^2)
+
+Q19: Parabolic Path in E-Field
+--------------------------------
+Horizontal: x = v * t => t = x/v
+Vertical: a_y = e * E / m
+y = (1/2) * a_y * t^2
+y = (e*E / (2*m*v^2)) * x^2
+
+Since e, E, m, v are constant:
+y = C * x^2  (Parabola)
+
+Q20: Radius in B-Field Numerical
+--------------------------------
+V = 2000 V, B = 0.02 T
+m = 9.1 * 10^-31 kg
+e = 1.6 * 10^-19 C
+
+v = sqrt(2 * e * V / m)
+v = sqrt(2*1.6e-19*2000/9.1e-31)
+v = 2.65 * 10^7 m/s
+
+r = m * v / (e * B)
+r = (9.1e-31 * 2.65e7) /
+    (1.6e-19 * 0.02)
+r = 0.00753 m = 7.53 mm
+
+Q21: Specific Charge Numerical
+--------------------------------
+v = 3 * 10^7 m/s, y = 0.002 m
+L = 0.10 m, E = 1800 V/m
+
+y = (e*E*L^2) / (2*m*v^2)
+e/m = (2 * y * v^2) / (E * L^2)
+e/m = (2 * 0.002 * (3e7)^2) /
+      (1800 * 0.1^2)
+e/m = 2.0 * 10^11 C/kg
+
+Q22: Force Exerted by Beam
+--------------------------------
+V = 5000 V, I = 50 uA
+
+v = sqrt(2 * e * V / m)
+v = 4.19 * 10^7 m/s
+
+Electrons per sec N_s = I / e
+N_s = 50e-6 / 1.6e-19
+N_s = 3.125 * 10^14 /s
+
+Force F = N_s * m * v
+F = 3.125e14 * 9.1e-31 * 4.19e7
+F = 1.19 * 10^-8 Newton
