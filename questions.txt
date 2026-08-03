@@ -1,0 +1,168 @@
+SHORT ANSWER QUESTIONS
+5. a) State Biot-Savart's law and obtain an expression for magnetic flux density at the centre of a current carrying circular coil.
+[3]
+b) In the Bohr model of hydrogen atom, the electron circulates around the nucleus in a path of radius 5.1 * 10 ^ - 11 meter at frequency of 6.8 * 10 ^ 15 rev/sec. What value of magnetic field is set up at the centre of the orbit?
+[2]
+6. An electron and proton are those particles in which charges are equal and opposite in nature but the mass is significantly different.
+a) If they move with the same speed in a uniform magnetic field, compare the radii of their circular paths.
+[2]
+b) Beams of electrons and protons having the same initial kinetic energy enter normally into an electric field, which beam will be more curved, justify.
+[1]
+d) A cosmic-ray electron moves at 7.5 * 10 ^ 6 * m / s perpendicular to Earth's magnetic field at an altitude where the field strength is 1 * 10 ^ - 5 * T What is the radius of the circular path the electron follows?
+[2]
+7. a) What is specific charge? Describe J.J. Thomson's experiment for measuring the specific charge of an electron.
+[3]
+b) An electron is accelerated through a potential difference of 2000V and then it enters a uniform magnetic field of 0.02T in a direction perpendicular to it. Find the radius of the path of the electron in the magnetic field. M₂= 9.1 X-31kg, e = 1.6 * 10 ^ - 19 * C
+[2]
+
+
+<
+8. a) Derive an expression for the magnetic field due to a moving charge.
+[2]
+b) A closely wound coil has a radius of 6 cm and carries current of 2.5 A. How many turns must it have if at a point on the coil axis 6 cm from the center of the coil the magnetic field is 6.39 * 10 ^ - 4 * T
+[3]
+GROUP -'C' [2 * 8 = 16]
+LONG ANSWER QUESTIONS
+9. a) Derive an equation of a progressive wave propagating along positive x-axis. What modification is needed on the equation if it was travelling allong opposite direction? Explain.
+[2 + 1]
+b) Define the phase of a wave.
+[1]
+c) Establish the relation between phase difference & path difference.
+[2]
+d) A wave of frequency 500 Hz is travelling at 350 m/s.
+i) How far apart two points 60° out of phase?
+[1]
+ii) By how much the phase of a particle change in 10-3 sec?
+[1]
+10. a) What are the essential conditions for the motion to be simple harmonic motion?
+[1]
+b) Explain the variation of acceleration with time of a particle executing SHM. Draw graph to show your understanding.
+[2]
+c) Show that the motion of a mass attached to a vertical spring is simple harmonic motion and find its time period. Mention the necessary assumptions you made to show this motion simple harmonic.
+[3]
+d) A body of mass 0.1 kg is executing SHM according to the equation y = 0.5sin(100t + 3pi / 4) meter.
+Find
+(1) Initial Phase
+[1]
+(ii) Total energy
+[1]
+"Best of Luck"
+
+GROUP - 'B' [5 * 4 = 20]
+SHORT ANSWER QUESTIONS
+5. a) By using Biot and Savart law derive an expression for magnetic flux density at any point on the axis of current carrying circular coil.
+[3]
+b) A coil consisting of 100 circular loops with radius 0.60 m carries a current of 5 A. At what distance from the center, along the axis, the magnetic field magnitude as great as it is at the center? 1 8
+[2]
+6. Millikan's oil drop experiment utilizes the electric field in a viscous fluid to analyze the speed of a charged oil drop.
+a) What happens if a falling drop suddenly experiences no net force in the vertical path?
+[1]
+<
+b) What types of forces apply during the instant of falling of a drop in th viscous fluid?
+[1]
+c) What is the condition of upward terminal velocity of qil drop in Millikan's oil drop experiment?
+[1]
+d) An electron beam after being accelerated from rest through a potential difference of 5 kV in vacuum is allowed to impinge normally on a fixed Surface. Determine the Force exerted on the surface assuming incident current is 50µA that it brings the electrons to rest. (mass of electron is 9.1 * 10 ^ - 31 * Kg ]
+[2]
+7.
+a) What is specific charge? Describe J.J. Thomson's Thomson's experiment experiment for for measuring the specific charge of an electron. 2
+[3]
+c) An electron is accelerated through a potential difference of 2000V and then it enters a uniform magnetic field of 0.02T in a direction perpendicular to it. Find the radius of the path of the electron in the magnetic field. M_{0} = 9.1X ^ - 31 * kg e = 1.6 * 10 ^ - 19 * C
+[2]
+8.
+a) State Biot-Savart's law..S
+[2]
+b) A closely wound coil has a radius of 6 cm and carries current of 2.5 A. How many turns must it have if at a point on the coil axis 6 cm from the center of the coil the magnetic field is 6.39 * 10 ^ - 4 T^ prime prime
+[3]
+
+GROUP-C [2 * 8 = 16]
+LONG ANSWER QUESTIONS
+[1]
+9. a) A wave transmit energy. Does it transmit linear momentum?
+b) Define progressive wave and write different forms of progressive wave equations.
+[3]
+c) For the wave shown in figure, write the equation of this wave if its position is shown at t = 0 Speed of wave is v = 300m / s
+[2]
+y(m)
+0.06
+0.2
+x(m)
+d) Why longitudinal wave is also known as pressure wave?
+[1]
+e) Define phase of a wave1
+[1]
+10.
+a) Define simple harmonic motion
+.
+[1]
+<
+b) Show that motion of a simple pendulum is simple harmonic motion and its time period is independent of mass of the bob. 3
+[3]
+c) A particle executes simple harmonic motion about the point x = 0 At time t = 0 it has displacement x = 2 cm and zero velocity. If the frequency of motion is 0.25 s¹, find the displacement at t = 3 s.
+[2]
+d) At what position the K.E and P.E of a particle in simple harmonic motion are equal?
+[2]
+
+
+SHORT ANSWER QUESTIONS
+a) Obtain an expression for magnetic flux density at a point on the axis of a current carrying circular coil.
+5.
+[3]
+b) A closely wound coil has a radius of 6 cm and carries current of 2.5 A. How many turns must it have if at a point on the coil axis 6 cm from the center of the coil the magnetic field is 6.39 * 10 ^ - 4 * T ?
+[2]
+6.
+a) Explain the effect of electric field on charged particle and show that the path of an electron is parabolic in electric field.
+[3]
+b) A beam of electrons with velocity 3 * 10 ^ 7 * m / s is deflected 2mm in passing for 10cm through an electric field of 1800 V/m perpendicular to its path. Calculate e/m for electrons.
+[2]
+7.
+a) What is specific charge? Describe J.J. Thomson's experiment for measuring the specific charge of an electron.
+[3]
+c) An electron is accelerated through a potential difference of 2000V and then it enters a uniform magnetic field of 0.02T in a direction perpendicular to it. Find the radius of the path of the electron in the magnetic field. M. 9.1 X-31kg, e = 1.6 * 10 ^ 0.19 * C
+[2]
+8.
+a) State Biot-Savart's law.
+[2]
+b) What do you mean by current element? What is its significance?
+[1]
+c) A closely wound circular coil with radius 2.4cm has 800 turns, what must be current in the coil if the magnetic field at the centre of the coil is 0.058T?
+[2]
+GROUP-'C' [2 * 8 = 16]
+LONG ANSWER QUESTIONS
+2.
+a) Derive an equation of a progressive wave propagating along positive x-axis.
+[2]
+b) Write down any two similarities between longitudinal and transverse wave.
+[1]
+c) Define phase and derive a relation between phase difference and path difference.
+[2]
+
+
+d) The figure shows the progressive wave propagating along positive x-axis with frequency 10 Hz. where x represents the position of vibrating particles (in meter) and y represents the displacement of sParticles (in meter). Find:
+i) Phase difference between point A and point B.
+[1]
+ii) Write down the equation of given wave.
+[1]
+iii) Write down the equation of wave having amplitude double of the given wave and travelling in opposite direction.
+[1]
+A
+B
+<
+a) Define simple harmonic motion with an example.
+[1]
+b) Find the expression for the total energy of a particle in SHM and show that SHM obeys the principle of conservation of energy.
+[3]
+c) A pendulum clock is taken to the moon; will it gain or lose the time? Why?
+[2]
+d) A Body of mass 200 Gram is executing SHM with amplitude of 20mm. The magnitude of the maximum force which acts upon it 0.6N. Calculate its maximum Velocity.
+[2]
+"Best of Luck"
+
+6. a. 'All SHM is periodic motion, not all periodic motion is SHM'. Express your understanding of this statement with an example.
+[1]
+b. Explain the graphical and mathematical variation of velocity with displacement from mean position of a particle in simple harmonic motion.
+[2]
+c. What is a simple pendulum? Show that the motion of simple pendulum is simple harmonic and find the expression for its time period
+[3]
+3 2 d. A SHM has time period 5 seconds and amplitude (r) 10 cm. Find the time it takes to traveler starting from the mean position.
+[2]
